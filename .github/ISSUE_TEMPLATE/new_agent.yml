@@ -1,0 +1,57 @@
+name: New agent request
+description: Propose a vulnerability class or recon pattern that should have an agent.
+title: "[New agent] brief description"
+labels: ["new-agent"]
+body:
+  - type: textarea
+    id: vulnerability
+    attributes:
+      label: What vulnerability or pattern should this agent detect?
+      description: One paragraph. What is the bug class? What's the attack?
+    validations:
+      required: true
+
+  - type: input
+    id: category
+    attributes:
+      label: Suggested category
+      description: Which folder would this live in? (e.g. base/injection, base/auth, recon)
+      placeholder: base/injection
+    validations:
+      required: false
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Example vulnerable code
+      description: One or more small snippets showing the pattern. Real CVEs or public writeups are great.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: false_positives
+    attributes:
+      label: Likely false positives
+      description: What code patterns LOOK like this bug but aren't? This is the hardest part of a good agent prompt.
+    validations:
+      required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: CWE / OWASP / CVE / blog posts / academic papers
+    validations:
+      required: false
+
+  - type: dropdown
+    id: willing_to_submit
+    attributes:
+      label: Are you willing to submit the agent yourself?
+      options:
+        - "Yes, I'll open a PR"
+        - "No, requesting only"
+        - "Maybe, with guidance"
+    validations:
+      required: true

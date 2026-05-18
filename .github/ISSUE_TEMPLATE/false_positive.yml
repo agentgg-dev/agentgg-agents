@@ -1,0 +1,48 @@
+name: False positive
+description: An agent flagged code that isn't actually vulnerable.
+title: "[FP] <agent-slug>: brief description"
+labels: ["false-positive"]
+body:
+  - type: input
+    id: agent
+    attributes:
+      label: Agent slug
+      description: Which agent fired? Find it in the scan output or via `agentgg agents list`.
+      placeholder: sql-injection
+    validations:
+      required: true
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Code that was flagged
+      description: Paste the smallest snippet that triggered the false positive. Redact anything sensitive.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: why_not_vulnerable
+    attributes:
+      label: Why this is NOT vulnerable
+      description: Explain why the agent was wrong. The clearer this is, the easier it is to update the prompt's false-positive guidance.
+    validations:
+      required: true
+
+  - type: textarea
+    id: finding
+    attributes:
+      label: Agent finding output
+      description: Paste the relevant chunk of the scan output (the finding the agent produced).
+      render: text
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: agentgg CLI version
+      description: Output of `agentgg --version`
+      placeholder: 0.1.0
+    validations:
+      required: false

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Lint the agent tree before letting the commit land.
+#
+# Enable once per clone:
+#   git config core.hooksPath .githooks
+#
+# Skip ad-hoc (e.g. WIP commits): git commit --no-verify
+#
+# Resolution order for the agentgg CLI:
+#   1. $AGENTGG_BIN env var (point at a local checkout during CLI dev)
+#   2. `agentgg` on PATH (npm-installed)
+#   3. `npx agentgg` (downloads on demand once published)
+set -eu
+
+repo_root=$(git rev-parse --show-toplevel)
+
+if [ -n "${AGENTGG_BIN:-}" ]; then
+  # Intentional word-split so multi-token overrides work, e.g.
+  #   AGENTGG_BIN="npx tsx ../agentgg/packages/cli/src/cli.ts"
+  # shellcheck disable=SC2206
+  cmd=(${AGENTGG_BIN})
+elif command -v agentgg >/dev/null 2>&1; then
+  cmd=(agentgg)
+else
+  cmd=(npx --yes agentgg)
+fi
+
+echo "→ ${cmd[*]} agents lint $repo_root"
+"${cmd[@]}" agents lint "$repo_root"

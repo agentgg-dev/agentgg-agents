@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Issue with the agentgg CLI (not an agent)
+    url: https://github.com/agentgg-dev/agentgg/issues
+    about: For bugs in the CLI itself, scanning behavior, or installation issues, file there instead.
+  - name: Security vulnerability
+    url: https://github.com/agentgg-dev/agentgg-agents/security/advisories/new
+    about: Privately report a security issue via GitHub Security Advisories. Do not open a public issue.
+  - name: Question or discussion
+    url: https://github.com/agentgg-dev/agentgg-agents/discussions
+    about: For questions, ideas, or "is this the right agent for X" conversations.

@@ -1,0 +1,47 @@
+name: False negative
+description: An agent should have caught a vulnerability but didn't.
+title: "[FN] <agent-slug>: brief description"
+labels: ["false-negative"]
+body:
+  - type: input
+    id: agent
+    attributes:
+      label: Agent slug
+      description: Which agent should have caught this? If you don't know, leave blank and we'll triage.
+      placeholder: sql-injection
+    validations:
+      required: false
+
+  - type: textarea
+    id: vulnerable_code
+    attributes:
+      label: Vulnerable code that was missed
+      description: Paste the code that contains the bug. Redact anything sensitive.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: why_vulnerable
+    attributes:
+      label: Why this IS vulnerable
+      description: Briefly explain the attack. Link to a CWE / CVE / blog post if relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scan_output
+    attributes:
+      label: What the agent reported instead
+      description: Paste the scan output for the file in question (or note "no findings"). Helps us distinguish "agent didn't fire" from "agent fired but didn't flag this".
+      render: text
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: agentgg CLI version
+      placeholder: 0.1.0
+    validations:
+      required: false
