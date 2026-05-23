@@ -5,6 +5,7 @@ description: PHP SQL execution (PDO, mysqli, Doctrine ORM/DBAL) with string conc
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [php]
 noiseTier: normal
 outputType: finding
 filePatterns:

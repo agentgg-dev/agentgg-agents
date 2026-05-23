@@ -5,6 +5,7 @@ description: PyMongo / Motor queries using $where with f-strings, json.loads on 
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [python]
 noiseTier: normal
 outputType: finding
 filePatterns:

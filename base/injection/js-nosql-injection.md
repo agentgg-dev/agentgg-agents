@@ -5,6 +5,7 @@ description: Mongoose / MongoDB driver queries built with $where, JSON.parse(req
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [node]
 noiseTier: normal
 outputType: finding
 filePatterns:

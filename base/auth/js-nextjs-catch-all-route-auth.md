@@ -5,6 +5,7 @@ description: Next.js catch-all routes ([...slug], [[...rest]]) and Payload CMS /
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [nextjs]
 noiseTier: precise
 outputType: finding
 filePatterns:

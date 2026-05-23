@@ -5,6 +5,7 @@ description: Drizzle ORM's sql.raw() / sql.unsafe() bypass parameterization — 
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [drizzle]
 noiseTier: precise
 outputType: finding
 filePatterns:

@@ -5,6 +5,7 @@ description: iOS / macOS custom URL scheme handler (application(_:open:options:)
 version: 0.1.0
 author: agentgg
 mode: file
+tech: [ios]
 noiseTier: normal
 outputType: finding
 filePatterns:

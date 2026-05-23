@@ -5,6 +5,7 @@ description: Raw SQL escape hatches across JS/TS drivers (pg, mysql2, TypeORM, S
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [node]
 noiseTier: normal
 outputType: finding
 filePatterns:

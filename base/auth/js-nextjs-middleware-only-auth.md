@@ -5,6 +5,7 @@ description: Next.js route handlers under a "protected" route group with no per-
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [nextjs]
 noiseTier: normal
 outputType: finding
 filePatterns:

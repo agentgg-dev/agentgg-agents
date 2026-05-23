@@ -5,6 +5,7 @@ description: Azure Functions — HTTP trigger authLevel anonymous on sensitive o
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [azure-functions]
 noiseTier: normal
 outputType: finding
 filePatterns:

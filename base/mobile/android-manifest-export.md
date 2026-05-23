@@ -5,6 +5,7 @@ description: AndroidManifest.xml Activity / Service / Receiver / Provider with a
 version: 0.1.0
 author: agentgg
 mode: file
+tech: [android]
 noiseTier: normal
 outputType: finding
 filePatterns:

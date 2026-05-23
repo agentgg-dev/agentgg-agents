@@ -5,6 +5,7 @@ description: GCP Cloud Functions (1st and 2nd gen) — unauthenticated invocatio
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [gcp-cloud-functions]
 noiseTier: normal
 outputType: finding
 filePatterns:

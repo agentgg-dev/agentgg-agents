@@ -5,6 +5,7 @@ description: Go SQL execution (database/sql, GORM, sqlx, pgx) with fmt.Sprintf o
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [go]
 noiseTier: normal
 outputType: finding
 filePatterns:

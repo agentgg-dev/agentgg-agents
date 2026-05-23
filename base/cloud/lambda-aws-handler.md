@@ -5,6 +5,7 @@ description: AWS Lambda handler code review — function URL auth, input validat
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [aws-lambda]
 noiseTier: normal
 outputType: finding
 filePatterns:

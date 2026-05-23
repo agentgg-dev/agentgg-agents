@@ -5,6 +5,7 @@ description: Drizzle insert/update where .values() or .set() receives a request 
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [drizzle]
 noiseTier: precise
 outputType: finding
 filePatterns:

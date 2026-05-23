@@ -5,6 +5,7 @@ description: Prisma $queryRawUnsafe / $executeRawUnsafe accept plain strings and
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [prisma]
 noiseTier: precise
 outputType: finding
 filePatterns:

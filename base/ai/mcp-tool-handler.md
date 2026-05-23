@@ -5,6 +5,7 @@ description: MCP (Model Context Protocol) server tool handlers — verify per-to
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [mcp]
 noiseTier: precise
 outputType: finding
 filePatterns:

@@ -5,6 +5,7 @@ description: JSON.stringify output embedded in a script tag or dangerouslySetInn
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [react]
 noiseTier: precise
 outputType: finding
 filePatterns:

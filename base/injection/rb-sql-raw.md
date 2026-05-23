@@ -5,6 +5,7 @@ description: Ruby SQL execution (ActiveRecord find_by_sql / where with string fr
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [ruby]
 noiseTier: normal
 outputType: finding
 filePatterns:

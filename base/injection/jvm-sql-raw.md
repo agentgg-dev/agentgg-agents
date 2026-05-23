@@ -5,6 +5,7 @@ description: JDBC, JPA/Hibernate, Spring JdbcTemplate, MyBatis, jOOQ, and Expose
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [jvm]
 noiseTier: normal
 outputType: finding
 filePatterns:

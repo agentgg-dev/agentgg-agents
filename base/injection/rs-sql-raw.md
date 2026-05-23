@@ -5,6 +5,7 @@ description: Rust SQL execution (sqlx runtime form with format!, diesel sql_quer
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [rust]
 noiseTier: normal
 outputType: finding
 filePatterns:

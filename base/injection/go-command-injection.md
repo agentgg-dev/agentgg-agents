@@ -5,6 +5,7 @@ description: Go exec.Command / exec.CommandContext / syscall.Exec with a shell i
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [go]
 noiseTier: precise
 outputType: finding
 filePatterns:

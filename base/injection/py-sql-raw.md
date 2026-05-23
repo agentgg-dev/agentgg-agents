@@ -5,6 +5,7 @@ description: Python SQL execution (SQLAlchemy, psycopg, pymysql, sqlite3, asyncp
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [python]
 noiseTier: normal
 outputType: finding
 filePatterns:

@@ -5,6 +5,7 @@ description: Go HTTP requests (http.Get, http.Post, http.NewRequest) where the U
 version: 0.1.0
 author: agentgg
 mode: walker
+tech: [go]
 noiseTier: normal
 outputType: finding
 filePatterns:
