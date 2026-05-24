@@ -6,7 +6,12 @@
 
 The official agent library for [agentgg](https://github.com/agentgg-dev/agentgg) — AI-powered SAST agents for code security review.
 
-Each agent is a self-contained markdown file with YAML frontmatter (metadata) and a markdown body (the LLM prompt). Agents are downloaded automatically by agentgg on first scan and updated with `agentgg agents update`.
+The library ships two kinds of templates:
+
+- **Agents** — `.md` files with `mode: file`, `walker`, or `hunt`. The frontmatter is metadata, the markdown body is the LLM prompt. Each agent costs LLM tokens to run.
+- **Rule templates** — `.md` files with `mode: rule`. Regex-only, no LLM. They scan files matching their `filePatterns` with the patterns in `preFilter` and emit candidate hits, which seed downstream walker agents. Free to run. The markdown body is documentation only — the runtime never sends it to a model. **These are not agents** in the LLM sense; they reuse the same file format so the CLI can manage them uniformly.
+
+Both are downloaded automatically by agentgg on first scan and updated with `agentgg agents update`.
 
 ## Directory structure
 
@@ -23,7 +28,12 @@ agentgg-agents/
     ├── cloud/        # AWS Lambda, GCP, Azure, IAM
     ├── cryptography/ # Insecure algorithms, unsafe deserialization
     ├── mobile/       # Android, iOS
-    └── ai/           # LLM/agent security, MCP, prompt injection
+    ├── ai/           # LLM/agent security, MCP, prompt injection
+    └── entry-points/ # Rule templates (mode: rule) — regex-only, no LLM.
+                      # Locate route handlers / controllers / queue
+                      # workers per framework and seed candidates into
+                      # walker agents. Tech-gated (e.g. only fires on
+                      # Laravel repos).
 ```
 
 ## Usage
@@ -99,10 +109,53 @@ You are reviewing source code for SQL injection...
 | `description` | One-line summary shown in `agentgg agents list`. |
 | `version` | Semver string. |
 | `author` | Your GitHub username, Twitter handle, or alias. Your name ships with the agent. Use `agentgg` for official agents. Optionally add a full profile in [`contributors.json`](contributors.json). |
-| `mode` | `file` (one LLM call per matching file), `walker` (agentic batches), or `hunt` (whole-repo exploration). |
+| `mode` | `file` (one LLM call per matching file), `walker` (agentic batches), `hunt` (whole-repo exploration), or `rule` (regex-only, no LLM — see below). |
 | `noiseTier` | `precise`, `normal`, or `noisy` — how many false positives to expect. |
 | `filePatterns` | Glob patterns for files this agent should scan. |
+| `tech` | Optional tech gate. The template only runs if at least one tag appears in `fingerprint(root).tags` (e.g. `[laravel]`, `[fastapi]`). Empty/absent = always runs. |
 | `references` | Optional. CWE, CVE, or OWASP identifiers — helps users triage findings and report to their security team. |
+
+## Rule templates (`mode: rule`)
+
+Rules are **not LLM agents**. They run pure regex over files matching `filePatterns` and emit candidate hits. The markdown body is documentation for humans; the runtime never sends it to a model.
+
+```markdown
+---
+slug: php-laravel-route
+name: Laravel Route Entry Points
+description: Locates Laravel route registrations, controller actions, and SQL surface markers via regex — no LLM cost.
+version: 0.1.0
+author: agentgg
+mode: rule
+tech: [laravel]
+noiseTier: noisy
+filePatterns:
+  - "**/routes/**/*.php"
+  - "**/app/Http/Controllers/**/*.php"
+preFilter:
+  - regex: "Route::(get|post|put|patch|delete|any|match)\\s*\\("
+    label: "Route::* registration"
+  - regex: "DB::raw\\s*\\("
+    label: "DB::raw (SQL injection if interpolated)"
+references:
+  - CWE-89
+---
+
+Documentation body — not sent to any model.
+```
+
+### How rule hits are used
+
+Rule hits seed the walker pool. For any file the rule flagged, any walker agent whose `filePatterns` overlap that file picks up the rule's hits as additional anchors, alongside the walker's own `preFilter` hits. Same investigation prompt, same batching — the rule's slug just shows up in the scanner context.
+
+Files where a rule fired but no walker agent overlaps are currently orphan (not investigated). Pair rule templates with a walker that covers the same stack (e.g. `php-laravel-route` + `missing-auth-php`).
+
+### Rule-template-specific fields
+
+| Field | Description |
+|---|---|
+| `preFilter` | Required. List of `{ regex, label }` pairs. Each `regex` is a per-line JS-flavor pattern; YAML strings must double-escape backslashes (`\\s` for `\s`). Each `label` appears in the scanner context the walker sees so the model knows *why* the line was flagged. |
+| `tech` | Strongly recommended for rules. Rules are noisy by design — gate them on framework detection so they only fire on relevant repos. |
 
 ## Contributing
 
@@ -119,6 +172,12 @@ New agents should have:
 - Clear true-positive and false-positive criteria in the prompt body
 - Tight `filePatterns` to avoid scanning irrelevant files
 - A CWE / CVE / OWASP reference when one fits (optional)
+
+New rule templates (`mode: rule`) should:
+- Live under [`base/entry-points/`](base/entry-points/)
+- Carry a `tech:` gate so they don't fire on irrelevant repos
+- Pair with at least one walker agent whose `filePatterns` cover the same files (otherwise the rule's hits are orphaned)
+- Compile under `new RegExp(...)` — `agentgg agents lint .` catches malformed patterns
 
 ## Related
 
