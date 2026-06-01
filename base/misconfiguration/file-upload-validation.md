@@ -1,18 +1,45 @@
 ---
 slug: file-upload-validation
 name: Insufficient File Upload Validation
-description: File upload handlers (multer, formidable, busboy, Flask, Django, Multer-style middleware) that accept any size, extension, or MIME type — leads to RCE via uploaded scripts, storage exhaustion, double-extension bypass, or XSS via stored HTML/SVG.
+description: 'File upload handlers (multer, formidable, busboy, Flask, Django, Multer-style middleware) that accept any size, extension, or MIME type — leads to RCE via uploaded scripts, storage exhaustion, double-extension bypass, or XSS via stored HTML/SVG.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - php
+      - java
+      - kt
+      - cs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
 references:
   - CWE-434
   - CWE-400
-  - OWASP-A04:2021
+  - 'OWASP-A04:2021'
 ---
 
 You are reviewing source code for insufficient file upload validation —

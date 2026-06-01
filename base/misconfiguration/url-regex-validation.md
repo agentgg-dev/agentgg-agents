@@ -4,15 +4,28 @@ name: URL Validation via Bypassable Regex
 description: URL safety check built with a regex that contains greedy wildcards or unanchored patterns — bypassable by adding the trusted domain as a subdomain of an attacker domain.
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
 references:
   - CWE-1287
   - CWE-918
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing source code for URL validation that uses a regular

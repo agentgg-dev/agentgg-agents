@@ -1,36 +1,77 @@
 ---
 slug: streaming-endpoint
 name: AI Streaming Endpoint Without Auth / Rate Limit
-description: streamText / streamObject / generateText / OpenAI stream:true / SSE endpoints that lack pre-stream auth and rate limiting — unlimited LLM token billing and prompt injection risk. Walker mode follows auth + rate-limit middleware across files.
+description: 'streamText / streamObject / generateText / OpenAI stream:true / SSE endpoints that lack pre-stream auth and rate limiting — unlimited LLM token billing and prompt injection risk. Walker mode follows auth + rate-limit middleware across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/route.{ts,tsx,js,jsx,mjs}"
-  - "**/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/app/**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\b(streamText|streamObject|generateText|generateObject)\\s*\\("
-    label: "Vercel AI SDK streaming/generate call"
-  - regex: "\\.chat\\.completions\\.create\\s*\\([^)]*stream\\s*:\\s*true"
-    label: "OpenAI chat.completions with stream: true"
-  - regex: "text/event-stream"
-    label: "SSE Content-Type response"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: \b(streamText|streamObject|generateText|generateObject)\s*\(
+        in:
+          - '**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Vercel AI SDK streaming/generate call
+      - regex: '\.chat\.completions\.create\s*\([^)]*stream\s*:\s*true'
+        in:
+          - '**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'OpenAI chat.completions with stream: true'
+      - regex: text/event-stream
+        in:
+          - '**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: SSE Content-Type response
+where:
+  filePatterns:
+    - '**/route.{ts,tsx,js,jsx,mjs}'
+    - '**/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/app/**/*.{ts,tsx,js,jsx,mjs}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: \b(streamText|streamObject|generateText|generateObject)\s*\(
+      label: Vercel AI SDK streaming/generate call
+    - regex: '\.chat\.completions\.create\s*\([^)]*stream\s*:\s*true'
+      label: 'OpenAI chat.completions with stream: true'
+    - regex: text/event-stream
+      label: SSE Content-Type response
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-307
   - CWE-770
-  - OWASP-A04:2021
+  - 'OWASP-A04:2021'
 ---
 
 You are reviewing AI streaming endpoints — handlers that call

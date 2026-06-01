@@ -1,31 +1,49 @@
 ---
 slug: vulnerable-dependency
 name: Vulnerable or Suspicious Dependency
-description: package.json / requirements.txt / Gemfile / pom.xml / go.mod entries that pin known-CVE versions, abandoned packages, or typosquat-shaped names ("expres", "loadsh", "moment-js"). Catches risky supply-chain surface before `npm audit` runs.
+description: 'package.json / requirements.txt / Gemfile / pom.xml / go.mod entries that pin known-CVE versions, abandoned packages, or typosquat-shaped names ("expres", "loadsh", "moment-js"). Catches risky supply-chain surface before `npm audit` runs.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-filePatterns:
-  - "**/package.json"
-  - "**/package-lock.json"
-  - "**/yarn.lock"
-  - "**/pnpm-lock.yaml"
-  - "**/requirements*.txt"
-  - "**/Pipfile"
-  - "**/Pipfile.lock"
-  - "**/pyproject.toml"
-  - "**/Gemfile"
-  - "**/Gemfile.lock"
-  - "**/go.mod"
-  - "**/pom.xml"
-  - "**/build.gradle"
-  - "**/build.gradle.kts"
-  - "**/composer.json"
+precondition:
+  regex:
+    files:
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/yarn.lock'
+      - '**/pnpm-lock.yaml'
+      - '**/requirements*.txt'
+      - '**/Pipfile'
+      - '**/Pipfile.lock'
+      - '**/pyproject.toml'
+      - '**/Gemfile'
+      - '**/Gemfile.lock'
+      - '**/go.mod'
+      - '**/pom.xml'
+      - '**/build.gradle'
+      - '**/build.gradle.kts'
+      - '**/composer.json'
+where:
+  filePatterns:
+    - '**/package.json'
+    - '**/package-lock.json'
+    - '**/yarn.lock'
+    - '**/pnpm-lock.yaml'
+    - '**/requirements*.txt'
+    - '**/Pipfile'
+    - '**/Pipfile.lock'
+    - '**/pyproject.toml'
+    - '**/Gemfile'
+    - '**/Gemfile.lock'
+    - '**/go.mod'
+    - '**/pom.xml'
+    - '**/build.gradle'
+    - '**/build.gradle.kts'
+    - '**/composer.json'
 references:
   - CWE-1395
   - CWE-1357
-  - OWASP-A06:2021
+  - 'OWASP-A06:2021'
 ---
 
 You are reviewing a dependency manifest for **risky supply-chain

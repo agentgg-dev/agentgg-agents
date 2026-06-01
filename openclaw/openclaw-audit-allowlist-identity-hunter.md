@@ -4,15 +4,23 @@ name: Allowlist Identity Audit — Hunter (OpenClaw chat-channel extensions)
 description: Audits chat-channel extensions for allowlist-bypass bugs where inbound sender/group identity is matched against a mutable field (display name, username, handle, email, group title) without the operator's `dangerouslyAllowNameMatching` opt-in. An attacker who can rename themselves to an allowlisted value slips past the allowlist without the operator ever flipping a dangerous flag.
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
-excludePatterns:
-  - "**/e2e/**"
-  - "**/*test*/**"
-  - "**/__tests__/**"
-  - "**/fixtures/**"
+precondition:
+  prompt: |
+    Run only if this codebase IS OpenClaw — the chat-channel automation
+    platform — or one of its first-party extensions/connectors. Skip any
+    project that merely depends on or integrates with OpenClaw. If the recon
+    brief doesn't clearly indicate an OpenClaw codebase, answer no.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs]
+  excludePatterns:
+    - "**/e2e/**"
+    - "**/*test*/**"
+    - "**/__tests__/**"
+    - "**/fixtures/**"
+  preFilter:
+    - { regex: "allow[_-]?list|allowList", label: "allowlist reference" }
+    - { regex: "senderUsername|from\\.username|displayName|dangerouslyAllowNameMatching|groupTitle", label: "mutable identity field" }
 references:
   - GHSA-c29c-2q9c-pc86
   - GHSA-8c59-hr4w-qg69

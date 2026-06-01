@@ -1,32 +1,72 @@
 ---
 slug: non-atomic-read-delete
 name: Non-Atomic Read-Then-Delete
-description: redis.get followed by redis.del (or DB find followed by delete) — two concurrent requests both succeed in reading the value before either deletes it, processing it twice. Walker mode follows token/cache helpers across files.
+description: 'redis.get followed by redis.del (or DB find followed by delete) — two concurrent requests both succeed in reading the value before either deletes it, processing it twice. Walker mode follows token/cache helpers across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "redis\\.(get|hget|hgetall)\\s*\\([\\s\\S]{0,200}redis\\.(del|hdel)\\s*\\("
-    label: "redis get + del pair (verify atomicity)"
-    multiline: true
-  - regex: "\\.(findFirst|findUnique|findOne)\\s*\\([\\s\\S]{0,300}\\.(delete|destroy|deleteMany)\\s*\\("
-    label: "find + delete pair (verify transaction)"
-    multiline: true
-  - regex: "(magic|otp|invite|reset|verify|consume).*Token|oneTimeUse"
-    label: "One-time-token shape (high-risk)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'redis\.(get|hget|hgetall)\s*\([\s\S]{0,200}redis\.(del|hdel)\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: redis get + del pair (verify atomicity)
+      - regex: '\.(findFirst|findUnique|findOne)\s*\([\s\S]{0,300}\.(delete|destroy|deleteMany)\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: find + delete pair (verify transaction)
+      - regex: (magic|otp|invite|reset|verify|consume).*Token|oneTimeUse
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: One-time-token shape (high-risk)
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'redis\.(get|hget|hgetall)\s*\([\s\S]{0,200}redis\.(del|hdel)\s*\('
+      label: redis get + del pair (verify atomicity)
+      multiline: true
+    - regex: '\.(findFirst|findUnique|findOne)\s*\([\s\S]{0,300}\.(delete|destroy|deleteMany)\s*\('
+      label: find + delete pair (verify transaction)
+      multiline: true
+    - regex: (magic|otp|invite|reset|verify|consume).*Token|oneTimeUse
+      label: One-time-token shape (high-risk)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-367
   - CWE-362

@@ -1,22 +1,51 @@
 ---
 slug: missing-security-headers
-name: Missing or Weak Security Headers (CSP, HSTS, Frame-Options)
-description: Web apps that don't set Content-Security-Policy, Strict-Transport-Security, X-Frame-Options, X-Content-Type-Options, Referrer-Policy — or set them in their weakest forms (CSP with `unsafe-inline`/`unsafe-eval`, X-Frame-Options ALLOWALL, HSTS max-age=0). These headers are the browser-side defense layer; missing them turns small bugs into bigger ones.
+name: 'Missing or Weak Security Headers (CSP, HSTS, Frame-Options)'
+description: 'Web apps that don''t set Content-Security-Policy, Strict-Transport-Security, X-Frame-Options, X-Content-Type-Options, Referrer-Policy — or set them in their weakest forms (CSP with `unsafe-inline`/`unsafe-eval`, X-Frame-Options ALLOWALL, HSTS max-age=0). These headers are the browser-side defense layer; missing them turns small bugs into bigger ones.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
-  - "**/nginx*.conf"
-  - "**/*.conf"
-  - "**/settings.py"
-  - "**/application.{properties,yml,yaml}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - php
+      - java
+      - kt
+      - cs
+      - conf
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
+    - conf
+  filePatterns:
+    - '**/nginx*.conf'
+    - '**/settings.py'
+    - '**/application.{properties,yml,yaml}'
 references:
   - CWE-693
   - CWE-1021
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for missing or weakly-configured HTTP

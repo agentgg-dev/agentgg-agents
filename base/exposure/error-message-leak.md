@@ -1,22 +1,29 @@
 ---
 slug: error-message-leak
 name: Error Message Leak to Client
-description: Catch blocks that return err.message, err.stack, err.toString(), or String(err) in HTTP responses — leaks stack traces, DB error text, internal file paths, and infrastructure details.
+description: 'Catch blocks that return err.message, err.stack, err.toString(), or String(err) in HTTP responses — leaks stack traces, DB error text, internal file paths, and infrastructure details.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/app/api/**/route.{ts,tsx,js,jsx,mjs}"
-  - "**/app/**/route.{ts,tsx,js,jsx,mjs}"
-  - "**/pages/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/routes/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/endpoints/**/*.{ts,tsx,js,jsx,mjs}"
+precondition:
+  regex:
+    files:
+      - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+      - '**/app/**/route.{ts,tsx,js,jsx,mjs}'
+      - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+      - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+      - '**/endpoints/**/*.{ts,tsx,js,jsx,mjs}'
+where:
+  filePatterns:
+    - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+    - '**/app/**/route.{ts,tsx,js,jsx,mjs}'
+    - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/endpoints/**/*.{ts,tsx,js,jsx,mjs}'
 references:
   - CWE-209
   - CWE-200
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing HTTP route handlers for error messages that leak

@@ -1,41 +1,124 @@
 ---
 slug: auth-bypass
 name: Authentication Bypass
-description: Auth checks that can be bypassed — weak boolean comparisons against client data, dev-mode skip flags, truthy session checks that don't validate the session, missing await on async verifiers. Walker mode traces verifier helpers and env-flag definitions.
+description: 'Auth checks that can be bypassed — weak boolean comparisons against client data, dev-mode skip flags, truthy session checks that don''t validate the session, missing await on async verifiers. Walker mode traces verifier helpers and env-flag definitions.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,java,kt,cs,php}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/tests/**"
-  - "**/spec/**"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "(SKIP_AUTH|DISABLE_AUTH|BYPASS_AUTH|NO_AUTH|AUTH_DISABLED|DEV_MODE)\\b"
-    label: "Dev/bypass auth env-var name"
-  - regex: "NODE_ENV\\s*(!==|===)\\s*[\"']production[\"']"
-    label: "NODE_ENV branch gating auth"
-  - regex: "if\\s*\\(\\s*!?\\s*(req\\.|request\\.|ctx\\.)?session\\s*\\)"
-    label: "Truthy session check (no contents validated)"
-  - regex: "(req|request|ctx)\\.(headers|body|query)[^=]*===?\\s*[\"'](admin|true|1)[\"']"
-    label: "Role/auth flag compared against client data"
-  - regex: "if\\s*\\(\\s*(verifyToken|verifyJwt|isAuthenticated|requireUser|assertAuth)\\s*\\("
-    label: "Async verifier potentially called without await"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (SKIP_AUTH|DISABLE_AUTH|BYPASS_AUTH|NO_AUTH|AUTH_DISABLED|DEV_MODE)\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,java,kt,cs,php}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Dev/bypass auth env-var name
+      - regex: 'NODE_ENV\s*(!==|===)\s*["'']production["'']'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,java,kt,cs,php}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: NODE_ENV branch gating auth
+      - regex: if\s*\(\s*!?\s*(req\.|request\.|ctx\.)?session\s*\)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,java,kt,cs,php}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Truthy session check (no contents validated)
+      - regex: '(req|request|ctx)\.(headers|body|query)[^=]*===?\s*["''](admin|true|1)["'']'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,java,kt,cs,php}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Role/auth flag compared against client data
+      - regex: if\s*\(\s*(verifyToken|verifyJwt|isAuthenticated|requireUser|assertAuth)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,java,kt,cs,php}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Async verifier potentially called without await
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - java
+    - kt
+    - cs
+    - php
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/spec/**'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: (SKIP_AUTH|DISABLE_AUTH|BYPASS_AUTH|NO_AUTH|AUTH_DISABLED|DEV_MODE)\b
+      label: Dev/bypass auth env-var name
+    - regex: 'NODE_ENV\s*(!==|===)\s*["'']production["'']'
+      label: NODE_ENV branch gating auth
+    - regex: if\s*\(\s*!?\s*(req\.|request\.|ctx\.)?session\s*\)
+      label: Truthy session check (no contents validated)
+    - regex: '(req|request|ctx)\.(headers|body|query)[^=]*===?\s*["''](admin|true|1)["'']'
+      label: Role/auth flag compared against client data
+    - regex: if\s*\(\s*(verifyToken|verifyJwt|isAuthenticated|requireUser|assertAuth)\s*\(
+      label: Async verifier potentially called without await
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-287
   - CWE-305
-  - OWASP-A07:2021
+  - 'OWASP-A07:2021'
 ---
 
 You are reviewing source code for authentication bypass — patterns

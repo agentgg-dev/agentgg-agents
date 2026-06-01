@@ -1,17 +1,36 @@
 ---
 slug: response-header-leak
 name: Response Headers Leaking Infrastructure Details
-description: Response headers exposing server identity (X-Powered-By, Server) or internal debug info (X-Debug, X-Internal-Trace, X-Trace-Id) — fingerprints attackers use for targeted exploits.
+description: 'Response headers exposing server identity (X-Powered-By, Server) or internal debug info (X-Debug, X-Internal-Trace, X-Trace-Id) — fingerprints attackers use for targeted exploits.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,lua,go,conf}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - lua
+      - go
+      - conf
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - lua
+    - go
+    - conf
 references:
   - CWE-200
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for HTTP response headers that leak

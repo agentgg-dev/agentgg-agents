@@ -1,19 +1,64 @@
 ---
 slug: secrets-exposure
 name: Hardcoded Secrets in Source
-description: API keys, tokens, passwords, and private keys committed to source files — including split-literal attempts to evade secret scanners.
+description: 'API keys, tokens, passwords, and private keys committed to source files — including split-literal attempts to evade secret scanners.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,rs,php,java,kt,cs,sh}"
-  - "**/*.{json,yaml,yml,toml,ini,conf,cfg}"
-  - "**/.env*"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - rs
+      - php
+      - java
+      - kt
+      - cs
+      - sh
+      - json
+      - yaml
+      - yml
+      - toml
+      - ini
+      - conf
+      - cfg
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - rs
+    - php
+    - java
+    - kt
+    - cs
+    - sh
+    - json
+    - yaml
+    - yml
+    - toml
+    - ini
+    - conf
+    - cfg
+  filePatterns:
+    - '**/.env*'
 references:
   - CWE-798
-  - OWASP-A07:2021
+  - 'OWASP-A07:2021'
 ---
 
 You are reviewing source code for hardcoded credentials that should

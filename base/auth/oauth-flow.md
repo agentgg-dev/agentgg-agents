@@ -1,41 +1,118 @@
 ---
 slug: oauth-flow
 name: OAuth Flow Issues
-description: OAuth authorize / callback handlers — missing state parameter, missing PKCE, open redirect_uri matching, access_token in URL fragment, code in URL query persisted in logs. Walker mode follows OAuth flow across authorize/callback files and shared validators.
+description: 'OAuth authorize / callback handlers — missing state parameter, missing PKCE, open redirect_uri matching, access_token in URL fragment, code in URL query persisted in logs. Walker mode follows OAuth flow across authorize/callback files and shared validators.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/oauth/**/*.{ts,tsx,js,jsx}"
-  - "**/auth/**/*.{ts,tsx,js,jsx}"
-  - "**/callback/**/*.{ts,tsx,js,jsx}"
-  - "**/app/api/**/*.{ts,tsx,js,jsx}"
-  - "**/api/**/*.{ts,tsx,js,jsx}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\b(authorize|authorization)\\b[\\s\\S]{0,200}\\bclient_id\\b"
-    label: "OAuth authorize URL construction"
-  - regex: "\\b(code_verifier|code_challenge|code_challenge_method)\\b"
-    label: "PKCE parameter"
-  - regex: "\\bredirect_uri\\b"
-    label: "redirect_uri reference (validate matching)"
-  - regex: "[?&#]access_token="
-    label: "access_token in URL (likely implicit grant or leak)"
-  - regex: "[?&]state\\s*="
-    label: "state parameter (validate binding to session)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\b(authorize|authorization)\b[\s\S]{0,200}\bclient_id\b'
+        in:
+          - '**/oauth/**/*.{ts,tsx,js,jsx}'
+          - '**/auth/**/*.{ts,tsx,js,jsx}'
+          - '**/callback/**/*.{ts,tsx,js,jsx}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx}'
+          - '**/api/**/*.{ts,tsx,js,jsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: OAuth authorize URL construction
+      - regex: \b(code_verifier|code_challenge|code_challenge_method)\b
+        in:
+          - '**/oauth/**/*.{ts,tsx,js,jsx}'
+          - '**/auth/**/*.{ts,tsx,js,jsx}'
+          - '**/callback/**/*.{ts,tsx,js,jsx}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx}'
+          - '**/api/**/*.{ts,tsx,js,jsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: PKCE parameter
+      - regex: \bredirect_uri\b
+        in:
+          - '**/oauth/**/*.{ts,tsx,js,jsx}'
+          - '**/auth/**/*.{ts,tsx,js,jsx}'
+          - '**/callback/**/*.{ts,tsx,js,jsx}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx}'
+          - '**/api/**/*.{ts,tsx,js,jsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: redirect_uri reference (validate matching)
+      - regex: '[?&#]access_token='
+        in:
+          - '**/oauth/**/*.{ts,tsx,js,jsx}'
+          - '**/auth/**/*.{ts,tsx,js,jsx}'
+          - '**/callback/**/*.{ts,tsx,js,jsx}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx}'
+          - '**/api/**/*.{ts,tsx,js,jsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: access_token in URL (likely implicit grant or leak)
+      - regex: '[?&]state\s*='
+        in:
+          - '**/oauth/**/*.{ts,tsx,js,jsx}'
+          - '**/auth/**/*.{ts,tsx,js,jsx}'
+          - '**/callback/**/*.{ts,tsx,js,jsx}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx}'
+          - '**/api/**/*.{ts,tsx,js,jsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: state parameter (validate binding to session)
+where:
+  filePatterns:
+    - '**/oauth/**/*.{ts,tsx,js,jsx}'
+    - '**/auth/**/*.{ts,tsx,js,jsx}'
+    - '**/callback/**/*.{ts,tsx,js,jsx}'
+    - '**/app/api/**/*.{ts,tsx,js,jsx}'
+    - '**/api/**/*.{ts,tsx,js,jsx}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\b(authorize|authorization)\b[\s\S]{0,200}\bclient_id\b'
+      label: OAuth authorize URL construction
+    - regex: \b(code_verifier|code_challenge|code_challenge_method)\b
+      label: PKCE parameter
+    - regex: \bredirect_uri\b
+      label: redirect_uri reference (validate matching)
+    - regex: '[?&#]access_token='
+      label: access_token in URL (likely implicit grant or leak)
+    - regex: '[?&]state\s*='
+      label: state parameter (validate binding to session)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-1275
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing OAuth 2.0 / OIDC flow code for the standard set of

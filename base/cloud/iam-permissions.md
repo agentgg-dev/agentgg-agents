@@ -1,17 +1,26 @@
 ---
 slug: iam-permissions
 name: Cloud IAM Permissions Review
-description: IAM role / policy / service-account assignments with overly broad actions, wildcard resources, AWS-managed broad policies, or cross-account trust without conditions.
+description: 'IAM role / policy / service-account assignments with overly broad actions, wildcard resources, AWS-managed broad policies, or cross-account trust without conditions.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{tf,yaml,yml,json}"
+precondition:
+  regex:
+    extensions:
+      - tf
+      - yaml
+      - yml
+      - json
+where:
+  extensions:
+    - tf
+    - yaml
+    - yml
+    - json
 references:
   - CWE-732
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing IAM resource definitions for overly broad

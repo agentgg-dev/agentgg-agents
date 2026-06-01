@@ -1,41 +1,113 @@
 ---
 slug: py-sql-raw
 name: Raw SQL Injection (Python)
-description: Python SQL execution (SQLAlchemy, psycopg, pymysql, sqlite3, asyncpg, Django ORM raw) with f-string, %-format, .format(), or + concatenation in the SQL string. Walker mode traces query helpers across modules.
+description: 'Python SQL execution (SQLAlchemy, psycopg, pymysql, sqlite3, asyncpg, Django ORM raw) with f-string, %-format, .format(), or + concatenation in the SQL string. Walker mode traces query helpers across modules.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [python]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.py"
-excludePatterns:
-  - "**/tests/**"
-  - "**/test_*.py"
-  - "**/*_test.py"
-  - "**/migrations/**"
-  - "**/__pycache__/**"
-preFilter:
-  - regex: "\\.(execute|executemany)\\s*\\(\\s*f[\"']"
-    label: "cursor/session execute with f-string"
-  - regex: "\\.(execute|executemany)\\s*\\(\\s*[\"'][^\"']*[\"']\\s*%"
-    label: "cursor/session execute with %-format"
-  - regex: "\\.(execute|executemany)\\s*\\(\\s*[\"'][^\"']*[\"']\\.format\\s*\\("
-    label: "cursor/session execute with .format()"
-  - regex: "\\.(execute|executemany)\\s*\\(\\s*[\"'][^\"']*[\"']\\s*\\+"
-    label: "cursor/session execute with + concat"
-  - regex: "\\btext\\s*\\(\\s*f[\"']"
-    label: "SQLAlchemy text() with f-string"
-  - regex: "\\.objects\\.(raw|extra)\\s*\\(\\s*f[\"']"
-    label: "Django objects.raw/extra with f-string"
-  - regex: "(await\\s+)?\\w+\\.execute\\s*\\(\\s*f[\"']"
-    label: "asyncpg-style execute with f-string"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.(execute|executemany)\s*\(\s*f["'']'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: cursor/session execute with f-string
+      - regex: '\.(execute|executemany)\s*\(\s*["''][^"'']*["'']\s*%'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: cursor/session execute with %-format
+      - regex: '\.(execute|executemany)\s*\(\s*["''][^"'']*["'']\.format\s*\('
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: cursor/session execute with .format()
+      - regex: '\.(execute|executemany)\s*\(\s*["''][^"'']*["'']\s*\+'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: cursor/session execute with + concat
+      - regex: '\btext\s*\(\s*f["'']'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: SQLAlchemy text() with f-string
+      - regex: '\.objects\.(raw|extra)\s*\(\s*f["'']'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: Django objects.raw/extra with f-string
+      - regex: '(await\s+)?\w+\.execute\s*\(\s*f["'']'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: asyncpg-style execute with f-string
+  prompt: Run only if this project uses python — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - py
+  excludePatterns:
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/migrations/**'
+    - '**/__pycache__/**'
+  preFilter:
+    - regex: '\.(execute|executemany)\s*\(\s*f["'']'
+      label: cursor/session execute with f-string
+    - regex: '\.(execute|executemany)\s*\(\s*["''][^"'']*["'']\s*%'
+      label: cursor/session execute with %-format
+    - regex: '\.(execute|executemany)\s*\(\s*["''][^"'']*["'']\.format\s*\('
+      label: cursor/session execute with .format()
+    - regex: '\.(execute|executemany)\s*\(\s*["''][^"'']*["'']\s*\+'
+      label: cursor/session execute with + concat
+    - regex: '\btext\s*\(\s*f["'']'
+      label: SQLAlchemy text() with f-string
+    - regex: '\.objects\.(raw|extra)\s*\(\s*f["'']'
+      label: Django objects.raw/extra with f-string
+    - regex: '(await\s+)?\w+\.execute\s*\(\s*f["'']'
+      label: asyncpg-style execute with f-string
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing Python source code for SQL injection via raw SQL

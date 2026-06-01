@@ -4,14 +4,27 @@ name: Missing Access Control
 description: Authenticated endpoints that read or modify a resource without verifying the requester owns it — IDOR / horizontal privilege escalation.
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
+precondition:
+  prompt: |
+    Run only if this project exposes authenticated HTTP endpoints (a web
+    API, backend service, or server-rendered app with sessions) that read
+    or mutate per-user or per-tenant resources. Skip pure CLIs, static
+    sites, and libraries with no request handlers.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs, py, rb, go, php, java, kt, cs]
+  excludePatterns:
+    - "**/*.{test,spec}.*"
+    - "**/__tests__/**"
+  preFilter:
+    - { regex: "\\.(get|post|put|patch|delete|all)\\s*\\(\\s*['\"]", label: "HTTP route handler (Express / Fastify / router)" }
+    - { regex: "@(Get|Post|Put|Patch|Delete|Controller|RequestMapping|GetMapping|PostMapping)\\s*\\(", label: "controller route decorator / annotation" }
+    - { regex: "Route::(get|post|put|patch|delete|resource|apiResource)\\s*\\(", label: "Laravel route definition" }
+    - { regex: "@(app|router|blueprint)\\.(route|get|post|put|patch|delete)\\s*\\(|def \\w+\\s*\\([^)]*request", label: "Python view (Flask / Django / FastAPI)" }
 references:
   - CWE-862
   - CWE-639
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are hunting for missing access-control checks across this

@@ -1,31 +1,71 @@
 ---
 slug: prompt-leaks-system-prompt
 name: System Prompt Embeds Secrets / Env Vars
-description: LLM system prompts (system / instructions / role:system messages) that embed env-var secrets or hardcoded API tokens — values can be extracted via prompt injection or appear in trace logs. Walker mode follows prompt builders across files.
+description: 'LLM system prompts (system / instructions / role:system messages) that embed env-var secrets or hardcoded API tokens — values can be extracted via prompt injection or appear in trace logs. Walker mode follows prompt builders across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "system\\s*:\\s*`[^`]*\\$\\{[^}]*process\\.env"
-    label: "system prompt interpolating process.env"
-  - regex: "(role|name)\\s*:\\s*[\"']system[\"'][\\s\\S]{0,300}content\\s*:\\s*`[^`]*\\$\\{[^}]*process\\.env"
-    label: "messages role:system with env-var interpolation"
-    multiline: true
-  - regex: "system\\s*:\\s*[\"'][^\"']*\\b(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|xoxb-[A-Za-z0-9-]{20,})"
-    label: "system prompt with hardcoded secret literal"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'system\s*:\s*`[^`]*\$\{[^}]*process\.env'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: system prompt interpolating process.env
+      - regex: '(role|name)\s*:\s*["'']system["''][\s\S]{0,300}content\s*:\s*`[^`]*\$\{[^}]*process\.env'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'messages role:system with env-var interpolation'
+      - regex: 'system\s*:\s*["''][^"'']*\b(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|xoxb-[A-Za-z0-9-]{20,})'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: system prompt with hardcoded secret literal
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'system\s*:\s*`[^`]*\$\{[^}]*process\.env'
+      label: system prompt interpolating process.env
+    - regex: '(role|name)\s*:\s*["'']system["''][\s\S]{0,300}content\s*:\s*`[^`]*\$\{[^}]*process\.env'
+      label: 'messages role:system with env-var interpolation'
+      multiline: true
+    - regex: 'system\s*:\s*["''][^"'']*\b(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|xoxb-[A-Za-z0-9-]{20,})'
+      label: system prompt with hardcoded secret literal
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-200
   - CWE-532

@@ -1,14 +1,17 @@
 ---
 slug: lua-ngx-exec
 name: Lua ngx.exec / os.execute / io.popen with User Input
-description: OpenResty ngx.exec / ngx.redirect / os.execute / io.popen called with caller-controlled input — internal subroute hijack, open redirect, or shell command injection.
+description: 'OpenResty ngx.exec / ngx.redirect / os.execute / io.popen called with caller-controlled input — internal subroute hijack, open redirect, or shell command injection.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.lua"
+precondition:
+  regex:
+    extensions:
+      - lua
+where:
+  extensions:
+    - lua
 references:
   - CWE-78
   - CWE-601

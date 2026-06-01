@@ -1,34 +1,81 @@
 ---
 slug: agent-tool-definition
 name: AI Agent Tool Definition Surface
-description: AI agent tool / function-calling definitions — review the execute body for shell exec, fs writes, network egress, DB writes, or other high-privilege capabilities exposed to LLM-controlled arguments. Walker mode follows execute helpers into the rest of the codebase.
+description: 'AI agent tool / function-calling definitions — review the execute body for shell exec, fs writes, network egress, DB writes, or other high-privilege capabilities exposed to LLM-controlled arguments. Walker mode follows execute helpers into the rest of the codebase.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/tools/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/agent/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/agents/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/*tool*.{ts,tsx,js,jsx,mjs}"
-  - "**/*agent*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\btool\\s*\\(\\s*\\{|\\bcreateTool\\s*\\(|\\bdefineTool\\s*\\("
-    label: "Tool definition (tool/createTool/defineTool)"
-  - regex: "execute\\s*:\\s*async\\s*\\("
-    label: "Tool execute body"
-  - regex: "\\btools\\s*:\\s*\\{"
-    label: "tools: { ... } object in LLM call"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\btool\s*\(\s*\{|\bcreateTool\s*\(|\bdefineTool\s*\('
+        in:
+          - '**/tools/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/agent/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/agents/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/*tool*.{ts,tsx,js,jsx,mjs}'
+          - '**/*agent*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Tool definition (tool/createTool/defineTool)
+      - regex: 'execute\s*:\s*async\s*\('
+        in:
+          - '**/tools/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/agent/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/agents/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/*tool*.{ts,tsx,js,jsx,mjs}'
+          - '**/*agent*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Tool execute body
+      - regex: '\btools\s*:\s*\{'
+        in:
+          - '**/tools/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/agent/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/agents/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/*tool*.{ts,tsx,js,jsx,mjs}'
+          - '**/*agent*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'tools: { ... } object in LLM call'
+where:
+  filePatterns:
+    - '**/tools/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/agent/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/agents/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/*tool*.{ts,tsx,js,jsx,mjs}'
+    - '**/*agent*.{ts,tsx,js,jsx,mjs}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\btool\s*\(\s*\{|\bcreateTool\s*\(|\bdefineTool\s*\('
+      label: Tool definition (tool/createTool/defineTool)
+    - regex: 'execute\s*:\s*async\s*\('
+      label: Tool execute body
+    - regex: '\btools\s*:\s*\{'
+      label: 'tools: { ... } object in LLM call'
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-94
   - OWASP-LLM06

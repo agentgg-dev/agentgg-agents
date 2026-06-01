@@ -1,31 +1,71 @@
 ---
 slug: missing-await
 name: Missing await on Async Call
-description: Async function called without await — error is swallowed, return value is a Promise (truthy), and the result is silently discarded. Especially dangerous around auth verifiers, mutex/lock helpers, and transactions. Walker mode follows function definitions to confirm async-ness.
+description: 'Async function called without await — error is swallowed, return value is a Promise (truthy), and the result is silently discarded. Especially dangerous around auth verifiers, mutex/lock helpers, and transactions. Walker mode follows function definitions to confirm async-ness.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "if\\s*\\(\\s*(verifyToken|verifyJwt|isAuthenticated|requireUser|assertAuth|checkPermission|hasAccess)\\s*\\("
-    label: "Likely-async verifier used in if() without await"
-  - regex: "\\b(withMutex|withLock|withUserMutex|withDistributedLock|withTransaction)\\s*\\("
-    label: "Mutex/lock/transaction helper call (confirm await)"
-  - regex: "^\\s*(redis|cache|prisma|db|client)\\.[a-z][a-zA-Z]+\\s*\\([^)]*\\)\\s*;?\\s*$"
-    label: "DB/cache call as a statement (verify await)"
-    multiline: true
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: if\s*\(\s*(verifyToken|verifyJwt|isAuthenticated|requireUser|assertAuth|checkPermission|hasAccess)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Likely-async verifier used in if() without await
+      - regex: \b(withMutex|withLock|withUserMutex|withDistributedLock|withTransaction)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Mutex/lock/transaction helper call (confirm await)
+      - regex: '^\s*(redis|cache|prisma|db|client)\.[a-z][a-zA-Z]+\s*\([^)]*\)\s*;?\s*$'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: DB/cache call as a statement (verify await)
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: if\s*\(\s*(verifyToken|verifyJwt|isAuthenticated|requireUser|assertAuth|checkPermission|hasAccess)\s*\(
+      label: Likely-async verifier used in if() without await
+    - regex: \b(withMutex|withLock|withUserMutex|withDistributedLock|withTransaction)\s*\(
+      label: Mutex/lock/transaction helper call (confirm await)
+    - regex: '^\s*(redis|cache|prisma|db|client)\.[a-z][a-zA-Z]+\s*\([^)]*\)\s*;?\s*$'
+      label: DB/cache call as a statement (verify await)
+      multiline: true
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-393
   - CWE-754

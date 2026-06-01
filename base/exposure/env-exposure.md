@@ -1,19 +1,33 @@
 ---
 slug: env-exposure
 name: Server Env Vars Exposed to Client Bundle
-description: NEXT_PUBLIC_ variables named after secrets (NEXT_PUBLIC_*_SECRET / _KEY / _TOKEN), or process.env accessed in 'use client' files where the value lands in the client bundle.
+description: 'NEXT_PUBLIC_ variables named after secrets (NEXT_PUBLIC_*_SECRET / _KEY / _TOKEN), or process.env accessed in ''use client'' files where the value lands in the client bundle.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/.env*"
-  - "**/next.config.*"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  filePatterns:
+    - '**/.env*'
+    - '**/next.config.*'
 references:
   - CWE-200
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing JavaScript / TypeScript code for environment

@@ -1,35 +1,86 @@
 ---
 slug: security-behind-flag
 name: Security Check Behind Feature Flag
-description: Auth, CSRF, WAF, encryption, or signature verification gated by a feature flag (LaunchDarkly, Statsig, custom isEnabled) — disabling the flag turns off the protection without code changes. Walker mode follows flag helpers and verifier definitions.
+description: 'Auth, CSRF, WAF, encryption, or signature verification gated by a feature flag (LaunchDarkly, Statsig, custom isEnabled) — disabling the flag turns off the protection without code changes. Walker mode follows flag helpers and verifier definitions.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/tests/**"
-  - "**/spec/**"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "(LaunchDarkly|statsig|Optimizely|Unleash|growthbook)\\b"
-    label: "Feature-flag provider reference"
-  - regex: "\\.(variation|checkGate|isEnabled|getFlag|getVariant)\\s*\\("
-    label: "Feature-flag check call"
-  - regex: "\\b(isEnabled|flag_enabled|flagFor|featureFlag)\\s*\\("
-    label: "Generic feature-flag helper"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (LaunchDarkly|statsig|Optimizely|Unleash|growthbook)\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Feature-flag provider reference
+      - regex: \.(variation|checkGate|isEnabled|getFlag|getVariant)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Feature-flag check call
+      - regex: \b(isEnabled|flag_enabled|flagFor|featureFlag)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Generic feature-flag helper
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - java
+    - kt
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/spec/**'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: (LaunchDarkly|statsig|Optimizely|Unleash|growthbook)\b
+      label: Feature-flag provider reference
+    - regex: \.(variation|checkGate|isEnabled|getFlag|getVariant)\s*\(
+      label: Feature-flag check call
+    - regex: \b(isEnabled|flag_enabled|flagFor|featureFlag)\s*\(
+      label: Generic feature-flag helper
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-693
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for security checks gated by feature

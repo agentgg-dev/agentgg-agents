@@ -1,50 +1,209 @@
 ---
 slug: command-injection
 name: Command Injection
-description: Shell or process invocations that include untrusted input in the command string, allowing arbitrary commands to be executed by an attacker. Walker mode follows exec wrappers to trace argument origin.
+description: 'Shell or process invocations that include untrusted input in the command string, allowing arbitrary commands to be executed by an attacker. Walker mode follows exec wrappers to trace argument origin.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,rs,php,java,kt,cs,sh}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/tests/**"
-  - "**/test_*.py"
-  - "**/*_test.py"
-  - "**/*_test.go"
-  - "**/spec/**"
-  - "**/vendor/**"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\bexec(Sync)?\\s*\\(\\s*[`\"'][^`\"']*\\$\\{|\\bexec(Sync)?\\s*\\([^)]*\\+"
-    label: "Node child_process.exec/execSync with interpolation/concat"
-  - regex: "spawn\\s*\\([^)]*\\bshell\\s*:\\s*true\\b"
-    label: "Node spawn({ shell: true })"
-  - regex: "os\\.system\\s*\\([^)]*[+%]|os\\.system\\s*\\(\\s*f['\"]"
-    label: "Python os.system with concat/format"
-  - regex: "subprocess\\.(call|run|Popen)\\s*\\([^)]*shell\\s*=\\s*True"
-    label: "Python subprocess with shell=True"
-  - regex: "Kernel\\.(system|exec)\\s*\\([^)]*#\\{|%x\\{[^}]*#\\{"
-    label: "Ruby Kernel.system/exec or %x{} with #{} interpolation"
-  - regex: "Runtime\\.getRuntime\\(\\)\\.exec\\s*\\(|new\\s+ProcessBuilder\\s*\\("
-    label: "Java Runtime.exec / ProcessBuilder"
-  - regex: "\\b(shell_exec|system|passthru|popen|proc_open)\\s*\\([^)]*\\$"
-    label: "PHP shell-exec family with variable"
-  - regex: "exec\\.(Command|CommandContext)\\s*\\(\\s*[\"`](sh|bash|/bin/sh)"
-    label: "Go exec.Command shell invocation"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\bexec(Sync)?\s*\(\s*[`"''][^`"'']*\$\{|\bexec(Sync)?\s*\([^)]*\+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Node child_process.exec/execSync with interpolation/concat
+      - regex: 'spawn\s*\([^)]*\bshell\s*:\s*true\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'Node spawn({ shell: true })'
+      - regex: 'os\.system\s*\([^)]*[+%]|os\.system\s*\(\s*f[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python os.system with concat/format
+      - regex: 'subprocess\.(call|run|Popen)\s*\([^)]*shell\s*=\s*True'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python subprocess with shell=True
+      - regex: 'Kernel\.(system|exec)\s*\([^)]*#\{|%x\{[^}]*#\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'Ruby Kernel.system/exec or %x{} with #{} interpolation'
+      - regex: Runtime\.getRuntime\(\)\.exec\s*\(|new\s+ProcessBuilder\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Java Runtime.exec / ProcessBuilder
+      - regex: '\b(shell_exec|system|passthru|popen|proc_open)\s*\([^)]*\$'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: PHP shell-exec family with variable
+      - regex: 'exec\.(Command|CommandContext)\s*\(\s*["`](sh|bash|/bin/sh)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Go exec.Command shell invocation
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - rs
+    - php
+    - java
+    - kt
+    - cs
+    - sh
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/*_test.go'
+    - '**/spec/**'
+    - '**/vendor/**'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\bexec(Sync)?\s*\(\s*[`"''][^`"'']*\$\{|\bexec(Sync)?\s*\([^)]*\+'
+      label: Node child_process.exec/execSync with interpolation/concat
+    - regex: 'spawn\s*\([^)]*\bshell\s*:\s*true\b'
+      label: 'Node spawn({ shell: true })'
+    - regex: 'os\.system\s*\([^)]*[+%]|os\.system\s*\(\s*f[''"]'
+      label: Python os.system with concat/format
+    - regex: 'subprocess\.(call|run|Popen)\s*\([^)]*shell\s*=\s*True'
+      label: Python subprocess with shell=True
+    - regex: 'Kernel\.(system|exec)\s*\([^)]*#\{|%x\{[^}]*#\{'
+      label: 'Ruby Kernel.system/exec or %x{} with #{} interpolation'
+    - regex: Runtime\.getRuntime\(\)\.exec\s*\(|new\s+ProcessBuilder\s*\(
+      label: Java Runtime.exec / ProcessBuilder
+    - regex: '\b(shell_exec|system|passthru|popen|proc_open)\s*\([^)]*\$'
+      label: PHP shell-exec family with variable
+    - regex: 'exec\.(Command|CommandContext)\s*\(\s*["`](sh|bash|/bin/sh)'
+      label: Go exec.Command shell invocation
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-78
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing source code for OS command injection — a shell or

@@ -1,21 +1,64 @@
 ---
 slug: hardcoded-secrets
 name: Hardcoded Secrets
-description: API keys, tokens, passwords, and private keys committed to source instead of pulled from a secret manager or environment variable.
+description: 'API keys, tokens, passwords, and private keys committed to source instead of pulled from a secret manager or environment variable.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,rs,php,java,kt,cs}"
-  - "**/*.{json,yaml,yml,toml,ini,conf,cfg}"
-  - "**/.env*"
-  - "**/*.tf"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - rs
+      - php
+      - java
+      - kt
+      - cs
+      - json
+      - yaml
+      - yml
+      - toml
+      - ini
+      - conf
+      - cfg
+      - tf
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - rs
+    - php
+    - java
+    - kt
+    - cs
+    - json
+    - yaml
+    - yml
+    - toml
+    - ini
+    - conf
+    - cfg
+    - tf
+  filePatterns:
+    - '**/.env*'
 references:
   - CWE-798
-  - OWASP-A07:2021
+  - 'OWASP-A07:2021'
 ---
 
 You are reviewing source code for hardcoded credentials that should

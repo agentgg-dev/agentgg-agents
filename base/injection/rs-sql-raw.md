@@ -1,33 +1,67 @@
 ---
 slug: rs-sql-raw
 name: Raw SQL Injection (Rust)
-description: Rust SQL execution (sqlx runtime form with format!, diesel sql_query with format!, sea-orm Statement::from_string) with format! interpolation — note that sqlx::query!() macro is compile-time-checked and safe. Walker mode disambiguates macro vs function-call form.
+description: 'Rust SQL execution (sqlx runtime form with format!, diesel sql_query with format!, sea-orm Statement::from_string) with format! interpolation — note that sqlx::query!() macro is compile-time-checked and safe. Walker mode disambiguates macro vs function-call form.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [rust]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.rs"
-excludePatterns:
-  - "**/tests/**"
-  - "**/examples/**"
-  - "**/target/**"
-preFilter:
-  - regex: "sqlx::(query|query_as)(::<[^>]+>)?\\s*\\(\\s*&?\\s*format!\\s*\\("
-    label: "sqlx runtime form wrapping format! (not the safe macro)"
-  - regex: "diesel::sql_query\\s*\\(\\s*format!\\s*\\("
-    label: "diesel::sql_query with format!"
-  - regex: "Statement::from_string\\s*\\([^,]*,\\s*format!\\s*\\("
-    label: "sea-orm Statement::from_string with format!"
-  - regex: "\\.execute\\s*\\(\\s*&?format!\\s*\\(|\\.query\\s*\\(\\s*&?format!\\s*\\("
-    label: "rusqlite execute/query with format!"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'sqlx::(query|query_as)(::<[^>]+>)?\s*\(\s*&?\s*format!\s*\('
+        in:
+          - '**/*.rs'
+        notIn:
+          - '**/tests/**'
+          - '**/examples/**'
+          - '**/target/**'
+        label: sqlx runtime form wrapping format! (not the safe macro)
+      - regex: 'diesel::sql_query\s*\(\s*format!\s*\('
+        in:
+          - '**/*.rs'
+        notIn:
+          - '**/tests/**'
+          - '**/examples/**'
+          - '**/target/**'
+        label: 'diesel::sql_query with format!'
+      - regex: 'Statement::from_string\s*\([^,]*,\s*format!\s*\('
+        in:
+          - '**/*.rs'
+        notIn:
+          - '**/tests/**'
+          - '**/examples/**'
+          - '**/target/**'
+        label: 'sea-orm Statement::from_string with format!'
+      - regex: \.execute\s*\(\s*&?format!\s*\(|\.query\s*\(\s*&?format!\s*\(
+        in:
+          - '**/*.rs'
+        notIn:
+          - '**/tests/**'
+          - '**/examples/**'
+          - '**/target/**'
+        label: rusqlite execute/query with format!
+  prompt: Run only if this project uses rust — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - rs
+  excludePatterns:
+    - '**/tests/**'
+    - '**/examples/**'
+    - '**/target/**'
+  preFilter:
+    - regex: 'sqlx::(query|query_as)(::<[^>]+>)?\s*\(\s*&?\s*format!\s*\('
+      label: sqlx runtime form wrapping format! (not the safe macro)
+    - regex: 'diesel::sql_query\s*\(\s*format!\s*\('
+      label: 'diesel::sql_query with format!'
+    - regex: 'Statement::from_string\s*\([^,]*,\s*format!\s*\('
+      label: 'sea-orm Statement::from_string with format!'
+    - regex: \.execute\s*\(\s*&?format!\s*\(|\.query\s*\(\s*&?format!\s*\(
+      label: rusqlite execute/query with format!
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing Rust source code for SQL injection in sqlx, diesel,

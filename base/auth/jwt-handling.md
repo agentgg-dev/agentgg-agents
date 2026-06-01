@@ -1,36 +1,87 @@
 ---
 slug: jwt-handling
-name: JWT Handling (Signing, Verification, Key Management)
-description: JWT signing and verification (jose, jsonwebtoken, custom) — verify algorithm pinning, key management, secret strength, and audience/issuer/expiration checks. Walker mode follows key sources and verifier helpers.
+name: 'JWT Handling (Signing, Verification, Key Management)'
+description: 'JWT signing and verification (jose, jsonwebtoken, custom) — verify algorithm pinning, key management, secret strength, and audience/issuer/expiration checks. Walker mode follows key sources and verifier helpers.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "jwt\\.(verify|sign|decode)\\s*\\("
-    label: "jsonwebtoken jwt.verify/sign/decode call"
-  - regex: "\\bjwtVerify\\s*\\(|new\\s+SignJWT\\s*\\(|\\bjwtDecrypt\\s*\\(|new\\s+EncryptJWT\\s*\\("
-    label: "jose verify/sign/decrypt/encrypt call"
-  - regex: "(verifyJwt|verifyJWT|signJwt|signJWT)\\s*\\("
-    label: "Custom JWT helper"
-  - regex: "split\\s*\\(\\s*[\"']\\.[\"']\\s*\\)|base64url|atob\\s*\\([^)]*\\."
-    label: "Manual JWT decoding (split on '.', base64) — possible hand-rolled verifier"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: jwt\.(verify|sign|decode)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: jsonwebtoken jwt.verify/sign/decode call
+      - regex: \bjwtVerify\s*\(|new\s+SignJWT\s*\(|\bjwtDecrypt\s*\(|new\s+EncryptJWT\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: jose verify/sign/decrypt/encrypt call
+      - regex: (verifyJwt|verifyJWT|signJwt|signJWT)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Custom JWT helper
+      - regex: 'split\s*\(\s*["'']\.["'']\s*\)|base64url|atob\s*\([^)]*\.'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'Manual JWT decoding (split on ''.'', base64) — possible hand-rolled verifier'
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: jwt\.(verify|sign|decode)\s*\(
+      label: jsonwebtoken jwt.verify/sign/decode call
+    - regex: \bjwtVerify\s*\(|new\s+SignJWT\s*\(|\bjwtDecrypt\s*\(|new\s+EncryptJWT\s*\(
+      label: jose verify/sign/decrypt/encrypt call
+    - regex: (verifyJwt|verifyJWT|signJwt|signJWT)\s*\(
+      label: Custom JWT helper
+    - regex: 'split\s*\(\s*["'']\.["'']\s*\)|base64url|atob\s*\([^)]*\.'
+      label: 'Manual JWT decoding (split on ''.'', base64) — possible hand-rolled verifier'
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-345
   - CWE-347
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing source code that signs, verifies, encrypts, or

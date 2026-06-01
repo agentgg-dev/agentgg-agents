@@ -1,18 +1,22 @@
 ---
 slug: tf-iac-surface
 name: Terraform Public-Facing Infrastructure Surface
-description: Terraform resources that create publicly accessible surfaces — API Gateway, ALB without auth, S3 public buckets, Lambda function URLs, CloudFront, RDS publicly_accessible — flagged for auth/exposure review.
+description: 'Terraform resources that create publicly accessible surfaces — API Gateway, ALB without auth, S3 public buckets, Lambda function URLs, CloudFront, RDS publicly_accessible — flagged for auth/exposure review.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.tf"
-  - "**/*.tf.json"
+precondition:
+  regex:
+    extensions:
+      - tf
+      - tf.json
+where:
+  extensions:
+    - tf
+    - tf.json
 references:
   - CWE-285
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing Terraform configuration for resources that create

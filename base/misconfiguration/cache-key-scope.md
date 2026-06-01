@@ -1,32 +1,61 @@
 ---
 slug: cache-key-scope
 name: Cache Key Missing User / Tenant Scope
-description: Per-user or per-tenant cache keys (feature flags, configs, tokens) without a userId / tenantId in the key — one user's value gets served to another. Walker mode follows key-builder helpers.
+description: 'Per-user or per-tenant cache keys (feature flags, configs, tokens) without a userId / tenantId in the key — one user''s value gets served to another. Walker mode follows key-builder helpers.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "(redis|cache|kv)\\.(get|set|setex|hget|hset|mget)\\s*\\(\\s*[`\"'](feature|config|token|flag|user|profile)"
-    label: "Cache call with per-user-shaped key prefix"
-  - regex: "new\\s+Map\\s*\\(\\s*\\)[\\s\\S]{0,200}\\.set\\s*\\(|\\.get\\s*\\("
-    label: "In-memory Map used as cache (verify per-user scope)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '(redis|cache|kv)\.(get|set|setex|hget|hset|mget)\s*\(\s*[`"''](feature|config|token|flag|user|profile)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Cache call with per-user-shaped key prefix
+      - regex: 'new\s+Map\s*\(\s*\)[\s\S]{0,200}\.set\s*\(|\.get\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: In-memory Map used as cache (verify per-user scope)
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '(redis|cache|kv)\.(get|set|setex|hget|hset|mget)\s*\(\s*[`"''](feature|config|token|flag|user|profile)'
+      label: Cache call with per-user-shaped key prefix
+    - regex: 'new\s+Map\s*\(\s*\)[\s\S]{0,200}\.set\s*\(|\.get\s*\('
+      label: In-memory Map used as cache (verify per-user scope)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-639
   - CWE-200
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing source code for cache keys that should be scoped to

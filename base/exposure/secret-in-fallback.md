@@ -1,18 +1,37 @@
 ---
 slug: secret-in-fallback
 name: Secret Env Var with Hardcoded Fallback
-description: Env var secret with a hardcoded ?? or || fallback value — production silently uses the fallback if the env is unset, enabling auth bypass or known-secret forgery.
+description: 'Env var secret with a hardcoded ?? or || fallback value — production silently uses the fallback if the env is unset, enabling auth bypass or known-secret forgery.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,lua,go,py}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - lua
+      - go
+      - py
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - lua
+    - go
+    - py
 references:
   - CWE-798
   - CWE-1188
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for environment variable secrets with

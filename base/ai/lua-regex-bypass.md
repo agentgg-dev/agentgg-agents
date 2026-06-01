@@ -1,14 +1,17 @@
 ---
 slug: lua-regex-bypass
 name: Lua Regex / Pattern Used for Security Check (Bypassable)
-description: Lua patterns or PCRE regexes used to validate URLs / hosts / paths for security decisions — Lua patterns have %z quirks, frontier patterns, and other gotchas; PCRE without anchors is bypassable.
+description: 'Lua patterns or PCRE regexes used to validate URLs / hosts / paths for security decisions — Lua patterns have %z quirks, frontier patterns, and other gotchas; PCRE without anchors is bypassable.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.lua"
+precondition:
+  regex:
+    extensions:
+      - lua
+where:
+  extensions:
+    - lua
 references:
   - CWE-1287
   - CWE-918

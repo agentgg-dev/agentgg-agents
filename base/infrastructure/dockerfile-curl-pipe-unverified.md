@@ -4,17 +4,21 @@ name: Dockerfile curl | sh Without Checksum
 description: RUN curl | sh / wget | bash patterns that fetch and execute a script from the network without verifying a checksum or signature — supply-chain compromise risk.
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/Dockerfile"
-  - "**/Dockerfile.*"
-  - "**/*.Dockerfile"
-  - "**/Containerfile"
+precondition:
+  regex:
+    extensions:
+      - Dockerfile
+where:
+  extensions:
+    - Dockerfile
+  filePatterns:
+    - '**/Dockerfile'
+    - '**/Dockerfile.*'
+    - '**/Containerfile'
 references:
   - CWE-494
-  - OWASP-A06:2021
+  - 'OWASP-A06:2021'
 ---
 
 You are reviewing Dockerfiles for `RUN` lines that download a script

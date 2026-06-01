@@ -4,14 +4,27 @@ name: postMessage Listener Without Origin Check
 description: window.addEventListener('message') / window.onmessage handlers that act on event.data without validating event.origin — any iframe / opened window can send messages.
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
 references:
   - CWE-346
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing client-side JavaScript for `window.addEventListener("message", ...)`

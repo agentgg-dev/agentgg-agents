@@ -1,18 +1,47 @@
 ---
 slug: xxe
 name: XML External Entity (XXE)
-description: XML parsers configured to resolve external entities or DTDs, allowing attacker-controlled XML to read local files, perform SSRF, or trigger entity-expansion DoS (billion laughs).
+description: 'XML parsers configured to resolve external entities or DTDs, allowing attacker-controlled XML to read local files, perform SSRF, or trigger entity-expansion DoS (billion laughs).'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,rs,php,java,kt,cs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - rs
+      - php
+      - java
+      - kt
+      - cs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - rs
+    - php
+    - java
+    - kt
+    - cs
 references:
   - CWE-611
   - CWE-776
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for XML External Entity (XXE) — XML

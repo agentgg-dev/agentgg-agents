@@ -1,20 +1,24 @@
 ---
 slug: dockerfile-from-mutable-tag
 name: Dockerfile FROM with Mutable Tag
-description: Dockerfile FROM directive using :latest or a non-pinned floating tag — supply-chain risk because the image content changes without notice.
+description: 'Dockerfile FROM directive using :latest or a non-pinned floating tag — supply-chain risk because the image content changes without notice.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/Dockerfile"
-  - "**/Dockerfile.*"
-  - "**/*.Dockerfile"
-  - "**/Containerfile"
+precondition:
+  regex:
+    extensions:
+      - Dockerfile
+where:
+  extensions:
+    - Dockerfile
+  filePatterns:
+    - '**/Dockerfile'
+    - '**/Dockerfile.*'
+    - '**/Containerfile'
 references:
   - CWE-1357
-  - OWASP-A06:2021
+  - 'OWASP-A06:2021'
 ---
 
 You are reviewing Dockerfiles for `FROM` directives that pin to a

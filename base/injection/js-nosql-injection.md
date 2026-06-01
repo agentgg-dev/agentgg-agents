@@ -1,36 +1,87 @@
 ---
 slug: js-nosql-injection
 name: NoSQL Injection (JavaScript / MongoDB)
-description: Mongoose / MongoDB driver queries built with $where, JSON.parse(req.*), or uncoerced request values — allows query operator smuggling or server-side JS execution. Walker mode traces the value source and any coercion/validation helpers.
+description: 'Mongoose / MongoDB driver queries built with $where, JSON.parse(req.*), or uncoerced request values — allows query operator smuggling or server-side JS execution. Walker mode traces the value source and any coercion/validation helpers.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [node]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\$where\\s*:\\s*(`|\"|')[^\"`']*\\$\\{|\\$where\\s*:\\s*[\"'][^\"']*\\+"
-    label: "$where with template-literal or concatenation"
-  - regex: "JSON\\.parse\\s*\\(\\s*(req|request|ctx)\\."
-    label: "JSON.parse over request input passed to query"
-  - regex: "new\\s+RegExp\\s*\\(\\s*(req|request)\\."
-    label: "new RegExp from request input (used in query)"
-  - regex: "\\.(find|findOne|findOneAndUpdate|findOneAndDelete|updateOne|updateMany|deleteOne|deleteMany)\\s*\\(\\s*\\{[^}]*:\\s*(req|request)\\.(body|query|params)\\."
-    label: "Mongo query field set directly from request without coercion"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\$where\s*:\s*(`|"|'')[^"`'']*\$\{|\$where\s*:\s*["''][^"'']*\+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: $where with template-literal or concatenation
+      - regex: JSON\.parse\s*\(\s*(req|request|ctx)\.
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: JSON.parse over request input passed to query
+      - regex: new\s+RegExp\s*\(\s*(req|request)\.
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: new RegExp from request input (used in query)
+      - regex: '\.(find|findOne|findOneAndUpdate|findOneAndDelete|updateOne|updateMany|deleteOne|deleteMany)\s*\(\s*\{[^}]*:\s*(req|request)\.(body|query|params)\.'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Mongo query field set directly from request without coercion
+  prompt: Run only if this project uses node — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\$where\s*:\s*(`|"|'')[^"`'']*\$\{|\$where\s*:\s*["''][^"'']*\+'
+      label: $where with template-literal or concatenation
+    - regex: JSON\.parse\s*\(\s*(req|request|ctx)\.
+      label: JSON.parse over request input passed to query
+    - regex: new\s+RegExp\s*\(\s*(req|request)\.
+      label: new RegExp from request input (used in query)
+    - regex: '\.(find|findOne|findOneAndUpdate|findOneAndDelete|updateOne|updateMany|deleteOne|deleteMany)\s*\(\s*\{[^}]*:\s*(req|request)\.(body|query|params)\.'
+      label: Mongo query field set directly from request without coercion
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-943
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing Node.js / TypeScript source code for NoSQL injection

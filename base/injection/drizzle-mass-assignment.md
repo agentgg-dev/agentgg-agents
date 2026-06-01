@@ -4,33 +4,83 @@ name: Drizzle ORM Mass Assignment
 description: Drizzle insert/update where .values() or .set() receives a request body directly or via spread — caller can write to columns the application never intended to expose. Walker mode traces the payload source and any schema parser between request and DB call.
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [drizzle]
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\.values\\s*\\(\\s*(req\\.body|request\\.body|body|payload|input|formData|data|json)\\b"
-    label: "Drizzle .values() with request-body variable"
-  - regex: "\\.values\\s*\\(\\s*\\{\\s*\\.\\.\\.\\s*(req\\.body|request\\.body|body|payload|input|formData)"
-    label: "Drizzle .values() with spread of request body"
-  - regex: "\\.set\\s*\\(\\s*(req\\.body|request\\.body|body|payload|input|data)\\b"
-    label: "Drizzle .set() with request-body variable"
-  - regex: "\\.set\\s*\\(\\s*\\{\\s*\\.\\.\\.\\s*(req\\.body|request\\.body|body|payload)"
-    label: "Drizzle .set() with spread of request body"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: \.values\s*\(\s*(req\.body|request\.body|body|payload|input|formData|data|json)\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Drizzle .values() with request-body variable
+      - regex: '\.values\s*\(\s*\{\s*\.\.\.\s*(req\.body|request\.body|body|payload|input|formData)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Drizzle .values() with spread of request body
+      - regex: \.set\s*\(\s*(req\.body|request\.body|body|payload|input|data)\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Drizzle .set() with request-body variable
+      - regex: '\.set\s*\(\s*\{\s*\.\.\.\s*(req\.body|request\.body|body|payload)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Drizzle .set() with spread of request body
+  prompt: Run only if this project uses drizzle — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: \.values\s*\(\s*(req\.body|request\.body|body|payload|input|formData|data|json)\b
+      label: Drizzle .values() with request-body variable
+    - regex: '\.values\s*\(\s*\{\s*\.\.\.\s*(req\.body|request\.body|body|payload|input|formData)'
+      label: Drizzle .values() with spread of request body
+    - regex: \.set\s*\(\s*(req\.body|request\.body|body|payload|input|data)\b
+      label: Drizzle .set() with request-body variable
+    - regex: '\.set\s*\(\s*\{\s*\.\.\.\s*(req\.body|request\.body|body|payload)'
+      label: Drizzle .set() with spread of request body
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-915
-  - OWASP-A08:2021
+  - 'OWASP-A08:2021'
 ---
 
 You are reviewing TypeScript source code for mass assignment in Drizzle

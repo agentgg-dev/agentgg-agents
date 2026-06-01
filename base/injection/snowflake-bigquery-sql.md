@@ -4,34 +4,95 @@ name: Analytics SQL Injection (Snowflake / BigQuery / ClickHouse / DuckDB)
 description: Snowflake / BigQuery / ClickHouse / DuckDB queries built with template literal interpolation or string concatenation — analytics endpoints are real query engines and these patterns are SQL injection. Walker mode confirms the warehouse SDK is in use and follows query helpers.
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "execute\\s*\\(\\s*\\{\\s*sqlText\\s*:\\s*`[^`]*\\$\\{"
-    label: "Snowflake execute sqlText with template-literal interpolation"
-  - regex: "bigquery\\.(query|createQueryJob)\\s*\\([^)]*`[^`]*\\$\\{"
-    label: "BigQuery query/createQueryJob with template-literal interpolation"
-  - regex: "clickhouse\\.query\\s*\\(\\s*`[^`]*\\$\\{|client\\.query\\s*\\(\\s*\\{\\s*query\\s*:\\s*`[^`]*\\$\\{"
-    label: "ClickHouse query with template-literal interpolation"
-  - regex: "\\bduckdb\\b[\\s\\S]{0,200}\\.execute\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "DuckDB execute with template-literal interpolation"
-  - regex: "from\\s+['\"](snowflake-sdk|@google-cloud/bigquery|@clickhouse/client|@databricks/sql|duckdb|@duckdb/)"
-    label: "imports analytics warehouse SDK (confirms context)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'execute\s*\(\s*\{\s*sqlText\s*:\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Snowflake execute sqlText with template-literal interpolation
+      - regex: 'bigquery\.(query|createQueryJob)\s*\([^)]*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: BigQuery query/createQueryJob with template-literal interpolation
+      - regex: 'clickhouse\.query\s*\(\s*`[^`]*\$\{|client\.query\s*\(\s*\{\s*query\s*:\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: ClickHouse query with template-literal interpolation
+      - regex: '\bduckdb\b[\s\S]{0,200}\.execute\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: DuckDB execute with template-literal interpolation
+      - regex: 'from\s+[''"](snowflake-sdk|@google-cloud/bigquery|@clickhouse/client|@databricks/sql|duckdb|@duckdb/)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: imports analytics warehouse SDK (confirms context)
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'execute\s*\(\s*\{\s*sqlText\s*:\s*`[^`]*\$\{'
+      label: Snowflake execute sqlText with template-literal interpolation
+    - regex: 'bigquery\.(query|createQueryJob)\s*\([^)]*`[^`]*\$\{'
+      label: BigQuery query/createQueryJob with template-literal interpolation
+    - regex: 'clickhouse\.query\s*\(\s*`[^`]*\$\{|client\.query\s*\(\s*\{\s*query\s*:\s*`[^`]*\$\{'
+      label: ClickHouse query with template-literal interpolation
+    - regex: '\bduckdb\b[\s\S]{0,200}\.execute\s*\(\s*`[^`]*\$\{'
+      label: DuckDB execute with template-literal interpolation
+    - regex: 'from\s+[''"](snowflake-sdk|@google-cloud/bigquery|@clickhouse/client|@databricks/sql|duckdb|@duckdb/)'
+      label: imports analytics warehouse SDK (confirms context)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing TypeScript / JavaScript source code for SQL

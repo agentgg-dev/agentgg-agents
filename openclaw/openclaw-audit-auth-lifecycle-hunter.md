@@ -4,15 +4,23 @@ name: Auth Lifecycle Audit — Hunter (OpenClaw)
 description: Audits OpenClaw token, session, secret, and dedupe state through their lifecycle (rotation, revocation, config reload, device removal, replay-cache, queue context). Reports each holder of long-lived auth/dedupe state as safe / risky / broken with the file:line where the lifecycle event happens and the file:line of the holder that does not observe it.
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
-excludePatterns:
-  - "**/e2e/**"
-  - "**/*test*/**"
-  - "**/__tests__/**"
-  - "**/fixtures/**"
+precondition:
+  prompt: |
+    Run only if this codebase IS OpenClaw — the chat-channel automation
+    platform — or one of its first-party extensions/connectors. Skip any
+    project that merely depends on or integrates with OpenClaw. If the recon
+    brief doesn't clearly indicate an OpenClaw codebase, answer no.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs]
+  excludePatterns:
+    - "**/e2e/**"
+    - "**/*test*/**"
+    - "**/__tests__/**"
+    - "**/fixtures/**"
+  preFilter:
+    - { regex: "\\b(rotate|revoke|refresh|reload|invalidate|expire)\\w*", label: "lifecycle event" }
+    - { regex: "\\b(token|session|secret|dedupe|replay)\\b", label: "auth / dedupe state" }
 references:
   - CVE-2026-34503
   - CVE-2026-41916

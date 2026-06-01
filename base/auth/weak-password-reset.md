@@ -1,18 +1,45 @@
 ---
 slug: weak-password-reset
 name: Weak Password Reset Flow
-description: Password reset endpoints that rely on knowledge-based answers (security questions, DOB, address), accept attacker-supplied identity claims without proof-of-possession, or skip rate limiting — attackers reset accounts using publicly knowable information.
+description: 'Password reset endpoints that rely on knowledge-based answers (security questions, DOB, address), accept attacker-supplied identity claims without proof-of-possession, or skip rate limiting — attackers reset accounts using publicly knowable information.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - php
+      - java
+      - kt
+      - cs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
 references:
   - CWE-640
   - CWE-307
-  - OWASP-A07:2021
+  - 'OWASP-A07:2021'
 ---
 
 You are reviewing source code for weak password reset flows — paths

@@ -4,32 +4,83 @@ name: Untrusted Redirect Following (SSRF via 3xx)
 description: Server-side fetch follows HTTP redirects from a caller-controlled URL — the initial URL passes allowlist checks but a 302 redirect to an internal address bypasses them. Walker mode follows fetch helpers to verify redirect handling.
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "fetch\\s*\\(\\s*(targetUrl|callbackUrl|webhookUrl|redirectUrl|destinationUrl|proxyUrl|imageUrl|userUrl|companyUrl)\\b"
-    label: "fetch with caller-influenced URL variable"
-  - regex: "fetch\\s*\\([^)]*\\)\\s*\\.then|await\\s+fetch\\s*\\([^)]*\\)"
-    label: "fetch call (verify redirect handling on caller-controlled URLs)"
-  - regex: "axios\\.(get|post|put|patch|delete|request)\\s*\\(\\s*(targetUrl|callbackUrl|webhookUrl|userUrl|companyUrl|imageUrl|proxyUrl)"
-    label: "axios call with caller-influenced URL variable"
-  - regex: "got\\s*\\(\\s*(targetUrl|callbackUrl|webhookUrl|domainUrl)"
-    label: "got call with caller-influenced URL variable"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: fetch\s*\(\s*(targetUrl|callbackUrl|webhookUrl|redirectUrl|destinationUrl|proxyUrl|imageUrl|userUrl|companyUrl)\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: fetch with caller-influenced URL variable
+      - regex: 'fetch\s*\([^)]*\)\s*\.then|await\s+fetch\s*\([^)]*\)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: fetch call (verify redirect handling on caller-controlled URLs)
+      - regex: axios\.(get|post|put|patch|delete|request)\s*\(\s*(targetUrl|callbackUrl|webhookUrl|userUrl|companyUrl|imageUrl|proxyUrl)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: axios call with caller-influenced URL variable
+      - regex: got\s*\(\s*(targetUrl|callbackUrl|webhookUrl|domainUrl)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: got call with caller-influenced URL variable
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: fetch\s*\(\s*(targetUrl|callbackUrl|webhookUrl|redirectUrl|destinationUrl|proxyUrl|imageUrl|userUrl|companyUrl)\b
+      label: fetch with caller-influenced URL variable
+    - regex: 'fetch\s*\([^)]*\)\s*\.then|await\s+fetch\s*\([^)]*\)'
+      label: fetch call (verify redirect handling on caller-controlled URLs)
+    - regex: axios\.(get|post|put|patch|delete|request)\s*\(\s*(targetUrl|callbackUrl|webhookUrl|userUrl|companyUrl|imageUrl|proxyUrl)
+      label: axios call with caller-influenced URL variable
+    - regex: got\s*\(\s*(targetUrl|callbackUrl|webhookUrl|domainUrl)
+      label: got call with caller-influenced URL variable
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-918
-  - OWASP-A10:2021
+  - 'OWASP-A10:2021'
 ---
 
 You are reviewing server-side code for an SSRF bypass via redirect

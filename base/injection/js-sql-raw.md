@@ -1,42 +1,126 @@
 ---
 slug: js-sql-raw
 name: Raw SQL Injection (JavaScript / TypeScript)
-description: Raw SQL escape hatches across JS/TS drivers (pg, mysql2, TypeORM, Sequelize, Knex, Kysely, postgres.js, better-sqlite3) built with template literal interpolation or string concatenation. Walker mode follows query helpers to verify safe parameterization.
+description: 'Raw SQL escape hatches across JS/TS drivers (pg, mysql2, TypeORM, Sequelize, Knex, Kysely, postgres.js, better-sqlite3) built with template literal interpolation or string concatenation. Walker mode follows query helpers to verify safe parameterization.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [node]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\.(query|execute|exec|raw)\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "driver.query/execute/raw with template-literal interpolation"
-  - regex: "\\.(query|execute|exec|raw)\\s*\\([^)]*\\+"
-    label: "driver.query/execute/raw concatenating a string"
-  - regex: "\\.(whereRaw|orderByRaw|havingRaw)\\s*\\("
-    label: "Knex whereRaw/orderByRaw/havingRaw"
-  - regex: "Sequelize\\.literal\\s*\\("
-    label: "Sequelize.literal escape hatch"
-  - regex: "sql\\.(raw|unsafe)\\s*\\("
-    label: "Kysely sql.raw / postgres.js sql.unsafe"
-  - regex: "\\.prepare\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "better-sqlite3 prepare with template-literal interpolation"
-  - regex: "@Query\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "TypeORM @Query decorator with interpolation"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.(query|execute|exec|raw)\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: driver.query/execute/raw with template-literal interpolation
+      - regex: '\.(query|execute|exec|raw)\s*\([^)]*\+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: driver.query/execute/raw concatenating a string
+      - regex: \.(whereRaw|orderByRaw|havingRaw)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Knex whereRaw/orderByRaw/havingRaw
+      - regex: Sequelize\.literal\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Sequelize.literal escape hatch
+      - regex: sql\.(raw|unsafe)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Kysely sql.raw / postgres.js sql.unsafe
+      - regex: '\.prepare\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: better-sqlite3 prepare with template-literal interpolation
+      - regex: '@Query\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: TypeORM @Query decorator with interpolation
+  prompt: Run only if this project uses node — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\.(query|execute|exec|raw)\s*\(\s*`[^`]*\$\{'
+      label: driver.query/execute/raw with template-literal interpolation
+    - regex: '\.(query|execute|exec|raw)\s*\([^)]*\+'
+      label: driver.query/execute/raw concatenating a string
+    - regex: \.(whereRaw|orderByRaw|havingRaw)\s*\(
+      label: Knex whereRaw/orderByRaw/havingRaw
+    - regex: Sequelize\.literal\s*\(
+      label: Sequelize.literal escape hatch
+    - regex: sql\.(raw|unsafe)\s*\(
+      label: Kysely sql.raw / postgres.js sql.unsafe
+    - regex: '\.prepare\s*\(\s*`[^`]*\$\{'
+      label: better-sqlite3 prepare with template-literal interpolation
+    - regex: '@Query\s*\(\s*`[^`]*\$\{'
+      label: TypeORM @Query decorator with interpolation
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing JavaScript / TypeScript source code for SQL

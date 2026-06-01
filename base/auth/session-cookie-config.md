@@ -1,37 +1,88 @@
 ---
 slug: session-cookie-config
 name: Session Cookie Configuration
-description: Session/auth cookies set without httpOnly, secure, or sameSite — exposed to XSS theft, insecure HTTP transit, or CSRF. Walker mode follows cookie-setter helpers and library configs.
+description: 'Session/auth cookies set without httpOnly, secure, or sameSite — exposed to XSS theft, insecure HTTP transit, or CSRF. Walker mode follows cookie-setter helpers and library configs.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "cookies\\s*\\(\\s*\\)\\.set\\s*\\(|\\.cookie\\s*\\(\\s*[\"'](session|auth|token|sid|jwt|access)"
-    label: "Cookie set for session/auth name"
-  - regex: "setHeader\\s*\\(\\s*[\"']Set-Cookie[\"']"
-    label: "Raw Set-Cookie header construction"
-  - regex: "(sessionCookie|cookieOptions)\\s*:"
-    label: "Library session/cookie config block"
-  - regex: "setSessionCookie\\s*\\(|setAuthCookie\\s*\\(|writeSession\\s*\\("
-    label: "Project-defined cookie helper"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'cookies\s*\(\s*\)\.set\s*\(|\.cookie\s*\(\s*["''](session|auth|token|sid|jwt|access)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Cookie set for session/auth name
+      - regex: 'setHeader\s*\(\s*["'']Set-Cookie["'']'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Raw Set-Cookie header construction
+      - regex: '(sessionCookie|cookieOptions)\s*:'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Library session/cookie config block
+      - regex: setSessionCookie\s*\(|setAuthCookie\s*\(|writeSession\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Project-defined cookie helper
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'cookies\s*\(\s*\)\.set\s*\(|\.cookie\s*\(\s*["''](session|auth|token|sid|jwt|access)'
+      label: Cookie set for session/auth name
+    - regex: 'setHeader\s*\(\s*["'']Set-Cookie["'']'
+      label: Raw Set-Cookie header construction
+    - regex: '(sessionCookie|cookieOptions)\s*:'
+      label: Library session/cookie config block
+    - regex: setSessionCookie\s*\(|setAuthCookie\s*\(|writeSession\s*\(
+      label: Project-defined cookie helper
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-1004
   - CWE-614
   - CWE-1275
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for session / authentication cookies

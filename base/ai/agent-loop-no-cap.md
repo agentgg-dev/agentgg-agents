@@ -4,27 +4,67 @@ name: Agent Loop / LLM Call Without Cap
 description: streamText / generateText / Claude Agent SDK query without maxSteps / maxTurns / stopWhen / abortSignal — unbounded tool-use loops can drain budget and never terminate. Walker mode follows shared config and helper wrappers.
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\b(streamText|generateText|streamObject|generateObject)\\s*\\("
-    label: "Vercel AI SDK invocation"
-  - regex: "@anthropic-ai/claude-agent-sdk|\\bquery\\s*\\(\\s*\\{\\s*prompt"
-    label: "Claude Agent SDK query"
-  - regex: "while\\s*\\(\\s*true\\s*\\)|for\\s+await\\s*\\(.*\\bagent\\b"
-    label: "Unbounded polling/streaming loop"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: \b(streamText|generateText|streamObject|generateObject)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Vercel AI SDK invocation
+      - regex: '@anthropic-ai/claude-agent-sdk|\bquery\s*\(\s*\{\s*prompt'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Claude Agent SDK query
+      - regex: while\s*\(\s*true\s*\)|for\s+await\s*\(.*\bagent\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Unbounded polling/streaming loop
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: \b(streamText|generateText|streamObject|generateObject)\s*\(
+      label: Vercel AI SDK invocation
+    - regex: '@anthropic-ai/claude-agent-sdk|\bquery\s*\(\s*\{\s*prompt'
+      label: Claude Agent SDK query
+    - regex: while\s*\(\s*true\s*\)|for\s+await\s*\(.*\bagent\b
+      label: Unbounded polling/streaming loop
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-770
   - OWASP-LLM10

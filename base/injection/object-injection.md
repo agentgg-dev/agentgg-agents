@@ -1,35 +1,86 @@
 ---
 slug: object-injection
 name: Prototype Pollution / Object Injection
-description: Object.assign, lodash merge, or defaultsDeep called with user-controlled input — allows an attacker to set properties on Object.prototype and affect all objects in the process. Walker mode traces validation helpers between request and merge.
+description: 'Object.assign, lodash merge, or defaultsDeep called with user-controlled input — allows an attacker to set properties on Object.prototype and affect all objects in the process. Walker mode traces validation helpers between request and merge.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "(_|lodash)\\.(merge|defaultsDeep|mergeWith)\\s*\\("
-    label: "lodash deep merge call"
-  - regex: "\\b(deepMerge|deepCopy|deepExtend|extend)\\s*\\([^)]*\\b(req|request|body|payload|input)\\b"
-    label: "Custom deep-merge call with request data"
-  - regex: "Object\\.assign\\s*\\([^)]*\\b(req\\.body|request\\.body|body|payload|input|formData)\\b"
-    label: "Object.assign with request input as source"
-  - regex: "\\[\\s*(req|request)\\.(query|body|params)\\.[a-zA-Z_]+\\s*\\]\\s*="
-    label: "Dynamic property assignment with request-controlled key"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (_|lodash)\.(merge|defaultsDeep|mergeWith)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: lodash deep merge call
+      - regex: '\b(deepMerge|deepCopy|deepExtend|extend)\s*\([^)]*\b(req|request|body|payload|input)\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Custom deep-merge call with request data
+      - regex: 'Object\.assign\s*\([^)]*\b(req\.body|request\.body|body|payload|input|formData)\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Object.assign with request input as source
+      - regex: '\[\s*(req|request)\.(query|body|params)\.[a-zA-Z_]+\s*\]\s*='
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Dynamic property assignment with request-controlled key
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: (_|lodash)\.(merge|defaultsDeep|mergeWith)\s*\(
+      label: lodash deep merge call
+    - regex: '\b(deepMerge|deepCopy|deepExtend|extend)\s*\([^)]*\b(req|request|body|payload|input)\b'
+      label: Custom deep-merge call with request data
+    - regex: 'Object\.assign\s*\([^)]*\b(req\.body|request\.body|body|payload|input|formData)\b'
+      label: Object.assign with request input as source
+    - regex: '\[\s*(req|request)\.(query|body|params)\.[a-zA-Z_]+\s*\]\s*='
+      label: Dynamic property assignment with request-controlled key
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-1321
-  - OWASP-A08:2021
+  - 'OWASP-A08:2021'
 ---
 
 You are reviewing JavaScript / TypeScript source code for prototype

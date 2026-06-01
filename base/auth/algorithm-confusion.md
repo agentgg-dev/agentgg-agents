@@ -1,32 +1,33 @@
 ---
 slug: algorithm-confusion
 name: JWT Algorithm Confusion
-description: JWT verification without an algorithms allowlist — caller can change the alg header to "none" or to HS256 keyed by the public key, forging tokens. Walker mode follows verifier wrappers to confirm pinning.
+description: 'JWT verification without an algorithms allowlist — caller can change the alg header to "none" or to HS256 keyed by the public key, forging tokens. Follows verifier wrappers to confirm pinning.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,lua}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "jwt\\.verify\\s*\\("
-    label: "jsonwebtoken jwt.verify call"
-  - regex: "\\bjwtVerify\\s*\\("
-    label: "jose jwtVerify call"
-  - regex: "verifyJwt\\s*\\(|verifyJWT\\s*\\("
-    label: "custom verifyJwt helper"
-  - regex: "jwt_obj\\s*:\\s*verify\\s*\\("
-    label: "Lua resty.jwt verify"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: "jwt\\.verify\\s*\\(|\\bjwtVerify\\s*\\(|verifyJwt\\s*\\(|verifyJWT\\s*\\(|jwt_obj\\s*:\\s*verify\\s*\\("
+        in: ["**/*.{ts,tsx,js,jsx,mjs,cjs,lua}"]
+        notIn: ["**/*.{test,spec}.*", "**/__tests__/**"]
+        label: JWT verify call present
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs, lua]
+  excludePatterns:
+    - "**/__tests__/**"
+    - "**/*.test.{ts,tsx,js,jsx,mjs}"
+    - "**/*.spec.{ts,tsx,js,jsx,mjs}"
+    - "**/node_modules/**"
+    - "**/dist/**"
+    - "**/.next/**"
+  preFilter:
+    - { regex: "jwt\\.verify\\s*\\(", label: "jsonwebtoken jwt.verify call" }
+    - { regex: "\\bjwtVerify\\s*\\(", label: "jose jwtVerify call" }
+    - { regex: "verifyJwt\\s*\\(|verifyJWT\\s*\\(", label: "custom verifyJwt helper" }
+    - { regex: "jwt_obj\\s*:\\s*verify\\s*\\(", label: "Lua resty.jwt verify" }
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-347
   - CVE-2015-9235
@@ -37,11 +38,11 @@ specific vulnerability where the verifier accepts whichever algorithm
 the incoming JWT header declares, allowing the attacker to substitute
 a weaker algorithm (or `none`) to forge tokens.
 
-**Walker mode advantage:** JWT verification is almost always wrapped
-in `auth/jwt.ts` or `lib/verify-token.ts`. If the candidate call
-delegates to such a helper, open it and check whether the wrapper
-pins `algorithms: [...]`. A finding requires the verify call to lack
-algorithm pinning all the way down the chain.
+**Follow the wrappers:** JWT verification is almost always wrapped
+in `auth/jwt.ts` or `lib/verify-token.ts`. If a flagged call
+delegates to such a helper, use Read/Grep to open it and check
+whether the wrapper pins `algorithms: [...]`. A finding requires the
+verify call to lack algorithm pinning all the way down the chain.
 
 ## The vulnerability
 

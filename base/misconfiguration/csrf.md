@@ -1,36 +1,105 @@
 ---
 slug: csrf
 name: Missing CSRF Protection
-description: State-changing endpoints reachable via cookie-based auth without CSRF token verification, SameSite cookies, or origin/referer checks. Walker mode reads the app entry point and shared middleware to confirm whether csurf / equivalent is mounted globally before flagging.
+description: 'State-changing endpoints reachable via cookie-based auth without CSRF token verification, SameSite cookies, or origin/referer checks. Walker mode reads the app entry point and shared middleware to confirm whether csurf / equivalent is mounted globally before flagging.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-preFilter:
-  - regex: "(app|router|api|fastify)\\.(post|put|patch|delete)\\s*\\("
-    label: "JS state-changing route registration"
-  - regex: "@(Post|Put|Patch|Delete)\\s*\\("
-    label: "Nest/Spring state-changing decorator"
-  - regex: "@csrf_exempt"
-    label: "Django CSRF exempt"
-  - regex: "skip_before_action\\s*:?\\s*:?verify_authenticity_token"
-    label: "Rails CSRF skip"
-  - regex: "sameSite\\s*:\\s*['\"](none|lax)['\"]"
-    label: "Permissive SameSite cookie"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (app|router|api|fastify)\.(post|put|patch|delete)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: JS state-changing route registration
+      - regex: '@(Post|Put|Patch|Delete)\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: Nest/Spring state-changing decorator
+      - regex: '@csrf_exempt'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: Django CSRF exempt
+      - regex: 'skip_before_action\s*:?\s*:?verify_authenticity_token'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: Rails CSRF skip
+      - regex: 'sameSite\s*:\s*[''"](none|lax)[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: Permissive SameSite cookie
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+  preFilter:
+    - regex: (app|router|api|fastify)\.(post|put|patch|delete)\s*\(
+      label: JS state-changing route registration
+    - regex: '@(Post|Put|Patch|Delete)\s*\('
+      label: Nest/Spring state-changing decorator
+    - regex: '@csrf_exempt'
+      label: Django CSRF exempt
+    - regex: 'skip_before_action\s*:?\s*:?verify_authenticity_token'
+      label: Rails CSRF skip
+    - regex: 'sameSite\s*:\s*[''"](none|lax)[''"]'
+      label: Permissive SameSite cookie
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-352
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing HTTP route handlers for missing Cross-Site Request

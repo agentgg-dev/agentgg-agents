@@ -1,29 +1,46 @@
 ---
 slug: zod-passthrough-mass-assignment
 name: Zod Passthrough Mass Assignment
-description: Zod schema using .passthrough() allows arbitrary extra fields through validation — if the parsed output is written to the database, callers can set columns the schema never declared. Walker mode follows imports to see whether parsed output reaches a DB write.
+description: 'Zod schema using .passthrough() allows arbitrary extra fields through validation — if the parsed output is written to the database, callers can set columns the schema never declared. Walker mode follows imports to see whether parsed output reaches a DB write.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\.passthrough\\s*\\(\\s*\\)"
-    label: "Zod .passthrough() (disables strip of unknown keys)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: \.passthrough\s*\(\s*\)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Zod .passthrough() (disables strip of unknown keys)
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: \.passthrough\s*\(\s*\)
+      label: Zod .passthrough() (disables strip of unknown keys)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-915
-  - OWASP-A08:2021
+  - 'OWASP-A08:2021'
 ---
 
 You are reviewing TypeScript source code for mass assignment via Zod's

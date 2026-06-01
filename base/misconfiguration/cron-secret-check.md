@@ -1,36 +1,80 @@
 ---
 slug: cron-secret-check
 name: Cron / Scheduler Endpoint Missing Secret Check
-description: Cron route handlers (Vercel Cron, custom scheduler endpoints) that lack a CRON_SECRET / scheduler-signature check — anyone on the internet can trigger the job. Walker mode follows verifier helpers and scheduler library wrappers.
+description: 'Cron route handlers (Vercel Cron, custom scheduler endpoints) that lack a CRON_SECRET / scheduler-signature check — anyone on the internet can trigger the job. Walker mode follows verifier helpers and scheduler library wrappers.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/cron/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/crons/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/api/cron*/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/app/api/**/route.{ts,tsx,js,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "export\\s+(async\\s+function|const)\\s+(GET|POST)\\b"
-    label: "HTTP handler in cron-shaped path"
-  - regex: "CRON_SECRET|x-cron-secret"
-    label: "CRON secret reference"
-  - regex: "inngest\\.serve\\s*\\(|trigger\\.dev|serve\\s*\\(\\s*\\{\\s*client"
-    label: "Scheduler library serve() wrapper"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: export\s+(async\s+function|const)\s+(GET|POST)\b
+        in:
+          - '**/cron/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/crons/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/api/cron*/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/api/**/route.{ts,tsx,js,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: HTTP handler in cron-shaped path
+      - regex: CRON_SECRET|x-cron-secret
+        in:
+          - '**/cron/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/crons/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/api/cron*/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/api/**/route.{ts,tsx,js,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: CRON secret reference
+      - regex: 'inngest\.serve\s*\(|trigger\.dev|serve\s*\(\s*\{\s*client'
+        in:
+          - '**/cron/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/crons/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/api/cron*/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/api/**/route.{ts,tsx,js,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Scheduler library serve() wrapper
+where:
+  filePatterns:
+    - '**/cron/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/crons/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/api/cron*/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/app/api/**/route.{ts,tsx,js,mjs}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: export\s+(async\s+function|const)\s+(GET|POST)\b
+      label: HTTP handler in cron-shaped path
+    - regex: CRON_SECRET|x-cron-secret
+      label: CRON secret reference
+    - regex: 'inngest\.serve\s*\(|trigger\.dev|serve\s*\(\s*\{\s*client'
+      label: Scheduler library serve() wrapper
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-306
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing cron / scheduled-job endpoints (Vercel Cron, custom

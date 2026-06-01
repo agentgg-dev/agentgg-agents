@@ -4,15 +4,23 @@ name: Workspace Dotenv Trust Audit — Hunter (OpenClaw)
 description: Audits OpenClaw consumers of workspace `.env`, `pnpm-workspace.yaml`, `.npmrc`, `setup-api.js`, `MCP server config`, and similar workspace-supplied configuration for places workspace bytes reach a host process env, a hooks root, an exec routing variable, an MCP stdio env, or a connector endpoint, in a way that converts a non-privileged workspace write into a host-privileged effect.
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
-excludePatterns:
-  - "**/e2e/**"
-  - "**/*test*/**"
-  - "**/__tests__/**"
-  - "**/fixtures/**"
+precondition:
+  prompt: |
+    Run only if this codebase IS OpenClaw — the chat-channel automation
+    platform — or one of its first-party extensions/connectors. Skip any
+    project that merely depends on or integrates with OpenClaw. If the recon
+    brief doesn't clearly indicate an OpenClaw codebase, answer no.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs]
+  excludePatterns:
+    - "**/e2e/**"
+    - "**/*test*/**"
+    - "**/__tests__/**"
+    - "**/fixtures/**"
+  preFilter:
+    - { regex: "process\\.env|dotenv|\\.npmrc|pnpm-workspace|setup-api", label: "workspace config consumer" }
+    - { regex: "\\benv\\s*:|spawn|exec|stdio|\\bmcp\\b", label: "host env / exec sink" }
 references:
   - CVE-2026-43531
   - CVE-2026-35641

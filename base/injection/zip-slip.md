@@ -1,18 +1,45 @@
 ---
 slug: zip-slip
 name: Zip Slip / Archive Entry Path Traversal
-description: Code that extracts archive entries (zip, tar, gzip, jar, war) by joining the entry name onto a destination path without verifying the resolved path stays inside the destination — a crafted `../../etc/cron.d/payload` entry writes outside the intended directory.
+description: 'Code that extracts archive entries (zip, tar, gzip, jar, war) by joining the entry name onto a destination path without verifying the resolved path stays inside the destination — a crafted `../../etc/cron.d/payload` entry writes outside the intended directory.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - php
+      - java
+      - kt
+      - cs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
 references:
   - CWE-22
   - CWE-23
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing source code for Zip Slip — archive extraction loops

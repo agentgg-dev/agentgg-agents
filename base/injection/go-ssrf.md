@@ -1,32 +1,62 @@
 ---
 slug: go-ssrf
 name: Server-Side Request Forgery (Go)
-description: Go HTTP requests (http.Get, http.Post, http.NewRequest) where the URL is built from string concatenation or fmt.Sprintf with caller-controlled input — SSRF risk. Walker mode follows allowlist helpers and HTTP client wrappers.
+description: 'Go HTTP requests (http.Get, http.Post, http.NewRequest) where the URL is built from string concatenation or fmt.Sprintf with caller-controlled input — SSRF risk. Walker mode follows allowlist helpers and HTTP client wrappers.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [go]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.go"
-excludePatterns:
-  - "**/*_test.go"
-  - "**/vendor/**"
-preFilter:
-  - regex: "http\\.(Get|Post|Head|NewRequest)\\s*\\([^)]*\\bfmt\\.Sprintf\\b"
-    label: "http.* call wrapping fmt.Sprintf URL"
-  - regex: "http\\.(Get|Post|Head|NewRequest)\\s*\\([^)]*\\+"
-    label: "http.* call with concatenated URL"
-  - regex: "\\.Do\\s*\\(\\s*req\\b"
-    label: "*http.Client.Do() — likely custom request"
-  - regex: "url\\.Parse\\s*\\([^)]*\\+"
-    label: "url.Parse on concatenated string"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'http\.(Get|Post|Head|NewRequest)\s*\([^)]*\bfmt\.Sprintf\b'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: http.* call wrapping fmt.Sprintf URL
+      - regex: 'http\.(Get|Post|Head|NewRequest)\s*\([^)]*\+'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: http.* call with concatenated URL
+      - regex: \.Do\s*\(\s*req\b
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: '*http.Client.Do() — likely custom request'
+      - regex: 'url\.Parse\s*\([^)]*\+'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: url.Parse on concatenated string
+  prompt: Run only if this project uses go — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - go
+  excludePatterns:
+    - '**/*_test.go'
+    - '**/vendor/**'
+  preFilter:
+    - regex: 'http\.(Get|Post|Head|NewRequest)\s*\([^)]*\bfmt\.Sprintf\b'
+      label: http.* call wrapping fmt.Sprintf URL
+    - regex: 'http\.(Get|Post|Head|NewRequest)\s*\([^)]*\+'
+      label: http.* call with concatenated URL
+    - regex: \.Do\s*\(\s*req\b
+      label: '*http.Client.Do() — likely custom request'
+    - regex: 'url\.Parse\s*\([^)]*\+'
+      label: url.Parse on concatenated string
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-918
-  - OWASP-A10:2021
+  - 'OWASP-A10:2021'
 ---
 
 You are reviewing Go source code for Server-Side Request Forgery

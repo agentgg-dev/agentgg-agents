@@ -1,18 +1,22 @@
 ---
 slug: tf-public-ingress
 name: Terraform Public Ingress on Sensitive Port
-description: aws_security_group / aws_security_group_rule / google_compute_firewall with 0.0.0.0/0 ingress on sensitive ports (22, 3306, 5432, 6379, 27017, RDP) — service is exposed to the open internet.
+description: 'aws_security_group / aws_security_group_rule / google_compute_firewall with 0.0.0.0/0 ingress on sensitive ports (22, 3306, 5432, 6379, 27017, RDP) — service is exposed to the open internet.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.tf"
-  - "**/*.tf.json"
+precondition:
+  regex:
+    extensions:
+      - tf
+      - tf.json
+where:
+  extensions:
+    - tf
+    - tf.json
 references:
   - CWE-668
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing Terraform configuration for security groups or

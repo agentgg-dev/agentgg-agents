@@ -1,33 +1,87 @@
 ---
 slug: weak-password-policy
 name: Weak Password Policy
-description: Registration/password-change paths that accept short, common, or trivially-guessable passwords because no minimum-length, common-password-deny, or strength check is enforced before hashing. Walker mode reads the model/validator helpers to confirm the absence of enforcement.
+description: 'Registration/password-change paths that accept short, common, or trivially-guessable passwords because no minimum-length, common-password-deny, or strength check is enforced before hashing. Walker mode reads the model/validator helpers to confirm the absence of enforcement.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}"
-  - "**/node_modules/**"
-preFilter:
-  - regex: "(bcrypt|argon2|scrypt|pbkdf2)\\.(hash|hashSync)\\s*\\("
-    label: "Password hashing call"
-  - regex: "password\\s*:\\s*hash\\s*\\("
-    label: "Storing hashed password"
-  - regex: "(set|create|register|signup|signUp)Password"
-    label: "Password setter / registration helper"
-  - regex: "User\\.(create|register|signup|build)\\s*\\("
-    label: "User creation"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (bcrypt|argon2|scrypt|pbkdf2)\.(hash|hashSync)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: Password hashing call
+      - regex: 'password\s*:\s*hash\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: Storing hashed password
+      - regex: (set|create|register|signup|signUp)Password
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: Password setter / registration helper
+      - regex: User\.(create|register|signup|build)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: User creation
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+    - '**/node_modules/**'
+  preFilter:
+    - regex: (bcrypt|argon2|scrypt|pbkdf2)\.(hash|hashSync)\s*\(
+      label: Password hashing call
+    - regex: 'password\s*:\s*hash\s*\('
+      label: Storing hashed password
+    - regex: (set|create|register|signup|signUp)Password
+      label: Password setter / registration helper
+    - regex: User\.(create|register|signup|build)\s*\(
+      label: User creation
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-521
-  - OWASP-A07:2021
+  - 'OWASP-A07:2021'
 ---
 
 You are reviewing source code for weak password-policy enforcement —

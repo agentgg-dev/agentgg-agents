@@ -4,15 +4,23 @@ name: Trusted Event Ingress Audit — Hunter (OpenClaw)
 description: 'Audits OpenClaw event/queue producers and consumers for trust transitions where untrusted external input is enqueued onto a channel that downstream code treats as a trusted system event (System: prompt channel, /hooks/wake, agent hook events, exec-event, channel-setup, cron awareness, heartbeat owner). Reports each producer/consumer pair as safe / risky / broken with the file:line of the producer, the consumer that does not re-sanitize, and the trust class crossed.'
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
-excludePatterns:
-  - "**/e2e/**"
-  - "**/*test*/**"
-  - "**/__tests__/**"
-  - "**/fixtures/**"
+precondition:
+  prompt: |
+    Run only if this codebase IS OpenClaw — the chat-channel automation
+    platform — or one of its first-party extensions/connectors. Skip any
+    project that merely depends on or integrates with OpenClaw. If the recon
+    brief doesn't clearly indicate an OpenClaw codebase, answer no.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs]
+  excludePatterns:
+    - "**/e2e/**"
+    - "**/*test*/**"
+    - "**/__tests__/**"
+    - "**/fixtures/**"
+  preFilter:
+    - { regex: "enqueue|\\.emit\\s*\\(|\\bqueue\\b|hooks/wake|exec-event", label: "event / queue producer" }
+    - { regex: "System:|heartbeat|\\bcron\\b|channel-setup|\\.on\\s*\\(", label: "trusted event consumer" }
 references:
   - CVE-2026-43534
   - CVE-2026-43566

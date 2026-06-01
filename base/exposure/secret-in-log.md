@@ -1,17 +1,44 @@
 ---
 slug: secret-in-log
 name: Secrets in Logs or Error Messages
-description: Credentials, tokens, passwords, or API keys passed to console.log, logger calls, JSON.stringify, or error message bodies — secrets persist in log aggregation systems and crash reports.
+description: 'Credentials, tokens, passwords, or API keys passed to console.log, logger calls, JSON.stringify, or error message bodies — secrets persist in log aggregation systems and crash reports.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt,cs,php}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - java
+      - kt
+      - cs
+      - php
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - java
+    - kt
+    - cs
+    - php
 references:
   - CWE-532
-  - OWASP-A09:2021
+  - 'OWASP-A09:2021'
 ---
 
 You are reviewing source code for credentials, tokens, passwords, or

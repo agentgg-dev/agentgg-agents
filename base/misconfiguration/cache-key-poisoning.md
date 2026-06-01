@@ -1,35 +1,88 @@
 ---
 slug: cache-key-poisoning
 name: Cache Key Poisoning
-description: CDN / proxy / application cache keyed using Host, custom headers, or unkeyed parameters — attacker can craft a request that poisons the cache for other users. Walker mode follows cache wrappers to verify key construction.
+description: 'CDN / proxy / application cache keyed using Host, custom headers, or unkeyed parameters — attacker can craft a request that poisons the cache for other users. Walker mode follows cache wrappers to verify key construction.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,lua,conf}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "(req|request|ctx)\\.headers(\\.|\\[)host"
-    label: "Cache key reference to request Host header"
-  - regex: "(req|request|ctx)\\.headers(\\.|\\[)['\"]?x-[a-z-]+"
-    label: "Cache key reference to custom request header"
-  - regex: "ngx\\.var\\.host|ngx\\.var\\.request_uri"
-    label: "OpenResty cache key from Host/URI"
-  - regex: "(redis|kv|cache)\\.(set|setex|hset|mset)\\s*\\(\\s*[`\"'][^`\"']*\\$\\{"
-    label: "Cache write with template-literal key"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '(req|request|ctx)\.headers(\.|\[)host'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,lua,conf}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Cache key reference to request Host header
+      - regex: '(req|request|ctx)\.headers(\.|\[)[''"]?x-[a-z-]+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,lua,conf}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Cache key reference to custom request header
+      - regex: ngx\.var\.host|ngx\.var\.request_uri
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,lua,conf}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: OpenResty cache key from Host/URI
+      - regex: '(redis|kv|cache)\.(set|setex|hset|mset)\s*\(\s*[`"''][^`"'']*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,lua,conf}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Cache write with template-literal key
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - lua
+    - conf
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '(req|request|ctx)\.headers(\.|\[)host'
+      label: Cache key reference to request Host header
+    - regex: '(req|request|ctx)\.headers(\.|\[)[''"]?x-[a-z-]+'
+      label: Cache key reference to custom request header
+    - regex: ngx\.var\.host|ngx\.var\.request_uri
+      label: OpenResty cache key from Host/URI
+    - regex: '(redis|kv|cache)\.(set|setex|hset|mset)\s*\(\s*[`"''][^`"'']*\$\{'
+      label: Cache write with template-literal key
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-444
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing source code for cache-key construction that allows

@@ -1,35 +1,86 @@
 ---
 slug: agentic-untrusted-prompt-input
 name: LLM Prompt Built from Untrusted External Data
-description: LLM call (streamText, generateText, anthropic.messages, openai.chat) where the prompt or messages interpolate variables originating from external sources — indirect prompt injection sink. Walker mode traces the prompt-source variable back across imports.
+description: 'LLM call (streamText, generateText, anthropic.messages, openai.chat) where the prompt or messages interpolate variables originating from external sources — indirect prompt injection sink. Walker mode traces the prompt-source variable back across imports.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\b(streamText|generateText|streamObject|generateObject)\\s*\\(\\s*\\{[\\s\\S]{0,500}(prompt|messages|system)\\s*:\\s*`[^`]*\\$\\{"
-    label: "Vercel AI SDK call with template-literal prompt/messages/system"
-    multiline: true
-  - regex: "(anthropic|client)\\.messages\\.create\\s*\\([\\s\\S]{0,500}(content|system)\\s*:\\s*`[^`]*\\$\\{"
-    label: "Anthropic messages.create with template-literal content"
-    multiline: true
-  - regex: "openai\\.chat\\.completions\\.create\\s*\\([\\s\\S]{0,500}(content|system)\\s*:\\s*`[^`]*\\$\\{"
-    label: "OpenAI chat.completions.create with template-literal content"
-    multiline: true
-  - regex: "\\b(notes|description|body|content|text|summary|email|emailBody|transcript|scraped|fetched|webpage|attachment|document|kbDocs|searchResults|crawlResult|formData|ticket|feedback|salesforce[A-Z]|hubspot[A-Z]|notion[A-Z])\\b"
-    label: "External-origin variable name"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\b(streamText|generateText|streamObject|generateObject)\s*\(\s*\{[\s\S]{0,500}(prompt|messages|system)\s*:\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Vercel AI SDK call with template-literal prompt/messages/system
+      - regex: '(anthropic|client)\.messages\.create\s*\([\s\S]{0,500}(content|system)\s*:\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Anthropic messages.create with template-literal content
+      - regex: 'openai\.chat\.completions\.create\s*\([\s\S]{0,500}(content|system)\s*:\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: OpenAI chat.completions.create with template-literal content
+      - regex: '\b(notes|description|body|content|text|summary|email|emailBody|transcript|scraped|fetched|webpage|attachment|document|kbDocs|searchResults|crawlResult|formData|ticket|feedback|salesforce[A-Z]|hubspot[A-Z]|notion[A-Z])\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: External-origin variable name
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\b(streamText|generateText|streamObject|generateObject)\s*\(\s*\{[\s\S]{0,500}(prompt|messages|system)\s*:\s*`[^`]*\$\{'
+      label: Vercel AI SDK call with template-literal prompt/messages/system
+      multiline: true
+    - regex: '(anthropic|client)\.messages\.create\s*\([\s\S]{0,500}(content|system)\s*:\s*`[^`]*\$\{'
+      label: Anthropic messages.create with template-literal content
+      multiline: true
+    - regex: 'openai\.chat\.completions\.create\s*\([\s\S]{0,500}(content|system)\s*:\s*`[^`]*\$\{'
+      label: OpenAI chat.completions.create with template-literal content
+      multiline: true
+    - regex: '\b(notes|description|body|content|text|summary|email|emailBody|transcript|scraped|fetched|webpage|attachment|document|kbDocs|searchResults|crawlResult|formData|ticket|feedback|salesforce[A-Z]|hubspot[A-Z]|notion[A-Z])\b'
+      label: External-origin variable name
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-94
   - OWASP-LLM01

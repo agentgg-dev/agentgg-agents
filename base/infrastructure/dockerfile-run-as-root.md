@@ -1,20 +1,24 @@
 ---
 slug: dockerfile-run-as-root
 name: Dockerfile Runs Container as Root
-description: Dockerfile with no USER directive, or USER 0 / USER root — container processes run as root, escalating impact of any in-container vulnerability.
+description: 'Dockerfile with no USER directive, or USER 0 / USER root — container processes run as root, escalating impact of any in-container vulnerability.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/Dockerfile"
-  - "**/Dockerfile.*"
-  - "**/*.Dockerfile"
-  - "**/Containerfile"
+precondition:
+  regex:
+    extensions:
+      - Dockerfile
+where:
+  extensions:
+    - Dockerfile
+  filePatterns:
+    - '**/Dockerfile'
+    - '**/Dockerfile.*'
+    - '**/Containerfile'
 references:
   - CWE-250
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing Dockerfiles for containers that run as root.

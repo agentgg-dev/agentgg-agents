@@ -1,40 +1,106 @@
 ---
 slug: jvm-sql-raw
 name: Raw SQL Injection (JVM — Java / Kotlin)
-description: JDBC, JPA/Hibernate, Spring JdbcTemplate, MyBatis, jOOQ, and Exposed raw SQL built by string concatenation or interpolation. Walker mode traces repository/service helpers across files.
+description: 'JDBC, JPA/Hibernate, Spring JdbcTemplate, MyBatis, jOOQ, and Exposed raw SQL built by string concatenation or interpolation. Walker mode traces repository/service helpers across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [jvm]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{java,kt}"
-excludePatterns:
-  - "**/src/test/**"
-  - "**/test/**"
-  - "**/target/**"
-  - "**/build/**"
-preFilter:
-  - regex: "\\.(executeQuery|executeUpdate)\\s*\\(\\s*\"[^\"]*\"\\s*\\+"
-    label: "JDBC Statement with concatenation"
-  - regex: "\\.prepareStatement\\s*\\(\\s*\"[^\"]*\"\\s*\\+"
-    label: "prepareStatement with concatenation (defeats parameterization)"
-  - regex: "\\.(createNativeQuery|createQuery|createSQLQuery)\\s*\\(\\s*\"[^\"]*\"\\s*\\+"
-    label: "JPA/Hibernate query with concatenation"
-  - regex: "jdbcTemplate\\.(query|update|queryForList|queryForObject)\\s*\\(\\s*\"[^\"]*\"\\s*\\+"
-    label: "Spring JdbcTemplate with concatenation"
-  - regex: "@(Select|Update|Insert|Delete)\\s*\\(\\s*\"[^\"]*\\$\\{"
-    label: "MyBatis annotation using ${} (use #{} instead)"
-  - regex: "DSL\\.(field|condition)\\s*\\(\\s*\"[^\"]*\"\\s*\\+"
-    label: "jOOQ DSL.field/condition with concatenation"
-  - regex: "exec\\s*\\(\\s*\"[^\"]*\\$\\{"
-    label: "Kotlin SQL exec with ${} interpolation"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.(executeQuery|executeUpdate)\s*\(\s*"[^"]*"\s*\+'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: JDBC Statement with concatenation
+      - regex: '\.prepareStatement\s*\(\s*"[^"]*"\s*\+'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: prepareStatement with concatenation (defeats parameterization)
+      - regex: '\.(createNativeQuery|createQuery|createSQLQuery)\s*\(\s*"[^"]*"\s*\+'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: JPA/Hibernate query with concatenation
+      - regex: 'jdbcTemplate\.(query|update|queryForList|queryForObject)\s*\(\s*"[^"]*"\s*\+'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring JdbcTemplate with concatenation
+      - regex: '@(Select|Update|Insert|Delete)\s*\(\s*"[^"]*\$\{'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: 'MyBatis annotation using ${} (use #{} instead)'
+      - regex: 'DSL\.(field|condition)\s*\(\s*"[^"]*"\s*\+'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: jOOQ DSL.field/condition with concatenation
+      - regex: 'exec\s*\(\s*"[^"]*\$\{'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: 'Kotlin SQL exec with ${} interpolation'
+  prompt: Run only if this project uses jvm — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - java
+    - kt
+  excludePatterns:
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
+  preFilter:
+    - regex: '\.(executeQuery|executeUpdate)\s*\(\s*"[^"]*"\s*\+'
+      label: JDBC Statement with concatenation
+    - regex: '\.prepareStatement\s*\(\s*"[^"]*"\s*\+'
+      label: prepareStatement with concatenation (defeats parameterization)
+    - regex: '\.(createNativeQuery|createQuery|createSQLQuery)\s*\(\s*"[^"]*"\s*\+'
+      label: JPA/Hibernate query with concatenation
+    - regex: 'jdbcTemplate\.(query|update|queryForList|queryForObject)\s*\(\s*"[^"]*"\s*\+'
+      label: Spring JdbcTemplate with concatenation
+    - regex: '@(Select|Update|Insert|Delete)\s*\(\s*"[^"]*\$\{'
+      label: 'MyBatis annotation using ${} (use #{} instead)'
+    - regex: 'DSL\.(field|condition)\s*\(\s*"[^"]*"\s*\+'
+      label: jOOQ DSL.field/condition with concatenation
+    - regex: 'exec\s*\(\s*"[^"]*\$\{'
+      label: 'Kotlin SQL exec with ${} interpolation'
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing JVM source code (Java / Kotlin) for SQL injection

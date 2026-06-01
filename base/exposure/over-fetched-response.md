@@ -1,37 +1,106 @@
 ---
 slug: over-fetched-response
 name: Over-Fetched / Over-Serialized API Response
-description: API responses that return a full ORM model or DB row to the client without an explicit field allowlist, leaking sensitive columns (password hashes, security answers, internal flags, audit metadata). Walker mode reads the model definition to identify which columns are sensitive.
+description: 'API responses that return a full ORM model or DB row to the client without an explicit field allowlist, leaking sensitive columns (password hashes, security answers, internal flags, audit metadata). Walker mode reads the model definition to identify which columns are sensitive.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-preFilter:
-  - regex: "(res|reply|ctx)\\.(json|send)\\s*\\(\\s*(user|users|account|profile|member|customer)\\b"
-    label: "Sending a user-shaped record verbatim"
-  - regex: "res\\.json\\s*\\(\\s*await\\s+\\w+\\.(findOne|findByPk|findAll|find|findUnique|findFirst|findMany)\\s*\\("
-    label: "ORM result returned directly"
-  - regex: "return\\s+\\w+\\.toJSON\\s*\\(\\)"
-    label: "toJSON of a model returned"
-  - regex: "JSON\\.stringify\\s*\\(\\s*user\\b"
-    label: "Stringify of a user record"
-  - regex: "(SELECT|select)\\s+\\*\\s+FROM"
-    label: "SELECT * in query"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (res|reply|ctx)\.(json|send)\s*\(\s*(user|users|account|profile|member|customer)\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: Sending a user-shaped record verbatim
+      - regex: res\.json\s*\(\s*await\s+\w+\.(findOne|findByPk|findAll|find|findUnique|findFirst|findMany)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: ORM result returned directly
+      - regex: return\s+\w+\.toJSON\s*\(\)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: toJSON of a model returned
+      - regex: JSON\.stringify\s*\(\s*user\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: Stringify of a user record
+      - regex: (SELECT|select)\s+\*\s+FROM
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+        label: SELECT * in query
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+  preFilter:
+    - regex: (res|reply|ctx)\.(json|send)\s*\(\s*(user|users|account|profile|member|customer)\b
+      label: Sending a user-shaped record verbatim
+    - regex: res\.json\s*\(\s*await\s+\w+\.(findOne|findByPk|findAll|find|findUnique|findFirst|findMany)\s*\(
+      label: ORM result returned directly
+    - regex: return\s+\w+\.toJSON\s*\(\)
+      label: toJSON of a model returned
+    - regex: JSON\.stringify\s*\(\s*user\b
+      label: Stringify of a user record
+    - regex: (SELECT|select)\s+\*\s+FROM
+      label: SELECT * in query
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-213
   - CWE-200
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing source code for over-fetched / over-serialized API

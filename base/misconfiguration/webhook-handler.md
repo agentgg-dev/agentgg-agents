@@ -1,37 +1,81 @@
 ---
 slug: webhook-handler
 name: Webhook Endpoint Missing Signature Verification
-description: Inbound webhook handlers (Stripe, GitHub, Linear, Sentry, custom integrations) without HMAC / signature / shared-secret verification — anyone on the internet can forge events. Walker mode follows verifier helpers across files.
+description: 'Inbound webhook handlers (Stripe, GitHub, Linear, Sentry, custom integrations) without HMAC / signature / shared-secret verification — anyone on the internet can forge events. Walker mode follows verifier helpers across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*webhook*/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/*hook*/**/route.{ts,js}"
-  - "**/api/**/route.{ts,tsx,js,mjs}"
-  - "**/services/**/src/**/*.ts"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "export\\s+(async\\s+function|const)\\s+POST\\b"
-    label: "POST handler in webhook-shaped path"
-  - regex: "stripe-signature|x-hub-signature|x-slack-signature|x-linear-signature|x-svix-signature|x-shopify-hmac"
-    label: "Provider signature header reference"
-  - regex: "(constructEvent|verifyAndReceive|verifyWebhook|verifySignature)\\s*\\("
-    label: "Webhook verification helper call"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: export\s+(async\s+function|const)\s+POST\b
+        in:
+          - '**/*webhook*/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/*hook*/**/route.{ts,js}'
+          - '**/api/**/route.{ts,tsx,js,mjs}'
+          - '**/services/**/src/**/*.ts'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: POST handler in webhook-shaped path
+      - regex: stripe-signature|x-hub-signature|x-slack-signature|x-linear-signature|x-svix-signature|x-shopify-hmac
+        in:
+          - '**/*webhook*/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/*hook*/**/route.{ts,js}'
+          - '**/api/**/route.{ts,tsx,js,mjs}'
+          - '**/services/**/src/**/*.ts'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Provider signature header reference
+      - regex: (constructEvent|verifyAndReceive|verifyWebhook|verifySignature)\s*\(
+        in:
+          - '**/*webhook*/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/*hook*/**/route.{ts,js}'
+          - '**/api/**/route.{ts,tsx,js,mjs}'
+          - '**/services/**/src/**/*.ts'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Webhook verification helper call
+where:
+  filePatterns:
+    - '**/*webhook*/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/*hook*/**/route.{ts,js}'
+    - '**/api/**/route.{ts,tsx,js,mjs}'
+    - '**/services/**/src/**/*.ts'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: export\s+(async\s+function|const)\s+POST\b
+      label: POST handler in webhook-shaped path
+    - regex: stripe-signature|x-hub-signature|x-slack-signature|x-linear-signature|x-svix-signature|x-shopify-hmac
+      label: Provider signature header reference
+    - regex: (constructEvent|verifyAndReceive|verifyWebhook|verifySignature)\s*\(
+      label: Webhook verification helper call
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-345
   - CWE-306
-  - OWASP-A08:2021
+  - 'OWASP-A08:2021'
 ---
 
 You are reviewing inbound webhook handlers for missing signature

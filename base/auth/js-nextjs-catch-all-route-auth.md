@@ -1,37 +1,71 @@
 ---
 slug: js-nextjs-catch-all-route-auth
 name: Next.js Catch-All Route Auth Coverage
-description: Next.js catch-all routes ([...slug], [[...rest]]) and Payload CMS / GraphQL endpoints — auth must cover every sub-path, not just the explicit ones in the codebase. Walker mode follows route handlers and HOF wrappers.
+description: 'Next.js catch-all routes ([...slug], [[...rest]]) and Payload CMS / GraphQL endpoints — auth must cover every sub-path, not just the explicit ones in the codebase. Walker mode follows route handlers and HOF wrappers.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [nextjs]
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/[[...rest]]/**/*.{ts,tsx}"
-  - "**/[...slug]/**/*.{ts,tsx}"
-  - "**/[...path]/**/*.{ts,tsx}"
-  - "**/(payload)/**/*.{ts,tsx}"
-  - "**/graphql/route.{ts,tsx}"
-  - "**/app/api/**/*.{ts,tsx}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "export\\s+(async\\s+function|const|function)\\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\b"
-    label: "App Router HTTP handler export"
-  - regex: "export\\s+default\\s+(async\\s+)?function\\s+handler"
-    label: "Pages Router default handler"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: export\s+(async\s+function|const|function)\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b
+        in:
+          - '**/[[...rest]]/**/*.{ts,tsx}'
+          - '**/[...slug]/**/*.{ts,tsx}'
+          - '**/[...path]/**/*.{ts,tsx}'
+          - '**/(payload)/**/*.{ts,tsx}'
+          - '**/graphql/route.{ts,tsx}'
+          - '**/app/api/**/*.{ts,tsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: App Router HTTP handler export
+      - regex: export\s+default\s+(async\s+)?function\s+handler
+        in:
+          - '**/[[...rest]]/**/*.{ts,tsx}'
+          - '**/[...slug]/**/*.{ts,tsx}'
+          - '**/[...path]/**/*.{ts,tsx}'
+          - '**/(payload)/**/*.{ts,tsx}'
+          - '**/graphql/route.{ts,tsx}'
+          - '**/app/api/**/*.{ts,tsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Pages Router default handler
+  prompt: Run only if this project uses nextjs — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  filePatterns:
+    - '**/[[...rest]]/**/*.{ts,tsx}'
+    - '**/[...slug]/**/*.{ts,tsx}'
+    - '**/[...path]/**/*.{ts,tsx}'
+    - '**/(payload)/**/*.{ts,tsx}'
+    - '**/graphql/route.{ts,tsx}'
+    - '**/app/api/**/*.{ts,tsx}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: export\s+(async\s+function|const|function)\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b
+      label: App Router HTTP handler export
+    - regex: export\s+default\s+(async\s+)?function\s+handler
+      label: Pages Router default handler
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-862
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing Next.js catch-all route handlers ([...slug],

@@ -1,35 +1,86 @@
 ---
 slug: unsafe-redirect
 name: Unsafe Redirect (Allowlist Bypass)
-description: Redirect destination that passes a superficial validation check but can still be bypassed — URL parsing inconsistencies, double-slash, unicode, open redirect_uri matching. Walker mode reads validation helpers to check for known bypass patterns.
+description: 'Redirect destination that passes a superficial validation check but can still be bypassed — URL parsing inconsistencies, double-slash, unicode, open redirect_uri matching. Walker mode reads validation helpers to check for known bypass patterns.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\.startsWith\\s*\\(\\s*[\"']/[\"']\\s*\\)"
-    label: "startsWith('/') check — verify it also rejects '//'"
-  - regex: "new\\s+URL\\s*\\([^,)]+,\\s*[\"']https?://"
-    label: "new URL(input, base) — verify base is enforced"
-  - regex: "\\.includes\\s*\\(\\s*[\"'][^\"']*\\.[a-z]{2,}[\"']"
-    label: ".includes() domain match — substring bypassable"
-  - regex: "redirect_uri|returnUrl|returnTo|redirectUrl"
-    label: "redirect_uri / returnUrl identifier — validation logic likely nearby"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.startsWith\s*\(\s*["'']/["'']\s*\)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: startsWith('/') check — verify it also rejects '//'
+      - regex: 'new\s+URL\s*\([^,)]+,\s*["'']https?://'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'new URL(input, base) — verify base is enforced'
+      - regex: '\.includes\s*\(\s*["''][^"'']*\.[a-z]{2,}["'']'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: .includes() domain match — substring bypassable
+      - regex: redirect_uri|returnUrl|returnTo|redirectUrl
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: redirect_uri / returnUrl identifier — validation logic likely nearby
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\.startsWith\s*\(\s*["'']/["'']\s*\)'
+      label: startsWith('/') check — verify it also rejects '//'
+    - regex: 'new\s+URL\s*\([^,)]+,\s*["'']https?://'
+      label: 'new URL(input, base) — verify base is enforced'
+    - regex: '\.includes\s*\(\s*["''][^"'']*\.[a-z]{2,}["'']'
+      label: .includes() domain match — substring bypassable
+    - regex: redirect_uri|returnUrl|returnTo|redirectUrl
+      label: redirect_uri / returnUrl identifier — validation logic likely nearby
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-601
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing source code for redirect validation that appears to

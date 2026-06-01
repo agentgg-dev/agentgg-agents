@@ -9,7 +9,7 @@ By participating, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md
 ## Ways to contribute
 
 - **Add a new agent** — propose a new vulnerability check or recon pattern
-- **Improve an existing agent** — sharpen the prompt, tighten file patterns, reduce false positives
+- **Improve an existing agent** — sharpen the prompt, tighten its `where` scope, reduce false positives
 - **Report a noisy or broken agent** — open an issue with a repro
 - **Fix typos or docs** — small PRs welcome, no issue needed
 
@@ -39,10 +39,16 @@ name: My New Check
 description: One-line summary shown in `agentgg agents list`.
 version: 0.1.0
 author: your-github-handle
-mode: file
 noiseTier: normal
-filePatterns:
-  - "**/*.{ts,js,py}"
+precondition:                      # optional — when should this agent run?
+  regex:
+    patterns:
+      - regex: "<the construct you look for>"
+        in: ["**/*.{ts,js,py}"]
+where:                             # which files to run on
+  extensions: [ts, js, py]
+  preFilter:
+    - { regex: "<the construct you look for>", label: "what it is" }
 references:
   - CWE-XXX
   - OWASP-AXX:2021
@@ -70,12 +76,9 @@ You are reviewing source code for <vulnerability>.
 
 - **Single responsibility.** One agent = one vulnerability class. Don't bundle "all injection bugs" into one prompt.
 - **Explicit false-positive criteria.** The single biggest source of noise is missing FP guidance. List the patterns that *look* like the bug but aren't.
-- **Tight `filePatterns`.** Don't scan Python files for a JS-only issue. Wasted tokens = wasted money for users.
+- **Tight `where`.** Scope to the relevant file types (`extensions`) and narrow with a `preFilter` for the suspicious construct. Don't hand a JS-only check every Python file — wasted tokens = wasted money for users.
+- **A real `precondition`.** Gate the agent so it skips repos it can't apply to: a cheap `regex` check (e.g. `extensions: [".php"]` for a PHP-only agent) and/or a `prompt` gate ("Run only if this is a Laravel app"). This is what keeps a 200-agent scan affordable.
 - **Reference a CWE / CVE / OWASP entry when one fits.** Optional but helpful — users use these to triage findings and report to their security team. Skip if the bug class doesn't map cleanly to an identifier.
-- **Pick the right `mode`:**
-  - `file` — one LLM call per matching file. Use for syntactic checks (e.g. "is this query parameterized?").
-  - `walker` — agentic batches across files. Use when context spans multiple files (e.g. "is this user input sanitized between the route handler and the DB call?").
-  - `hunt` — whole-repo exploration. Use for emergent patterns (e.g. "find any auth bypass logic").
 - **`noiseTier` honestly:**
   - `precise` — near-zero false positives. Safe to run in CI.
   - `normal` — some noise expected, worth the signal.

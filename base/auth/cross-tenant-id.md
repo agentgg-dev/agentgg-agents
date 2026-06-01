@@ -4,35 +4,82 @@ name: Cross-Tenant ID Access
 description: Tenant/team/org ID taken from request input and used in a DB lookup without verifying the authenticated user belongs to that tenant — allows reading or modifying other tenants' data. Walker mode follows DB helpers to verify scoping.
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/services/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/apps/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/app/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/pages/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/routes/**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\b(teamId|ownerId|orgId|tenantId|installationId|configurationId|integrationConfigurationId|customerId|workspaceId|accountId)\\b"
-    label: "Tenant-shaped identifier"
-  - regex: "(get|find|update|delete)[A-Z][a-zA-Z]+By(Id|Uid|Slug)\\s*\\("
-    label: "Repository getByX/findByX/updateByX call"
-  - regex: "\\.(findUnique|findFirst|findOne|update|delete)\\s*\\(\\s*\\{\\s*where\\s*:\\s*\\{\\s*id\\s*:"
-    label: "ORM where: { id } lookup"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: \b(teamId|ownerId|orgId|tenantId|installationId|configurationId|integrationConfigurationId|customerId|workspaceId|accountId)\b
+        in:
+          - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/apps/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Tenant-shaped identifier
+      - regex: '(get|find|update|delete)[A-Z][a-zA-Z]+By(Id|Uid|Slug)\s*\('
+        in:
+          - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/apps/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Repository getByX/findByX/updateByX call
+      - regex: '\.(findUnique|findFirst|findOne|update|delete)\s*\(\s*\{\s*where\s*:\s*\{\s*id\s*:'
+        in:
+          - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/apps/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'ORM where: { id } lookup'
+where:
+  filePatterns:
+    - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/apps/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: \b(teamId|ownerId|orgId|tenantId|installationId|configurationId|integrationConfigurationId|customerId|workspaceId|accountId)\b
+      label: Tenant-shaped identifier
+    - regex: '(get|find|update|delete)[A-Z][a-zA-Z]+By(Id|Uid|Slug)\s*\('
+      label: Repository getByX/findByX/updateByX call
+    - regex: '\.(findUnique|findFirst|findOne|update|delete)\s*\(\s*\{\s*where\s*:\s*\{\s*id\s*:'
+      label: 'ORM where: { id } lookup'
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-639
   - CWE-862
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing source code for cross-tenant ID access — patterns

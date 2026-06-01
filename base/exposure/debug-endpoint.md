@@ -1,22 +1,29 @@
 ---
 slug: debug-endpoint
 name: Debug / Test / Dev Endpoint Reachable in Production
-description: HTTP handlers under /api/debug/, /api/test/, /api/dev/, or gated by x-debug / x-internal headers — these often leak internal state or skip auth and can be reachable in production.
+description: 'HTTP handlers under /api/debug/, /api/test/, /api/dev/, or gated by x-debug / x-internal headers — these often leak internal state or skip auth and can be reachable in production.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/api/debug/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/api/test/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/api/dev/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/app/api/**/*.{ts,tsx,js,jsx,mjs}"
+precondition:
+  regex:
+    files:
+      - '**/api/debug/**/*.{ts,tsx,js,jsx,mjs}'
+      - '**/api/test/**/*.{ts,tsx,js,jsx,mjs}'
+      - '**/api/dev/**/*.{ts,tsx,js,jsx,mjs}'
+      - '**/api/**/*.{ts,tsx,js,jsx,mjs}'
+      - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+where:
+  filePatterns:
+    - '**/api/debug/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/api/test/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/api/dev/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
 references:
   - CWE-489
   - CWE-215
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing HTTP handlers that look like debug, test, or

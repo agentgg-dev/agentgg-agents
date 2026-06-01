@@ -1,39 +1,98 @@
 ---
 slug: gcp-cloud-function
 name: GCP Cloud Function Security
-description: GCP Cloud Functions (1st and 2nd gen) — unauthenticated invocation, missing trigger validation, IAM bindings for allUsers, secrets in env vars. Walker mode correlates handler with Terraform IAM bindings.
+description: 'GCP Cloud Functions (1st and 2nd gen) — unauthenticated invocation, missing trigger validation, IAM bindings for allUsers, secrets in env vars. Walker mode correlates handler with Terraform IAM bindings.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [gcp-cloud-functions]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}"
-  - "**/cloud-functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}"
-  - "**/*.tf"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py,go}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/tests/**"
-  - "**/node_modules/**"
-  - "**/vendor/**"
-  - "**/dist/**"
-preFilter:
-  - regex: "(google_cloudfunctions(2)?_function_iam_member|google_cloud_run_service_iam_member)"
-    label: "GCP function/run IAM binding resource"
-  - regex: "member\\s*=\\s*[\"']allUsers[\"']"
-    label: "IAM binding to allUsers"
-  - regex: "HttpFunction|@google-cloud/functions-framework"
-    label: "GCP HTTP function handler"
-  - regex: "functions_framework\\.http|functions_framework\\.cloud_event"
-    label: "Python functions-framework decorator"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (google_cloudfunctions(2)?_function_iam_member|google_cloud_run_service_iam_member)
+        in:
+          - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+          - '**/cloud-functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+          - '**/*.tf'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+        label: GCP function/run IAM binding resource
+      - regex: 'member\s*=\s*["'']allUsers["'']'
+        in:
+          - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+          - '**/cloud-functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+          - '**/*.tf'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+        label: IAM binding to allUsers
+      - regex: HttpFunction|@google-cloud/functions-framework
+        in:
+          - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+          - '**/cloud-functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+          - '**/*.tf'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+        label: GCP HTTP function handler
+      - regex: functions_framework\.http|functions_framework\.cloud_event
+        in:
+          - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+          - '**/cloud-functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+          - '**/*.tf'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+        label: Python functions-framework decorator
+  prompt: Run only if this project uses gcp-cloud-functions — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - tf
+  filePatterns:
+    - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+    - '**/cloud-functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/node_modules/**'
+    - '**/vendor/**'
+    - '**/dist/**'
+  preFilter:
+    - regex: (google_cloudfunctions(2)?_function_iam_member|google_cloud_run_service_iam_member)
+      label: GCP function/run IAM binding resource
+    - regex: 'member\s*=\s*["'']allUsers["'']'
+      label: IAM binding to allUsers
+    - regex: HttpFunction|@google-cloud/functions-framework
+      label: GCP HTTP function handler
+    - regex: functions_framework\.http|functions_framework\.cloud_event
+      label: Python functions-framework decorator
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-285
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing Google Cloud Function implementations and their

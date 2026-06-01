@@ -4,31 +4,71 @@ name: Prisma Raw SQL Escape Hatch
 description: Prisma $queryRawUnsafe / $executeRawUnsafe accept plain strings and bypass parameterization. Also flags $queryRaw / $executeRaw called as a function rather than a tagged template. Walker mode follows query helpers to verify whether arguments are user-controlled.
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [prisma]
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\$(query|execute)RawUnsafe\\s*\\("
-    label: "Prisma $queryRawUnsafe / $executeRawUnsafe call"
-  - regex: "\\$(query|execute)Raw\\s*\\([^`]"
-    label: "Prisma $queryRaw / $executeRaw called as a function (not tagged template)"
-  - regex: "Prisma\\.raw\\s*\\("
-    label: "Prisma.raw() literal-injection helper"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: \$(query|execute)RawUnsafe\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Prisma $queryRawUnsafe / $executeRawUnsafe call
+      - regex: '\$(query|execute)Raw\s*\([^`]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Prisma $queryRaw / $executeRaw called as a function (not tagged template)
+      - regex: Prisma\.raw\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Prisma.raw() literal-injection helper
+  prompt: Run only if this project uses prisma — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: \$(query|execute)RawUnsafe\s*\(
+      label: Prisma $queryRawUnsafe / $executeRawUnsafe call
+    - regex: '\$(query|execute)Raw\s*\([^`]'
+      label: Prisma $queryRaw / $executeRaw called as a function (not tagged template)
+    - regex: Prisma\.raw\s*\(
+      label: Prisma.raw() literal-injection helper
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing TypeScript / JavaScript source code for SQL

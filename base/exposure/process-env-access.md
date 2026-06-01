@@ -1,14 +1,31 @@
 ---
 slug: process-env-access
 name: process.env Access (Review Site)
-description: Any direct process.env access — review site for hardcoded fallbacks, client-bundle leaks, env-as-bool bugs, and missing-env auth bypass. Noisy by design; pairs with more targeted exposure agents.
+description: 'Any direct process.env access — review site for hardcoded fallbacks, client-bundle leaks, env-as-bool bugs, and missing-env auth bypass. Noisy by design; pairs with more targeted exposure agents.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: noisy
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,lua,go}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - lua
+      - go
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - lua
+    - go
 references:
   - CWE-200
   - CWE-1188

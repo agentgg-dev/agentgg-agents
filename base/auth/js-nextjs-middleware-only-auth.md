@@ -1,31 +1,45 @@
 ---
 slug: js-nextjs-middleware-only-auth
 name: Next.js Middleware-Only Auth
-description: Next.js route handlers under a "protected" route group with no per-handler auth check, relying solely on middleware.ts — bypassable via direct RSC fetch or by middleware misconfiguration. Walker mode reads middleware.ts and verifies its matcher covers the route.
+description: 'Next.js route handlers under a "protected" route group with no per-handler auth check, relying solely on middleware.ts — bypassable via direct RSC fetch or by middleware misconfiguration. Walker mode reads middleware.ts and verifies its matcher covers the route.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [nextjs]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/app/**/route.{ts,tsx}"
-  - "**/app/api/**/route.{ts,tsx}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "export\\s+(async\\s+function|const|function)\\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\b"
-    label: "App Router HTTP method export"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: export\s+(async\s+function|const|function)\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b
+        in:
+          - '**/app/**/route.{ts,tsx}'
+          - '**/app/api/**/route.{ts,tsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: App Router HTTP method export
+  prompt: Run only if this project uses nextjs — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  filePatterns:
+    - '**/app/**/route.{ts,tsx}'
+    - '**/app/api/**/route.{ts,tsx}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: export\s+(async\s+function|const|function)\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b
+      label: App Router HTTP method export
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-862
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing Next.js App Router route handlers that have no

@@ -1,42 +1,137 @@
 ---
 slug: unsafe-deserialization
 name: Unsafe Deserialization
-description: JSON.parse / yaml.load / pickle.loads / Java ObjectInputStream on user input without schema validation — allows prototype pollution, code execution (Python/Java), or untyped objects reaching trusted paths. Walker mode follows downstream usage to confirm severity.
+description: 'JSON.parse / yaml.load / pickle.loads / Java ObjectInputStream on user input without schema validation — allows prototype pollution, code execution (Python/Java), or untyped objects reaching trusted paths. Walker mode follows downstream usage to confirm severity.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,py,java,kt,rb}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/tests/**"
-  - "**/spec/**"
-  - "**/node_modules/**"
-  - "**/vendor/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "JSON\\.parse\\s*\\(\\s*(req|request|ctx)\\.(body|text|json)"
-    label: "JSON.parse on request body"
-  - regex: "JSON\\.parse\\s*\\(\\s*(await\\s+)?(req|request)\\.(text|json)\\s*\\(\\s*\\)\\s*\\)"
-    label: "JSON.parse on awaited req.text()/req.json()"
-  - regex: "yaml\\.(load|unsafeLoad)\\s*\\(|yaml\\.unsafe_load\\s*\\("
-    label: "Unsafe yaml.load"
-  - regex: "pickle\\.loads?\\s*\\("
-    label: "Python pickle.loads"
-  - regex: "ObjectInputStream\\s*\\(|\\.readObject\\s*\\("
-    label: "Java ObjectInputStream"
-  - regex: "Marshal\\.load\\s*\\("
-    label: "Ruby Marshal.load"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: JSON\.parse\s*\(\s*(req|request|ctx)\.(body|text|json)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,java,kt,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: JSON.parse on request body
+      - regex: JSON\.parse\s*\(\s*(await\s+)?(req|request)\.(text|json)\s*\(\s*\)\s*\)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,java,kt,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: JSON.parse on awaited req.text()/req.json()
+      - regex: yaml\.(load|unsafeLoad)\s*\(|yaml\.unsafe_load\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,java,kt,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Unsafe yaml.load
+      - regex: pickle\.loads?\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,java,kt,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python pickle.loads
+      - regex: ObjectInputStream\s*\(|\.readObject\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,java,kt,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Java ObjectInputStream
+      - regex: Marshal\.load\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,java,kt,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Ruby Marshal.load
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - java
+    - kt
+    - rb
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/spec/**'
+    - '**/node_modules/**'
+    - '**/vendor/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: JSON\.parse\s*\(\s*(req|request|ctx)\.(body|text|json)
+      label: JSON.parse on request body
+    - regex: JSON\.parse\s*\(\s*(await\s+)?(req|request)\.(text|json)\s*\(\s*\)\s*\)
+      label: JSON.parse on awaited req.text()/req.json()
+    - regex: yaml\.(load|unsafeLoad)\s*\(|yaml\.unsafe_load\s*\(
+      label: Unsafe yaml.load
+    - regex: pickle\.loads?\s*\(
+      label: Python pickle.loads
+    - regex: ObjectInputStream\s*\(|\.readObject\s*\(
+      label: Java ObjectInputStream
+    - regex: Marshal\.load\s*\(
+      label: Ruby Marshal.load
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-502
-  - OWASP-A08:2021
+  - 'OWASP-A08:2021'
 ---
 
 You are reviewing source code for deserialization of untrusted input

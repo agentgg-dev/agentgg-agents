@@ -1,35 +1,86 @@
 ---
 slug: spread-operator-injection
 name: Mass Assignment via Spread Operator
-description: Object spread of req.body / params / query into a DB insert, update, or trusted object — allows callers to set fields the application never intended to expose. Walker mode traces validation between spread and DB write.
+description: 'Object spread of req.body / params / query into a DB insert, update, or trusted object — allows callers to set fields the application never intended to expose. Walker mode traces validation between spread and DB write.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\{\\s*\\.\\.\\.\\s*(req|request)\\.(body|query|params)"
-    label: "Spread of req/request.{body,query,params}"
-  - regex: "\\{\\s*\\.\\.\\.\\s*(body|payload|input|formData|parsed)\\s*[,}]"
-    label: "Spread of body/payload/input variable"
-  - regex: "\\{\\s*\\.\\.\\.\\s*searchParams\\s*[,}]"
-    label: "Spread of searchParams"
-  - regex: "Object\\.assign\\s*\\(\\s*\\{\\}\\s*,\\s*(req|request)\\.(body|query|params)"
-    label: "Object.assign({}, req.body) pattern"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\{\s*\.\.\.\s*(req|request)\.(body|query|params)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'Spread of req/request.{body,query,params}'
+      - regex: '\{\s*\.\.\.\s*(body|payload|input|formData|parsed)\s*[,}]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Spread of body/payload/input variable
+      - regex: '\{\s*\.\.\.\s*searchParams\s*[,}]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Spread of searchParams
+      - regex: 'Object\.assign\s*\(\s*\{\}\s*,\s*(req|request)\.(body|query|params)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'Object.assign({}, req.body) pattern'
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\{\s*\.\.\.\s*(req|request)\.(body|query|params)'
+      label: 'Spread of req/request.{body,query,params}'
+    - regex: '\{\s*\.\.\.\s*(body|payload|input|formData|parsed)\s*[,}]'
+      label: Spread of body/payload/input variable
+    - regex: '\{\s*\.\.\.\s*searchParams\s*[,}]'
+      label: Spread of searchParams
+    - regex: 'Object\.assign\s*\(\s*\{\}\s*,\s*(req|request)\.(body|query|params)'
+      label: 'Object.assign({}, req.body) pattern'
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-915
-  - OWASP-A08:2021
+  - 'OWASP-A08:2021'
 ---
 
 You are reviewing JavaScript / TypeScript source code for mass

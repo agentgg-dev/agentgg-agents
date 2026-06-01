@@ -1,14 +1,17 @@
 ---
 slug: lua-string-concat-url
 name: Lua / OpenResty URL Built by String Concatenation
-description: OpenResty / Nginx-Lua code that builds URLs by concatenating ngx.var, ngx.req fields, or request arguments — SSRF / open-redirect / URL injection.
+description: 'OpenResty / Nginx-Lua code that builds URLs by concatenating ngx.var, ngx.req fields, or request arguments — SSRF / open-redirect / URL injection.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.lua"
+precondition:
+  regex:
+    extensions:
+      - lua
+where:
+  extensions:
+    - lua
 references:
   - CWE-918
   - CWE-601

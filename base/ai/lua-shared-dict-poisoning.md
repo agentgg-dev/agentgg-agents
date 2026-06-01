@@ -1,14 +1,17 @@
 ---
 slug: lua-shared-dict-poisoning
 name: Lua ngx.shared Dict Write from User Input
-description: OpenResty ngx.shared.*:set / :add / :replace / :incr where the key or value is derived from request input — cache poisoning, counter tampering, session injection.
+description: 'OpenResty ngx.shared.*:set / :add / :replace / :incr where the key or value is derived from request input — cache poisoning, counter tampering, session injection.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.lua"
+precondition:
+  regex:
+    extensions:
+      - lua
+where:
+  extensions:
+    - lua
 references:
   - CWE-444
   - CWE-22

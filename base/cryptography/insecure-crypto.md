@@ -1,39 +1,101 @@
 ---
 slug: insecure-crypto
 name: Insecure Cryptographic Primitives
-description: Weak hashes (MD5, SHA1), deprecated ciphers (createCipher, DES, RC4, Blowfish), timing-unsafe equality checks on HMACs/digests, and Math.random for security tokens. Walker mode traces helper functions to confirm the security context.
+description: 'Weak hashes (MD5, SHA1), deprecated ciphers (createCipher, DES, RC4, Blowfish), timing-unsafe equality checks on HMACs/digests, and Math.random for security tokens. Walker mode traces helper functions to confirm the security context.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: noisy
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "createHash\\s*\\(\\s*['\"](md5|sha1)['\"]"
-    label: "createHash with MD5/SHA1"
-  - regex: "createCipher\\s*\\("
-    label: "createCipher (deprecated, no IV)"
-  - regex: "['\"](DES|3DES|RC4|Blowfish)['\"]"
-    label: "Deprecated cipher algorithm literal"
-  - regex: "(hmac|digest|signature|expected|computed)\\s*(===|==)\\s*"
-    label: "Timing-unsafe comparison on HMAC/digest/signature"
-  - regex: "Math\\.random\\s*\\(\\s*\\)[\\s\\S]{0,100}(token|secret|otp|id|password|key)"
-    label: "Math.random used near security-shaped name"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'createHash\s*\(\s*[''"](md5|sha1)[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: createHash with MD5/SHA1
+      - regex: createCipher\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'createCipher (deprecated, no IV)'
+      - regex: '[''"](DES|3DES|RC4|Blowfish)[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Deprecated cipher algorithm literal
+      - regex: (hmac|digest|signature|expected|computed)\s*(===|==)\s*
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Timing-unsafe comparison on HMAC/digest/signature
+      - regex: 'Math\.random\s*\(\s*\)[\s\S]{0,100}(token|secret|otp|id|password|key)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Math.random used near security-shaped name
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'createHash\s*\(\s*[''"](md5|sha1)[''"]'
+      label: createHash with MD5/SHA1
+    - regex: createCipher\s*\(
+      label: 'createCipher (deprecated, no IV)'
+    - regex: '[''"](DES|3DES|RC4|Blowfish)[''"]'
+      label: Deprecated cipher algorithm literal
+    - regex: (hmac|digest|signature|expected|computed)\s*(===|==)\s*
+      label: Timing-unsafe comparison on HMAC/digest/signature
+    - regex: 'Math\.random\s*\(\s*\)[\s\S]{0,100}(token|secret|otp|id|password|key)'
+      label: Math.random used near security-shaped name
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-327
   - CWE-330
   - CWE-208
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing JavaScript / TypeScript source code for use of

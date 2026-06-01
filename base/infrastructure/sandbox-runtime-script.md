@@ -1,38 +1,100 @@
 ---
 slug: sandbox-runtime-script
 name: Sandbox / VM Runtime Executing User Code
-description: vm.runInNewContext, vm.runInThisContext, vm2, isolated-vm, ses-shim, py-sandbox, Lua sandbox, or similar runtimes executing caller-supplied code — most are not true sandboxes and can be escaped. Walker mode follows sandbox-setup helpers and exposed globals.
+description: 'vm.runInNewContext, vm.runInThisContext, vm2, isolated-vm, ses-shim, py-sandbox, Lua sandbox, or similar runtimes executing caller-supplied code — most are not true sandboxes and can be escaped. Walker mode follows sandbox-setup helpers and exposed globals.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "vm\\.(runInNewContext|runInThisContext|runInContext|Script)\\s*\\(|new\\s+vm\\.Script\\s*\\("
-    label: "Node vm module call"
-  - regex: "new\\s+VM\\s*\\(|from\\s+['\"]vm2['\"]"
-    label: "vm2 (deprecated, multiple sandbox escapes)"
-  - regex: "isolated-vm|new\\s+ivm\\.Isolate"
-    label: "isolated-vm Isolate"
-  - regex: "new\\s+Compartment\\s*\\(|\\bses-shim\\b"
-    label: "SES Compartment"
-  - regex: "new\\s+Function\\s*\\("
-    label: "new Function() runtime code construction"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: vm\.(runInNewContext|runInThisContext|runInContext|Script)\s*\(|new\s+vm\.Script\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Node vm module call
+      - regex: 'new\s+VM\s*\(|from\s+[''"]vm2[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'vm2 (deprecated, multiple sandbox escapes)'
+      - regex: isolated-vm|new\s+ivm\.Isolate
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: isolated-vm Isolate
+      - regex: new\s+Compartment\s*\(|\bses-shim\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: SES Compartment
+      - regex: new\s+Function\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: new Function() runtime code construction
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: vm\.(runInNewContext|runInThisContext|runInContext|Script)\s*\(|new\s+vm\.Script\s*\(
+      label: Node vm module call
+    - regex: 'new\s+VM\s*\(|from\s+[''"]vm2[''"]'
+      label: 'vm2 (deprecated, multiple sandbox escapes)'
+    - regex: isolated-vm|new\s+ivm\.Isolate
+      label: isolated-vm Isolate
+    - regex: new\s+Compartment\s*\(|\bses-shim\b
+      label: SES Compartment
+    - regex: new\s+Function\s*\(
+      label: new Function() runtime code construction
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-94
   - CWE-913
-  - OWASP-A04:2021
+  - 'OWASP-A04:2021'
 ---
 
 You are reviewing source code for code-evaluation runtimes that

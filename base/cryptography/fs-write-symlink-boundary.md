@@ -4,29 +4,58 @@ name: Filesystem Write Without Symlink Boundary Check
 description: fs.writeFile / fs.mkdir / fs.copyFile to a non-literal path without realpath / startsWith(rootDir) validation — attacker can place a symlink to escape the intended root. Walker mode follows path-resolver helpers.
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "fs(\\.promises)?\\.(writeFile|writeFileSync|createWriteStream|copyFile|copyFileSync|symlink|link|rename|appendFile|chmod|chown|truncate|mkdir|mkdirSync)\\s*\\([^)]*`[^`]*\\$\\{"
-    label: "fs write call with template-literal path"
-  - regex: "fs(\\.promises)?\\.(writeFile|copyFile|appendFile|mkdir|createWriteStream)\\s*\\([^)]*\\bpath\\.(join|resolve)\\s*\\([^)]*\\b(req|request|params|body)\\b"
-    label: "fs write with path.join/resolve combining request data"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'fs(\.promises)?\.(writeFile|writeFileSync|createWriteStream|copyFile|copyFileSync|symlink|link|rename|appendFile|chmod|chown|truncate|mkdir|mkdirSync)\s*\([^)]*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: fs write call with template-literal path
+      - regex: 'fs(\.promises)?\.(writeFile|copyFile|appendFile|mkdir|createWriteStream)\s*\([^)]*\bpath\.(join|resolve)\s*\([^)]*\b(req|request|params|body)\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: fs write with path.join/resolve combining request data
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'fs(\.promises)?\.(writeFile|writeFileSync|createWriteStream|copyFile|copyFileSync|symlink|link|rename|appendFile|chmod|chown|truncate|mkdir|mkdirSync)\s*\([^)]*`[^`]*\$\{'
+      label: fs write call with template-literal path
+    - regex: 'fs(\.promises)?\.(writeFile|copyFile|appendFile|mkdir|createWriteStream)\s*\([^)]*\bpath\.(join|resolve)\s*\([^)]*\b(req|request|params|body)\b'
+      label: fs write with path.join/resolve combining request data
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - CWE-59
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing Node.js source code for filesystem writes that

@@ -1,18 +1,22 @@
 ---
 slug: tf-encryption-missing
 name: Terraform Resource Missing Encryption at Rest
-description: Terraform S3 buckets, RDS instances, EBS volumes, EFS, SQS queues, DynamoDB tables, etc. without encryption_at_rest / kms_key_id / sse_algorithm configured.
+description: 'Terraform S3 buckets, RDS instances, EBS volumes, EFS, SQS queues, DynamoDB tables, etc. without encryption_at_rest / kms_key_id / sse_algorithm configured.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.tf"
-  - "**/*.tf.json"
+precondition:
+  regex:
+    extensions:
+      - tf
+      - tf.json
+where:
+  extensions:
+    - tf
+    - tf.json
 references:
   - CWE-311
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing Terraform configuration for storage resources

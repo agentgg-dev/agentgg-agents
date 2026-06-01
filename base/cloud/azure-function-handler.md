@@ -1,40 +1,102 @@
 ---
 slug: azure-function-handler
 name: Azure Function Handler Security
-description: Azure Functions — HTTP trigger authLevel anonymous on sensitive operations, missing input validation, managed identity misuse, secrets in app settings. Walker mode correlates function.json bindings with handler code.
+description: 'Azure Functions — HTTP trigger authLevel anonymous on sensitive operations, missing input validation, managed identity misuse, secrets in app settings. Walker mode correlates function.json bindings with handler code.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [azure-functions]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,cs,java}"
-  - "**/*Function*.{ts,cs,py,java}"
-  - "**/function.json"
-  - "**/host.json"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py,cs,java}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/tests/**"
-  - "**/node_modules/**"
-  - "**/bin/**"
-  - "**/obj/**"
-preFilter:
-  - regex: "\"authLevel\"\\s*:\\s*\"(anonymous|function)\""
-    label: "function.json authLevel"
-  - regex: "AuthorizationLevel\\.(Anonymous|Function|Admin)"
-    label: "C# HttpTrigger AuthorizationLevel"
-  - regex: "module\\.exports\\s*=\\s*async\\s+function\\s*\\(\\s*context\\s*,\\s*req"
-    label: "JS Azure Function v1/v2 handler"
-  - regex: "app\\.http\\s*\\(|app\\.timer\\s*\\(|app\\.queue\\s*\\(|app\\.serviceBusQueue\\s*\\("
-    label: "JS Azure Functions v4 binding"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '"authLevel"\s*:\s*"(anonymous|function)"'
+        in:
+          - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,cs,java}'
+          - '**/*Function*.{ts,cs,py,java}'
+          - '**/function.json'
+          - '**/host.json'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,cs,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: function.json authLevel
+      - regex: AuthorizationLevel\.(Anonymous|Function|Admin)
+        in:
+          - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,cs,java}'
+          - '**/*Function*.{ts,cs,py,java}'
+          - '**/function.json'
+          - '**/host.json'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,cs,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: C# HttpTrigger AuthorizationLevel
+      - regex: 'module\.exports\s*=\s*async\s+function\s*\(\s*context\s*,\s*req'
+        in:
+          - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,cs,java}'
+          - '**/*Function*.{ts,cs,py,java}'
+          - '**/function.json'
+          - '**/host.json'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,cs,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: JS Azure Function v1/v2 handler
+      - regex: app\.http\s*\(|app\.timer\s*\(|app\.queue\s*\(|app\.serviceBusQueue\s*\(
+        in:
+          - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,cs,java}'
+          - '**/*Function*.{ts,cs,py,java}'
+          - '**/function.json'
+          - '**/host.json'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,cs,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: JS Azure Functions v4 binding
+  prompt: Run only if this project uses azure-functions — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  filePatterns:
+    - '**/functions/**/*.{ts,tsx,js,jsx,mjs,cjs,py,cs,java}'
+    - '**/*Function*.{ts,cs,py,java}'
+    - '**/function.json'
+    - '**/host.json'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py,cs,java}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/node_modules/**'
+    - '**/bin/**'
+    - '**/obj/**'
+  preFilter:
+    - regex: '"authLevel"\s*:\s*"(anonymous|function)"'
+      label: function.json authLevel
+    - regex: AuthorizationLevel\.(Anonymous|Function|Admin)
+      label: C# HttpTrigger AuthorizationLevel
+    - regex: 'module\.exports\s*=\s*async\s+function\s*\(\s*context\s*,\s*req'
+      label: JS Azure Function v1/v2 handler
+    - regex: app\.http\s*\(|app\.timer\s*\(|app\.queue\s*\(|app\.serviceBusQueue\s*\(
+      label: JS Azure Functions v4 binding
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-285
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing Azure Function implementations for the standard

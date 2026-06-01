@@ -1,39 +1,85 @@
 ---
 slug: non-atomic-operation
 name: Non-Atomic Read-Check-Write (TOCTOU)
-description: Read a value, check a condition, then write — between the read and write another request can change the value. Classic race condition affecting balances, counters, quotas, and uniqueness checks. Walker mode follows transaction wrappers across files.
+description: 'Read a value, check a condition, then write — between the read and write another request can change the value. Classic race condition affecting balances, counters, quotas, and uniqueness checks. Walker mode follows transaction wrappers across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/migrations/**"
-  - "**/seed*/**"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\.(findUnique|findFirst|findById|findOne)\\s*\\([\\s\\S]{0,300}\\.update\\s*\\("
-    label: "find + update pair (verify transaction)"
-    multiline: true
-  - regex: "redis\\.get\\s*\\([\\s\\S]{0,200}redis\\.set\\s*\\("
-    label: "redis.get + redis.set pair (verify atomicity)"
-    multiline: true
-  - regex: "\\bbalance\\b[\\s\\S]{0,200}\\.update\\s*\\(|quota|credits"
-    label: "Balance/quota/credits mutation (high-risk)"
-    multiline: true
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.(findUnique|findFirst|findById|findOne)\s*\([\s\S]{0,300}\.update\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/migrations/**'
+          - '**/seed*/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: find + update pair (verify transaction)
+      - regex: 'redis\.get\s*\([\s\S]{0,200}redis\.set\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/migrations/**'
+          - '**/seed*/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: redis.get + redis.set pair (verify atomicity)
+      - regex: '\bbalance\b[\s\S]{0,200}\.update\s*\(|quota|credits'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/migrations/**'
+          - '**/seed*/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Balance/quota/credits mutation (high-risk)
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/migrations/**'
+    - '**/seed*/**'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\.(findUnique|findFirst|findById|findOne)\s*\([\s\S]{0,300}\.update\s*\('
+      label: find + update pair (verify transaction)
+      multiline: true
+    - regex: 'redis\.get\s*\([\s\S]{0,200}redis\.set\s*\('
+      label: redis.get + redis.set pair (verify atomicity)
+      multiline: true
+    - regex: '\bbalance\b[\s\S]{0,200}\.update\s*\(|quota|credits'
+      label: Balance/quota/credits mutation (high-risk)
+      multiline: true
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-367
   - CWE-362
-  - OWASP-A04:2021
+  - 'OWASP-A04:2021'
 ---
 
 You are reviewing source code for non-atomic read-then-write

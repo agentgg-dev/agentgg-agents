@@ -1,18 +1,45 @@
 ---
 slug: ssti
 name: Server-Side Template Injection (SSTi)
-description: Template engines (Pug, Handlebars, Jinja2, ERB, Thymeleaf, Freemarker, EJS) compiling or rendering templates whose source string came from user input — leads to template-language code execution.
+description: 'Template engines (Pug, Handlebars, Jinja2, ERB, Thymeleaf, Freemarker, EJS) compiling or rendering templates whose source string came from user input — leads to template-language code execution.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - php
+      - java
+      - kt
+      - cs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
 references:
   - CWE-1336
   - CWE-94
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing source code for Server-Side Template Injection

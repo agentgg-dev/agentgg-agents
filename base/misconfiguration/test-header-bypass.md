@@ -1,18 +1,31 @@
 ---
 slug: test-header-bypass
 name: Test / Debug Header Bypasses Security
-description: Production-reachable code branches on x-automated-test, x-debug, x-bypass, x-internal, x-skip-auth, x-no-rate-limit, x-admin headers to disable security checks.
+description: 'Production-reachable code branches on x-automated-test, x-debug, x-bypass, x-internal, x-skip-auth, x-no-rate-limit, x-admin headers to disable security checks.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
 references:
   - CWE-287
   - CWE-489
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for HTTP request headers that bypass

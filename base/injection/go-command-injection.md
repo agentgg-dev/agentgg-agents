@@ -4,29 +4,59 @@ name: Command Injection (Go)
 description: Go exec.Command / exec.CommandContext / syscall.Exec with a shell invocation or a user-controlled command name — allows shell metacharacter injection. Walker mode traces argument origin and any wrapper functions around exec.
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [go]
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.go"
-excludePatterns:
-  - "**/*_test.go"
-  - "**/vendor/**"
-preFilter:
-  - regex: "exec\\.(Command|CommandContext)\\s*\\(\\s*[\"`](sh|bash|zsh|/bin/sh|/bin/bash)"
-    label: "exec.Command shell invocation"
-  - regex: "exec\\.(Command|CommandContext)\\s*\\([^,)]*\\b(fmt\\.Sprintf|\\+)"
-    label: "exec.Command with Sprintf/concat in command argument"
-  - regex: "syscall\\.Exec\\s*\\("
-    label: "syscall.Exec call"
-  - regex: "exec\\.(Command|CommandContext)\\s*\\(\\s*[a-zA-Z_][a-zA-Z0-9_]*\\s*,"
-    label: "exec.Command with variable command name"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'exec\.(Command|CommandContext)\s*\(\s*["`](sh|bash|zsh|/bin/sh|/bin/bash)'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: exec.Command shell invocation
+      - regex: 'exec\.(Command|CommandContext)\s*\([^,)]*\b(fmt\.Sprintf|\+)'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: exec.Command with Sprintf/concat in command argument
+      - regex: syscall\.Exec\s*\(
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: syscall.Exec call
+      - regex: 'exec\.(Command|CommandContext)\s*\(\s*[a-zA-Z_][a-zA-Z0-9_]*\s*,'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: exec.Command with variable command name
+  prompt: Run only if this project uses go — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - go
+  excludePatterns:
+    - '**/*_test.go'
+    - '**/vendor/**'
+  preFilter:
+    - regex: 'exec\.(Command|CommandContext)\s*\(\s*["`](sh|bash|zsh|/bin/sh|/bin/bash)'
+      label: exec.Command shell invocation
+    - regex: 'exec\.(Command|CommandContext)\s*\([^,)]*\b(fmt\.Sprintf|\+)'
+      label: exec.Command with Sprintf/concat in command argument
+    - regex: syscall\.Exec\s*\(
+      label: syscall.Exec call
+    - regex: 'exec\.(Command|CommandContext)\s*\(\s*[a-zA-Z_][a-zA-Z0-9_]*\s*,'
+      label: exec.Command with variable command name
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-78
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing Go source code for OS command injection —

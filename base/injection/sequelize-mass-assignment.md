@@ -1,16 +1,30 @@
 ---
 slug: sequelize-mass-assignment
 name: Sequelize Mass Assignment
-description: Sequelize Model.create / build / update / bulkCreate calls that receive a request body directly or via spread, letting the caller write to any column on the model — including role, isAdmin, emailVerified, deletedAt, internal flags.
+description: 'Sequelize Model.create / build / update / bulkCreate calls that receive a request body directly or via spread, letting the caller write to any column on the model — including role, isAdmin, emailVerified, deletedAt, internal flags.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
 references:
   - CWE-915
-  - OWASP-A08:2021
+  - 'OWASP-A08:2021'
 ---
 
 You are reviewing TypeScript/JavaScript source code for mass assignment

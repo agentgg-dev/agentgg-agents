@@ -1,19 +1,23 @@
 ---
 slug: github-workflow-security
 name: GitHub Actions Workflow Security
-description: "GitHub Actions workflows with pull_request_target on untrusted PR code, ${{ github.event.* }} interpolated into run: shell, unpinned action versions, or persist-credentials with write-permission."
+description: 'GitHub Actions workflows with pull_request_target on untrusted PR code, ${{ github.event.* }} interpolated into run: shell, unpinned action versions, or persist-credentials with write-permission.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/.github/workflows/*.{yml,yaml}"
-  - "**/.gitea/workflows/*.{yml,yaml}"
+precondition:
+  regex:
+    files:
+      - '**/.github/workflows/*.{yml,yaml}'
+      - '**/.gitea/workflows/*.{yml,yaml}'
+where:
+  filePatterns:
+    - '**/.github/workflows/*.{yml,yaml}'
+    - '**/.gitea/workflows/*.{yml,yaml}'
 references:
   - CWE-94
   - CWE-1357
-  - OWASP-A06:2021
+  - 'OWASP-A06:2021'
 ---
 
 You are reviewing GitHub Actions workflow YAML files for the standard

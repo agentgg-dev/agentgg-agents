@@ -4,15 +4,19 @@ name: Terraform Module Source Not Version-Pinned
 description: Terraform module references using a Git URL or registry without a version constraint or commit SHA pin — supply-chain risk because upstream changes affect the build silently.
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.tf"
-  - "**/*.tf.json"
+precondition:
+  regex:
+    extensions:
+      - tf
+      - tf.json
+where:
+  extensions:
+    - tf
+    - tf.json
 references:
   - CWE-1357
-  - OWASP-A06:2021
+  - 'OWASP-A06:2021'
 ---
 
 You are reviewing Terraform module declarations for missing version

@@ -1,19 +1,24 @@
 ---
 slug: tf-iam-wildcard
 name: Terraform IAM Policy with Wildcard Action or Resource
-description: "Terraform aws_iam_policy / aws_iam_role_policy with Action: \"*\" or Resource: \"*\" — overly broad permissions that turn the principal into an admin."
+description: 'Terraform aws_iam_policy / aws_iam_role_policy with Action: "*" or Resource: "*" — overly broad permissions that turn the principal into an admin.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.tf"
-  - "**/*.tf.json"
-  - "**/*.tfvars"
+precondition:
+  regex:
+    extensions:
+      - tf
+      - tf.json
+      - tfvars
+where:
+  extensions:
+    - tf
+    - tf.json
+    - tfvars
 references:
   - CWE-732
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing Terraform configuration for IAM policies that use

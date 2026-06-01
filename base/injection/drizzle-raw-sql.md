@@ -4,31 +4,70 @@ name: Drizzle Raw SQL Escape Hatch
 description: Drizzle ORM's sql.raw() / sql.unsafe() bypass parameterization — user-built strings reach the query engine as-is. Also flags risky concatenation inside sql`` templates. Walker mode follows imports to confirm Drizzle is in use and to trace argument sources.
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [drizzle]
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "sql\\.raw\\s*\\("
-    label: "Drizzle sql.raw() escape hatch"
-  - regex: "sql\\.unsafe\\s*\\("
-    label: "Drizzle sql.unsafe() escape hatch"
-  - regex: "from\\s+['\"]drizzle-orm['\"]"
-    label: "imports drizzle-orm (confirms ORM context)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: sql\.raw\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Drizzle sql.raw() escape hatch
+      - regex: sql\.unsafe\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Drizzle sql.unsafe() escape hatch
+      - regex: 'from\s+[''"]drizzle-orm[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: imports drizzle-orm (confirms ORM context)
+  prompt: Run only if this project uses drizzle — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: sql\.raw\s*\(
+      label: Drizzle sql.raw() escape hatch
+    - regex: sql\.unsafe\s*\(
+      label: Drizzle sql.unsafe() escape hatch
+    - regex: 'from\s+[''"]drizzle-orm[''"]'
+      label: imports drizzle-orm (confirms ORM context)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing TypeScript source code for SQL injection through

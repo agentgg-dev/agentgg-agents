@@ -1,36 +1,83 @@
 ---
 slug: rb-sql-raw
 name: Raw SQL Injection (Ruby)
-description: Ruby SQL execution (ActiveRecord find_by_sql / where with string fragments, Sequel.lit, pg gem) with #{} interpolation in the SQL string. Walker mode traces scopes and concerns across files.
+description: 'Ruby SQL execution (ActiveRecord find_by_sql / where with string fragments, Sequel.lit, pg gem) with'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [ruby]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.rb"
-excludePatterns:
-  - "**/spec/**"
-  - "**/test/**"
-  - "**/*_spec.rb"
-  - "**/*_test.rb"
-preFilter:
-  - regex: "\\.find_by_sql\\s*\\(\\s*[\"'][^\"']*#\\{"
-    label: "find_by_sql with #{} interpolation"
-  - regex: "\\.where\\s*\\(\\s*[\"'][^\"']*#\\{"
-    label: ".where with string-fragment interpolation"
-  - regex: "\\.connection\\.execute\\s*\\(\\s*[\"'][^\"']*#\\{"
-    label: "connection.execute with interpolation"
-  - regex: "Sequel\\.lit\\s*\\(\\s*[\"'][^\"']*#\\{"
-    label: "Sequel.lit with interpolation"
-  - regex: "\\.exec\\s*\\(\\s*[\"'][^\"']*#\\{"
-    label: "pg exec with interpolation"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.find_by_sql\s*\(\s*["''][^"'']*#\{'
+        in:
+          - '**/*.rb'
+        notIn:
+          - '**/spec/**'
+          - '**/test/**'
+          - '**/*_spec.rb'
+          - '**/*_test.rb'
+        label: 'find_by_sql with #{} interpolation'
+      - regex: '\.where\s*\(\s*["''][^"'']*#\{'
+        in:
+          - '**/*.rb'
+        notIn:
+          - '**/spec/**'
+          - '**/test/**'
+          - '**/*_spec.rb'
+          - '**/*_test.rb'
+        label: .where with string-fragment interpolation
+      - regex: '\.connection\.execute\s*\(\s*["''][^"'']*#\{'
+        in:
+          - '**/*.rb'
+        notIn:
+          - '**/spec/**'
+          - '**/test/**'
+          - '**/*_spec.rb'
+          - '**/*_test.rb'
+        label: connection.execute with interpolation
+      - regex: 'Sequel\.lit\s*\(\s*["''][^"'']*#\{'
+        in:
+          - '**/*.rb'
+        notIn:
+          - '**/spec/**'
+          - '**/test/**'
+          - '**/*_spec.rb'
+          - '**/*_test.rb'
+        label: Sequel.lit with interpolation
+      - regex: '\.exec\s*\(\s*["''][^"'']*#\{'
+        in:
+          - '**/*.rb'
+        notIn:
+          - '**/spec/**'
+          - '**/test/**'
+          - '**/*_spec.rb'
+          - '**/*_test.rb'
+        label: pg exec with interpolation
+  prompt: Run only if this project uses ruby — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - rb
+  excludePatterns:
+    - '**/spec/**'
+    - '**/test/**'
+    - '**/*_spec.rb'
+    - '**/*_test.rb'
+  preFilter:
+    - regex: '\.find_by_sql\s*\(\s*["''][^"'']*#\{'
+      label: 'find_by_sql with #{} interpolation'
+    - regex: '\.where\s*\(\s*["''][^"'']*#\{'
+      label: .where with string-fragment interpolation
+    - regex: '\.connection\.execute\s*\(\s*["''][^"'']*#\{'
+      label: connection.execute with interpolation
+    - regex: 'Sequel\.lit\s*\(\s*["''][^"'']*#\{'
+      label: Sequel.lit with interpolation
+    - regex: '\.exec\s*\(\s*["''][^"'']*#\{'
+      label: pg exec with interpolation
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing Ruby source code for SQL injection across

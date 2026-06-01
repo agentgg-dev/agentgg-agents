@@ -1,48 +1,176 @@
 ---
 slug: rce
 name: Remote Code Execution (eval / exec)
-description: eval(), new Function(), child_process.exec with a shell, vm.runInContext, and Python/Ruby equivalents with user-controlled input — allows arbitrary code execution. Walker mode traces the argument origin.
+description: 'eval(), new Function(), child_process.exec with a shell, vm.runInContext, and Python/Ruby equivalents with user-controlled input — allows arbitrary code execution. Walker mode traces the argument origin.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/tests/**"
-  - "**/test_*.py"
-  - "**/spec/**"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\beval\\s*\\(\\s*(?!['\"][^'\"]*['\"]\\s*\\))"
-    label: "eval() with non-literal argument"
-  - regex: "new\\s+Function\\s*\\("
-    label: "new Function() — runtime code construction"
-  - regex: "vm\\.(runInNewContext|runInThisContext|runInContext|Script)\\s*\\("
-    label: "vm.* — Node VM module (not a sandbox)"
-  - regex: "\\bexec(Sync)?\\s*\\(\\s*[`\"'][^`\"']*\\$\\{|\\bexec(Sync)?\\s*\\([^)]*\\+"
-    label: "child_process.exec/execSync with interpolation/concat"
-  - regex: "spawn\\s*\\([^)]*\\bshell\\s*:\\s*true\\b"
-    label: "spawn({ shell: true }) — invokes a shell"
-  - regex: "os\\.system\\s*\\([^)]*[+%]|os\\.system\\s*\\(\\s*f['\"]"
-    label: "Python os.system with formatting/concat"
-  - regex: "subprocess\\.(call|run|Popen)\\s*\\([^)]*shell\\s*=\\s*True"
-    label: "Python subprocess with shell=True"
-  - regex: "\\beval\\s*\\(|\\bexec\\s*\\(\\s*[a-zA-Z_]"
-    label: "Python eval()/exec() with variable"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\beval\s*\(\s*(?![''"][^''"]*[''"]\s*\))'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: eval() with non-literal argument
+      - regex: new\s+Function\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: new Function() — runtime code construction
+      - regex: vm\.(runInNewContext|runInThisContext|runInContext|Script)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: vm.* — Node VM module (not a sandbox)
+      - regex: '\bexec(Sync)?\s*\(\s*[`"''][^`"'']*\$\{|\bexec(Sync)?\s*\([^)]*\+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: child_process.exec/execSync with interpolation/concat
+      - regex: 'spawn\s*\([^)]*\bshell\s*:\s*true\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'spawn({ shell: true }) — invokes a shell'
+      - regex: 'os\.system\s*\([^)]*[+%]|os\.system\s*\(\s*f[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python os.system with formatting/concat
+      - regex: 'subprocess\.(call|run|Popen)\s*\([^)]*shell\s*=\s*True'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python subprocess with shell=True
+      - regex: '\beval\s*\(|\bexec\s*\(\s*[a-zA-Z_]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python eval()/exec() with variable
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/spec/**'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\beval\s*\(\s*(?![''"][^''"]*[''"]\s*\))'
+      label: eval() with non-literal argument
+    - regex: new\s+Function\s*\(
+      label: new Function() — runtime code construction
+    - regex: vm\.(runInNewContext|runInThisContext|runInContext|Script)\s*\(
+      label: vm.* — Node VM module (not a sandbox)
+    - regex: '\bexec(Sync)?\s*\(\s*[`"''][^`"'']*\$\{|\bexec(Sync)?\s*\([^)]*\+'
+      label: child_process.exec/execSync with interpolation/concat
+    - regex: 'spawn\s*\([^)]*\bshell\s*:\s*true\b'
+      label: 'spawn({ shell: true }) — invokes a shell'
+    - regex: 'os\.system\s*\([^)]*[+%]|os\.system\s*\(\s*f[''"]'
+      label: Python os.system with formatting/concat
+    - regex: 'subprocess\.(call|run|Popen)\s*\([^)]*shell\s*=\s*True'
+      label: Python subprocess with shell=True
+    - regex: '\beval\s*\(|\bexec\s*\(\s*[a-zA-Z_]'
+      label: Python eval()/exec() with variable
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-94
   - CWE-78
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing source code for remote code execution sinks —

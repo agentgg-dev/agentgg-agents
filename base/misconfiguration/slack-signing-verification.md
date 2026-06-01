@@ -1,33 +1,73 @@
 ---
 slug: slack-signing-verification
 name: Slack Webhook Handler Missing Signing Verification
-description: Slack command/action/event/view/shortcut handlers (raw Next.js route handlers, not @slack/bolt receivers) without HMAC signing secret verification or replay protection. Walker mode follows verifier helpers across files.
+description: 'Slack command/action/event/view/shortcut handlers (raw Next.js route handlers, not @slack/bolt receivers) without HMAC signing secret verification or replay protection. Walker mode follows verifier helpers across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "from\\s+['\"]@slack/(bolt|web-api|events-api)['\"]"
-    label: "Imports @slack/* SDK"
-  - regex: "x-slack-(signature|request-timestamp)"
-    label: "Slack signature/timestamp header reference"
-  - regex: "verifySlackSignature|verifyRequestSignature|createEventAdapter"
-    label: "Slack-specific verifier call"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'from\s+[''"]@slack/(bolt|web-api|events-api)[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Imports @slack/* SDK
+      - regex: x-slack-(signature|request-timestamp)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Slack signature/timestamp header reference
+      - regex: verifySlackSignature|verifyRequestSignature|createEventAdapter
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Slack-specific verifier call
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'from\s+[''"]@slack/(bolt|web-api|events-api)[''"]'
+      label: Imports @slack/* SDK
+    - regex: x-slack-(signature|request-timestamp)
+      label: Slack signature/timestamp header reference
+    - regex: verifySlackSignature|verifyRequestSignature|createEventAdapter
+      label: Slack-specific verifier call
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-345
-  - OWASP-A08:2021
+  - 'OWASP-A08:2021'
 ---
 
 You are reviewing Slack integration endpoints for missing signing

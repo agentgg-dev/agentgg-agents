@@ -4,15 +4,23 @@ name: Webhook Ingress Audit — Hunter (OpenClaw chat-channel extensions)
 description: Audits OpenClaw chat-channel extensions for webhook-ingress vulnerabilities — places where the gateway accepts an internet-reachable HTTP POST without enforcing signature/secret verification *first*, allowing an attacker who can reach the webhook URL to forge inbound messages and impersonate the platform. Reports each channel as safe / risky / broken with the file:line of the auth boundary and the specific weakness (missing secret, parse-before-verify, timing leak, replay, path ambiguity, etc.). Pairs with `openclaw-audit-allowlist-identity-hunter` — that one asks "is this *sender* allowed?", this one asks "did this even come from the platform?"
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
-excludePatterns:
-  - "**/e2e/**"
-  - "**/*test*/**"
-  - "**/__tests__/**"
-  - "**/fixtures/**"
+precondition:
+  prompt: |
+    Run only if this codebase IS OpenClaw — the chat-channel automation
+    platform — or one of its first-party extensions/connectors. Skip any
+    project that merely depends on or integrates with OpenClaw. If the recon
+    brief doesn't clearly indicate an OpenClaw codebase, answer no.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs]
+  excludePatterns:
+    - "**/e2e/**"
+    - "**/*test*/**"
+    - "**/__tests__/**"
+    - "**/fixtures/**"
+  preFilter:
+    - { regex: "webhook|\\.(post|all)\\s*\\(|req\\.(body|rawBody)", label: "webhook ingress" }
+    - { regex: "verif(y|ication)|hmac|signature|x-hub-signature|\\bsecret\\b|timingSafeEqual", label: "signature / secret check" }
 references:
   - CVE-2026-25474
   - CVE-2026-32896

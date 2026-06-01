@@ -1,18 +1,45 @@
 ---
 slug: deprecated-endpoint
 name: Deprecated / Legacy Endpoint Still Mounted
-description: Routes documented as deprecated, legacy, or "old API" that are still registered on the router — often retaining weaker auth, unsafer parsers, or test-only credentials that pre-date current security hardening.
+description: 'Routes documented as deprecated, legacy, or "old API" that are still registered on the router — often retaining weaker auth, unsafer parsers, or test-only credentials that pre-date current security hardening.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - php
+      - java
+      - kt
+      - cs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
 references:
   - CWE-1059
   - CWE-477
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for **deprecated endpoints that are still

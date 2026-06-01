@@ -1,39 +1,101 @@
 ---
 slug: py-nosql-injection
 name: NoSQL Injection (Python / MongoDB)
-description: PyMongo / Motor queries using $where with f-strings, json.loads on request input fed into queries, or $regex from request values — allows operator smuggling or server-side JS execution. Walker mode traces request data through validators.
+description: 'PyMongo / Motor queries using $where with f-strings, json.loads on request input fed into queries, or $regex from request values — allows operator smuggling or server-side JS execution. Walker mode traces request data through validators.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [python]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.py"
-excludePatterns:
-  - "**/tests/**"
-  - "**/test_*.py"
-  - "**/*_test.py"
-  - "**/migrations/**"
-  - "**/__pycache__/**"
-preFilter:
-  - regex: "[\"']\\$where[\"']\\s*:\\s*f[\"']"
-    label: "$where with f-string"
-  - regex: "[\"']\\$where[\"']\\s*:\\s*[\"'][^\"']*[\"']\\s*[+%]"
-    label: "$where with %/+ formatting"
-  - regex: "json\\.loads\\s*\\(\\s*request\\."
-    label: "json.loads on request data (potential query smuggling)"
-  - regex: "[\"']\\$regex[\"']\\s*:\\s*request\\."
-    label: "$regex bound to request input"
-  - regex: "re\\.compile\\s*\\(\\s*request\\."
-    label: "re.compile on request input"
-  - regex: "__raw__\\s*=\\s*\\{[^}]*[\"']\\$where[\"']"
-    label: "MongoEngine __raw__ with $where"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '["'']\$where["'']\s*:\s*f["'']'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: $where with f-string
+      - regex: '["'']\$where["'']\s*:\s*["''][^"'']*["'']\s*[+%]'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: $where with %/+ formatting
+      - regex: json\.loads\s*\(\s*request\.
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: json.loads on request data (potential query smuggling)
+      - regex: '["'']\$regex["'']\s*:\s*request\.'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: $regex bound to request input
+      - regex: re\.compile\s*\(\s*request\.
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: re.compile on request input
+      - regex: '__raw__\s*=\s*\{[^}]*["'']\$where["'']'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: MongoEngine __raw__ with $where
+  prompt: Run only if this project uses python — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - py
+  excludePatterns:
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/migrations/**'
+    - '**/__pycache__/**'
+  preFilter:
+    - regex: '["'']\$where["'']\s*:\s*f["'']'
+      label: $where with f-string
+    - regex: '["'']\$where["'']\s*:\s*["''][^"'']*["'']\s*[+%]'
+      label: $where with %/+ formatting
+    - regex: json\.loads\s*\(\s*request\.
+      label: json.loads on request data (potential query smuggling)
+    - regex: '["'']\$regex["'']\s*:\s*request\.'
+      label: $regex bound to request input
+    - regex: re\.compile\s*\(\s*request\.
+      label: re.compile on request input
+    - regex: '__raw__\s*=\s*\{[^}]*["'']\$where["'']'
+      label: MongoEngine __raw__ with $where
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-943
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing Python source code for NoSQL injection in PyMongo,

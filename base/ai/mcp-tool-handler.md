@@ -1,31 +1,70 @@
 ---
 slug: mcp-tool-handler
 name: MCP Tool Handler Security
-description: MCP (Model Context Protocol) server tool handlers — verify per-tool authentication, argument validation, and capability scoping. Walker mode follows tool execute helpers and server bootstrap.
+description: 'MCP (Model Context Protocol) server tool handlers — verify per-tool authentication, argument validation, and capability scoping. Walker mode follows tool execute helpers and server bootstrap.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [mcp]
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "from\\s+['\"]@modelcontextprotocol/sdk"
-    label: "Imports MCP SDK"
-  - regex: "server\\.tool\\s*\\(|\\bsetRequestHandler\\s*\\(\\s*CallToolRequestSchema|registerTool\\s*\\("
-    label: "MCP tool registration"
-  - regex: "new\\s+(StdioServerTransport|SSEServerTransport|HttpServerTransport)\\s*\\("
-    label: "MCP transport instantiation (verify auth on HTTP/SSE)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'from\s+[''"]@modelcontextprotocol/sdk'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Imports MCP SDK
+      - regex: server\.tool\s*\(|\bsetRequestHandler\s*\(\s*CallToolRequestSchema|registerTool\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: MCP tool registration
+      - regex: new\s+(StdioServerTransport|SSEServerTransport|HttpServerTransport)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: MCP transport instantiation (verify auth on HTTP/SSE)
+  prompt: Run only if this project uses mcp — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'from\s+[''"]@modelcontextprotocol/sdk'
+      label: Imports MCP SDK
+    - regex: server\.tool\s*\(|\bsetRequestHandler\s*\(\s*CallToolRequestSchema|registerTool\s*\(
+      label: MCP tool registration
+    - regex: new\s+(StdioServerTransport|SSEServerTransport|HttpServerTransport)\s*\(
+      label: MCP transport instantiation (verify auth on HTTP/SSE)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-285
   - OWASP-LLM06

@@ -1,17 +1,22 @@
 ---
 slug: k8s-secret-reference
 name: Kubernetes Secret Mounted as Env Var
-description: "Secrets exposed via env: valueFrom: secretKeyRef — visible in /proc/<pid>/environ to any process in the container and to anyone who can `kubectl exec`. Prefer mounted volumes."
+description: 'Secrets exposed via env: valueFrom: secretKeyRef — visible in /proc/<pid>/environ to any process in the container and to anyone who can `kubectl exec`. Prefer mounted volumes.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{yml,yaml}"
+precondition:
+  regex:
+    extensions:
+      - yml
+      - yaml
+where:
+  extensions:
+    - yml
+    - yaml
 references:
   - CWE-526
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing Kubernetes manifests (Deployment, StatefulSet,

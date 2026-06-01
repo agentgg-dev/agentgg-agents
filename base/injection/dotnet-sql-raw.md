@@ -1,42 +1,121 @@
 ---
 slug: dotnet-sql-raw
 name: Raw SQL Injection (.NET)
-description: .NET SQL execution (ADO.NET SqlCommand, Dapper, EF Core FromSqlRaw / ExecuteSqlRaw) with string concatenation or C# $"" interpolation — FromSqlInterpolated is safe. Walker mode traces helper methods to verify the SQL source.
+description: '.NET SQL execution (ADO.NET SqlCommand, Dapper, EF Core FromSqlRaw / ExecuteSqlRaw) with string concatenation or C# $"" interpolation — FromSqlInterpolated is safe. Walker mode traces helper methods to verify the SQL source.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [dotnet]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.cs"
-excludePatterns:
-  - "**/Tests/**"
-  - "**/UnitTests/**"
-  - "**/IntegrationTests/**"
-  - "**/*.Tests/**"
-  - "**/bin/**"
-  - "**/obj/**"
-preFilter:
-  - regex: "new\\s+SqlCommand\\s*\\(\\s*\\$\""
-    label: "SqlCommand with $\"...\" interpolation"
-  - regex: "new\\s+SqlCommand\\s*\\([^,)]*\\+"
-    label: "SqlCommand with string concatenation"
-  - regex: "\\.CommandText\\s*=\\s*(\\$\"|[^;]*\\+)"
-    label: "CommandText assigned via interpolation/concat"
-  - regex: "\\.(Query|Execute|QueryAsync|ExecuteAsync)(<[^>]+>)?\\s*\\(\\s*\\$\""
-    label: "Dapper Query/Execute with $\"...\" interpolation"
-  - regex: "FromSqlRaw\\s*\\(\\s*\\$\""
-    label: "EF Core FromSqlRaw with $\"...\" (use FromSqlInterpolated)"
-  - regex: "ExecuteSqlRaw\\s*\\(\\s*\\$\""
-    label: "EF Core ExecuteSqlRaw with $\"...\" (use ExecuteSqlInterpolated)"
-  - regex: "(FromSqlRaw|ExecuteSqlRaw)\\s*\\([^,)]*\\+"
-    label: "EF Core SqlRaw with string concatenation"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: new\s+SqlCommand\s*\(\s*\$"
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: SqlCommand with $"..." interpolation
+      - regex: 'new\s+SqlCommand\s*\([^,)]*\+'
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: SqlCommand with string concatenation
+      - regex: '\.CommandText\s*=\s*(\$"|[^;]*\+)'
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: CommandText assigned via interpolation/concat
+      - regex: '\.(Query|Execute|QueryAsync|ExecuteAsync)(<[^>]+>)?\s*\(\s*\$"'
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: Dapper Query/Execute with $"..." interpolation
+      - regex: FromSqlRaw\s*\(\s*\$"
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: EF Core FromSqlRaw with $"..." (use FromSqlInterpolated)
+      - regex: ExecuteSqlRaw\s*\(\s*\$"
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: EF Core ExecuteSqlRaw with $"..." (use ExecuteSqlInterpolated)
+      - regex: '(FromSqlRaw|ExecuteSqlRaw)\s*\([^,)]*\+'
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: EF Core SqlRaw with string concatenation
+  prompt: Run only if this project uses dotnet — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - cs
+  excludePatterns:
+    - '**/Tests/**'
+    - '**/UnitTests/**'
+    - '**/IntegrationTests/**'
+    - '**/*.Tests/**'
+    - '**/bin/**'
+    - '**/obj/**'
+  preFilter:
+    - regex: new\s+SqlCommand\s*\(\s*\$"
+      label: SqlCommand with $"..." interpolation
+    - regex: 'new\s+SqlCommand\s*\([^,)]*\+'
+      label: SqlCommand with string concatenation
+    - regex: '\.CommandText\s*=\s*(\$"|[^;]*\+)'
+      label: CommandText assigned via interpolation/concat
+    - regex: '\.(Query|Execute|QueryAsync|ExecuteAsync)(<[^>]+>)?\s*\(\s*\$"'
+      label: Dapper Query/Execute with $"..." interpolation
+    - regex: FromSqlRaw\s*\(\s*\$"
+      label: EF Core FromSqlRaw with $"..." (use FromSqlInterpolated)
+    - regex: ExecuteSqlRaw\s*\(\s*\$"
+      label: EF Core ExecuteSqlRaw with $"..." (use ExecuteSqlInterpolated)
+    - regex: '(FromSqlRaw|ExecuteSqlRaw)\s*\([^,)]*\+'
+      label: EF Core SqlRaw with string concatenation
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing C# / .NET source code for SQL injection across

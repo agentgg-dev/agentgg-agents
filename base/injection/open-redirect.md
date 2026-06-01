@@ -1,39 +1,112 @@
 ---
 slug: open-redirect
 name: Open Redirect
-description: Redirect responses (res.redirect, Next.js redirect(), router.push, Location header) where the destination URL comes from user input without validation — allows phishing via trusted domain. Walker mode follows redirect-allowlist helpers.
+description: 'Redirect responses (res.redirect, Next.js redirect(), router.push, Location header) where the destination URL comes from user input without validation — allows phishing via trusted domain. Walker mode follows redirect-allowlist helpers.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "res\\.redirect\\s*\\(\\s*(req|request)\\.(query|body|params|headers)\\."
-    label: "res.redirect() with request-derived destination"
-  - regex: "\\bredirect\\s*\\(\\s*(searchParams|req|request|params)\\."
-    label: "Next.js redirect() / generic redirect with request data"
-  - regex: "router\\.(push|replace)\\s*\\(\\s*(searchParams|params|location)\\."
-    label: "router.push/replace with request-derived destination"
-  - regex: "NextResponse\\.redirect\\s*\\(\\s*new\\s+URL\\s*\\(\\s*(req|request)\\."
-    label: "NextResponse.redirect with request-derived URL"
-  - regex: "Location\\s*:\\s*(req|request|body|searchParams)\\."
-    label: "Raw Location header set from request data"
-  - regex: "window\\.location(\\.href)?\\s*=\\s*(searchParams|new\\s+URLSearchParams|location\\.search)"
-    label: "window.location set from URL search params"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: res\.redirect\s*\(\s*(req|request)\.(query|body|params|headers)\.
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: res.redirect() with request-derived destination
+      - regex: \bredirect\s*\(\s*(searchParams|req|request|params)\.
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Next.js redirect() / generic redirect with request data
+      - regex: router\.(push|replace)\s*\(\s*(searchParams|params|location)\.
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: router.push/replace with request-derived destination
+      - regex: NextResponse\.redirect\s*\(\s*new\s+URL\s*\(\s*(req|request)\.
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: NextResponse.redirect with request-derived URL
+      - regex: 'Location\s*:\s*(req|request|body|searchParams)\.'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Raw Location header set from request data
+      - regex: window\.location(\.href)?\s*=\s*(searchParams|new\s+URLSearchParams|location\.search)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: window.location set from URL search params
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: res\.redirect\s*\(\s*(req|request)\.(query|body|params|headers)\.
+      label: res.redirect() with request-derived destination
+    - regex: \bredirect\s*\(\s*(searchParams|req|request|params)\.
+      label: Next.js redirect() / generic redirect with request data
+    - regex: router\.(push|replace)\s*\(\s*(searchParams|params|location)\.
+      label: router.push/replace with request-derived destination
+    - regex: NextResponse\.redirect\s*\(\s*new\s+URL\s*\(\s*(req|request)\.
+      label: NextResponse.redirect with request-derived URL
+    - regex: 'Location\s*:\s*(req|request|body|searchParams)\.'
+      label: Raw Location header set from request data
+    - regex: window\.location(\.href)?\s*=\s*(searchParams|new\s+URLSearchParams|location\.search)
+      label: window.location set from URL search params
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-601
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing Node.js / TypeScript / React source code for open

@@ -4,44 +4,175 @@ name: SQL Injection
 description: SQL queries built by concatenating or interpolating untrusted input into a query string instead of using parameterized queries. Walker mode follows query helpers and ORM wrappers to verify whether parameterization is actually applied.
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,rs,php,java,kt,cs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/build/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\.(query|execute|exec|run|raw)\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "SQL call with template-literal interpolation"
-  - regex: "\\.(query|execute|exec|run|raw)\\s*\\([^)]*\\+\\s*(req|params|body|input|args|query|userInput)"
-    label: "SQL call concatenating request data"
-  - regex: "(execute|cursor|conn)\\s*\\(\\s*f['\"]"
-    label: "Python SQL with f-string"
-  - regex: "(execute|cursor|conn)\\s*\\([^)]*%\\s*\\("
-    label: "Python SQL with %-format placeholder"
-  - regex: "sqlalchemy\\.text\\s*\\(\\s*(f['\"]|.*\\+)"
-    label: "SQLAlchemy text() with interpolation"
-  - regex: "find_by_sql\\s*\\(.*#\\{"
-    label: "ActiveRecord find_by_sql with #{} interpolation"
-  - regex: "Sequel\\.lit\\s*\\(.*#\\{"
-    label: "Sequel.lit with #{} interpolation"
-  - regex: "fmt\\.Sprintf\\s*\\([^)]*(SELECT|INSERT|UPDATE|DELETE)"
-    label: "Go fmt.Sprintf building SQL"
-  - regex: "ORDER\\s+BY\\s+`?\\s*\\+|ORDER\\s+BY\\s+[\"`]?\\$\\{"
-    label: "Dynamic ORDER BY built from input"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.(query|execute|exec|run|raw)\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: SQL call with template-literal interpolation
+      - regex: '\.(query|execute|exec|run|raw)\s*\([^)]*\+\s*(req|params|body|input|args|query|userInput)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: SQL call concatenating request data
+      - regex: '(execute|cursor|conn)\s*\(\s*f[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: Python SQL with f-string
+      - regex: '(execute|cursor|conn)\s*\([^)]*%\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: Python SQL with %-format placeholder
+      - regex: 'sqlalchemy\.text\s*\(\s*(f[''"]|.*\+)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: SQLAlchemy text() with interpolation
+      - regex: 'find_by_sql\s*\(.*#\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: 'ActiveRecord find_by_sql with #{} interpolation'
+      - regex: 'Sequel\.lit\s*\(.*#\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: 'Sequel.lit with #{} interpolation'
+      - regex: 'fmt\.Sprintf\s*\([^)]*(SELECT|INSERT|UPDATE|DELETE)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: Go fmt.Sprintf building SQL
+      - regex: 'ORDER\s+BY\s+`?\s*\+|ORDER\s+BY\s+["`]?\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: Dynamic ORDER BY built from input
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - rs
+    - php
+    - java
+    - kt
+    - cs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/build/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\.(query|execute|exec|run|raw)\s*\(\s*`[^`]*\$\{'
+      label: SQL call with template-literal interpolation
+    - regex: '\.(query|execute|exec|run|raw)\s*\([^)]*\+\s*(req|params|body|input|args|query|userInput)'
+      label: SQL call concatenating request data
+    - regex: '(execute|cursor|conn)\s*\(\s*f[''"]'
+      label: Python SQL with f-string
+    - regex: '(execute|cursor|conn)\s*\([^)]*%\s*\('
+      label: Python SQL with %-format placeholder
+    - regex: 'sqlalchemy\.text\s*\(\s*(f[''"]|.*\+)'
+      label: SQLAlchemy text() with interpolation
+    - regex: 'find_by_sql\s*\(.*#\{'
+      label: 'ActiveRecord find_by_sql with #{} interpolation'
+    - regex: 'Sequel\.lit\s*\(.*#\{'
+      label: 'Sequel.lit with #{} interpolation'
+    - regex: 'fmt\.Sprintf\s*\([^)]*(SELECT|INSERT|UPDATE|DELETE)'
+      label: Go fmt.Sprintf building SQL
+    - regex: 'ORDER\s+BY\s+`?\s*\+|ORDER\s+BY\s+["`]?\$\{'
+      label: Dynamic ORDER BY built from input
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing a batch of source files for SQL injection — query

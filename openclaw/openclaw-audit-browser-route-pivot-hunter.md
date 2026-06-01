@@ -4,15 +4,23 @@ name: Browser Route Pivot / SSRF Audit — Hunter (OpenClaw)
 description: Audits OpenClaw browser-automation and SSRF-guarded fetch surfaces for places attacker-controlled (or model-driven) navigation/interaction reaches an internal address, the cloud-metadata endpoint, a different origin, or a local file. Reports each route as safe / risky / broken with the file:line of the SSRF guard, the navigation primitive, and the bypass shape (IPv4-mapped IPv6, DNS rebinding, trailing-dot host, cross-origin redirect, second-hop CDP, interaction-triggered navigation).
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
-excludePatterns:
-  - "**/e2e/**"
-  - "**/*test*/**"
-  - "**/__tests__/**"
-  - "**/fixtures/**"
+precondition:
+  prompt: |
+    Run only if this codebase IS OpenClaw — the chat-channel automation
+    platform — or one of its first-party extensions/connectors. Skip any
+    project that merely depends on or integrates with OpenClaw. If the recon
+    brief doesn't clearly indicate an OpenClaw codebase, answer no.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs]
+  excludePatterns:
+    - "**/e2e/**"
+    - "**/*test*/**"
+    - "**/__tests__/**"
+    - "**/fixtures/**"
+  preFilter:
+    - { regex: "\\.(goto|navigate)\\s*\\(|fetch\\s*\\(|axios|got\\s*\\(", label: "navigation / outbound fetch" }
+    - { regex: "169\\.254|metadata|isPrivate|rebind|puppeteer|playwright|CDP", label: "SSRF guard / browser driver" }
 references:
   - CVE-2026-26324
   - CVE-2026-43527

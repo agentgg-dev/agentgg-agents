@@ -4,31 +4,69 @@ name: Unsafe JSON in HTML Script Tags (React/Next.js)
 description: JSON.stringify output embedded in a script tag or dangerouslySetInnerHTML without escaping </script> — allows closing the script tag early to inject HTML. Walker mode traces any safe-stringify helper imports.
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [react]
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{tsx,jsx,ts,js}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "dangerouslySetInnerHTML\\s*=\\s*\\{\\s*\\{\\s*__html\\s*:\\s*[^}]*JSON\\.stringify"
-    label: "dangerouslySetInnerHTML embedding JSON.stringify"
-  - regex: "<script[^>]*>[^<]*\\$\\{\\s*JSON\\.stringify"
-    label: "<script> tag template-interpolating JSON.stringify"
-  - regex: "res\\.send\\s*\\(\\s*`[^`]*<script[^`]*\\$\\{\\s*JSON\\.stringify"
-    label: "res.send template embedding JSON.stringify in <script>"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'dangerouslySetInnerHTML\s*=\s*\{\s*\{\s*__html\s*:\s*[^}]*JSON\.stringify'
+        in:
+          - '**/*.{tsx,jsx,ts,js}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: dangerouslySetInnerHTML embedding JSON.stringify
+      - regex: '<script[^>]*>[^<]*\$\{\s*JSON\.stringify'
+        in:
+          - '**/*.{tsx,jsx,ts,js}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: <script> tag template-interpolating JSON.stringify
+      - regex: 'res\.send\s*\(\s*`[^`]*<script[^`]*\$\{\s*JSON\.stringify'
+        in:
+          - '**/*.{tsx,jsx,ts,js}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: res.send template embedding JSON.stringify in <script>
+  prompt: Run only if this project uses react — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - tsx
+    - jsx
+    - ts
+    - js
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'dangerouslySetInnerHTML\s*=\s*\{\s*\{\s*__html\s*:\s*[^}]*JSON\.stringify'
+      label: dangerouslySetInnerHTML embedding JSON.stringify
+    - regex: '<script[^>]*>[^<]*\$\{\s*JSON\.stringify'
+      label: <script> tag template-interpolating JSON.stringify
+    - regex: 'res\.send\s*\(\s*`[^`]*<script[^`]*\$\{\s*JSON\.stringify'
+      label: res.send template embedding JSON.stringify in <script>
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-79
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing React and Next.js code for a specific XSS variant:

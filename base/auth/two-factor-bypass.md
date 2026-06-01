@@ -1,34 +1,88 @@
 ---
 slug: two-factor-bypass
 name: Two-Factor Authentication Bypass
-description: 2FA / MFA verification steps that can be skipped — full session granted before the second factor is validated, the second-factor endpoint trusts client-supplied "verified" flags, brute-forceable OTP codes, or step-up paths that don't gate sensitive actions. Walker mode reads the auth flow across login, verify, and session-issuance handlers.
+description: '2FA / MFA verification steps that can be skipped — full session granted before the second factor is validated, the second-factor endpoint trusts client-supplied "verified" flags, brute-forceable OTP codes, or step-up paths that don''t gate sensitive actions. Walker mode reads the auth flow across login, verify, and session-issuance handlers.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}"
-  - "**/node_modules/**"
-preFilter:
-  - regex: "(totp|otp|mfa|twoFactor|two_factor|2fa)"
-    label: "2FA reference"
-  - regex: "(speakeasy|otplib|@otplib|pyotp|rotp|node-2fa)"
-    label: "TOTP library"
-  - regex: "(verifyToken|verifyOtp|verify_otp|verifyMfa|verifyTwoFactor)"
-    label: "2FA verification call"
-  - regex: "(jwt\\.sign|createSession|issueToken|setSession)\\s*\\("
-    label: "Session/token issuance"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (totp|otp|mfa|twoFactor|two_factor|2fa)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: 2FA reference
+      - regex: (speakeasy|otplib|@otplib|pyotp|rotp|node-2fa)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: TOTP library
+      - regex: (verifyToken|verifyOtp|verify_otp|verifyMfa|verifyTwoFactor)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: 2FA verification call
+      - regex: (jwt\.sign|createSession|issueToken|setSession)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: Session/token issuance
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+    - '**/node_modules/**'
+  preFilter:
+    - regex: (totp|otp|mfa|twoFactor|two_factor|2fa)
+      label: 2FA reference
+    - regex: (speakeasy|otplib|@otplib|pyotp|rotp|node-2fa)
+      label: TOTP library
+    - regex: (verifyToken|verifyOtp|verify_otp|verifyMfa|verifyTwoFactor)
+      label: 2FA verification call
+    - regex: (jwt\.sign|createSession|issueToken|setSession)\s*\(
+      label: Session/token issuance
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-287
   - CWE-308
-  - OWASP-A07:2021
+  - 'OWASP-A07:2021'
 ---
 
 You are reviewing the multi-step authentication flow for 2FA / MFA

@@ -1,32 +1,62 @@
 ---
 slug: go-sql-raw
 name: Raw SQL Injection (Go)
-description: Go SQL execution (database/sql, GORM, sqlx, pgx) with fmt.Sprintf or string concatenation in the query — bypasses parameterization. Walker mode traces the query source and any repository helpers.
+description: 'Go SQL execution (database/sql, GORM, sqlx, pgx) with fmt.Sprintf or string concatenation in the query — bypasses parameterization. Walker mode traces the query source and any repository helpers.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [go]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.go"
-excludePatterns:
-  - "**/*_test.go"
-  - "**/vendor/**"
-preFilter:
-  - regex: "\\.(Query|QueryRow|Exec|QueryContext|QueryRowContext|ExecContext)\\s*\\([^)]*\\bfmt\\.Sprintf\\b"
-    label: "database/sql call wrapping fmt.Sprintf"
-  - regex: "\\.(Query|QueryRow|Exec|QueryContext|QueryRowContext|ExecContext)\\s*\\(\\s*\"[^\"]*\"\\s*\\+"
-    label: "database/sql call concatenating strings"
-  - regex: "\\.(Raw|Where|Select|Get)\\s*\\([^)]*\\bfmt\\.Sprintf\\b"
-    label: "GORM/sqlx call wrapping fmt.Sprintf"
-  - regex: "\\.(Raw|Where)\\s*\\(\\s*\"[^\"]*\"\\s*\\+"
-    label: "GORM Raw/Where concatenating strings"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.(Query|QueryRow|Exec|QueryContext|QueryRowContext|ExecContext)\s*\([^)]*\bfmt\.Sprintf\b'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: database/sql call wrapping fmt.Sprintf
+      - regex: '\.(Query|QueryRow|Exec|QueryContext|QueryRowContext|ExecContext)\s*\(\s*"[^"]*"\s*\+'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: database/sql call concatenating strings
+      - regex: '\.(Raw|Where|Select|Get)\s*\([^)]*\bfmt\.Sprintf\b'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: GORM/sqlx call wrapping fmt.Sprintf
+      - regex: '\.(Raw|Where)\s*\(\s*"[^"]*"\s*\+'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: GORM Raw/Where concatenating strings
+  prompt: Run only if this project uses go — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - go
+  excludePatterns:
+    - '**/*_test.go'
+    - '**/vendor/**'
+  preFilter:
+    - regex: '\.(Query|QueryRow|Exec|QueryContext|QueryRowContext|ExecContext)\s*\([^)]*\bfmt\.Sprintf\b'
+      label: database/sql call wrapping fmt.Sprintf
+    - regex: '\.(Query|QueryRow|Exec|QueryContext|QueryRowContext|ExecContext)\s*\(\s*"[^"]*"\s*\+'
+      label: database/sql call concatenating strings
+    - regex: '\.(Raw|Where|Select|Get)\s*\([^)]*\bfmt\.Sprintf\b'
+      label: GORM/sqlx call wrapping fmt.Sprintf
+    - regex: '\.(Raw|Where)\s*\(\s*"[^"]*"\s*\+'
+      label: GORM Raw/Where concatenating strings
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing Go source code for SQL injection across

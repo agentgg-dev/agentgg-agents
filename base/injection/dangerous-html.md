@@ -1,37 +1,99 @@
 ---
 slug: dangerous-html
 name: Dangerous HTML DOM APIs
-description: Less-obvious HTML injection sinks — insertAdjacentHTML, DOMParser, Range.createContextualFragment, template innerHTML, and Sanitizer API misuse. Walker mode follows sanitizer wrappers and HTML helpers to verify configuration.
+description: 'Less-obvious HTML injection sinks — insertAdjacentHTML, DOMParser, Range.createContextualFragment, template innerHTML, and Sanitizer API misuse. Walker mode follows sanitizer wrappers and HTML helpers to verify configuration.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\.insertAdjacentHTML\\s*\\("
-    label: "insertAdjacentHTML sink"
-  - regex: "new\\s+DOMParser\\s*\\("
-    label: "DOMParser instantiation"
-  - regex: "createContextualFragment\\s*\\("
-    label: "Range.createContextualFragment (executes scripts on insert)"
-  - regex: "new\\s+Sanitizer\\s*\\(\\s*\\{"
-    label: "Sanitizer instantiated with explicit config"
-  - regex: "\\.setHTML\\s*\\("
-    label: "element.setHTML call"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: \.insertAdjacentHTML\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: insertAdjacentHTML sink
+      - regex: new\s+DOMParser\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: DOMParser instantiation
+      - regex: createContextualFragment\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Range.createContextualFragment (executes scripts on insert)
+      - regex: 'new\s+Sanitizer\s*\(\s*\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Sanitizer instantiated with explicit config
+      - regex: \.setHTML\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: element.setHTML call
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: \.insertAdjacentHTML\s*\(
+      label: insertAdjacentHTML sink
+    - regex: new\s+DOMParser\s*\(
+      label: DOMParser instantiation
+    - regex: createContextualFragment\s*\(
+      label: Range.createContextualFragment (executes scripts on insert)
+    - regex: 'new\s+Sanitizer\s*\(\s*\{'
+      label: Sanitizer instantiated with explicit config
+    - regex: \.setHTML\s*\(
+      label: element.setHTML call
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-79
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing source code for HTML injection via DOM APIs that are

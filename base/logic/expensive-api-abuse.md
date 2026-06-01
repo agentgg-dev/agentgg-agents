@@ -1,37 +1,103 @@
 ---
 slug: expensive-api-abuse
 name: Expensive API Call Without Abuse Protection
-description: Endpoints that invoke paid APIs (LLM, payment, email send, SMS) without rate limiting, captcha, or other abuse gating — single user can drain budget. Walker mode follows rate-limit middleware across files.
+description: 'Endpoints that invoke paid APIs (LLM, payment, email send, SMS) without rate limiting, captcha, or other abuse gating — single user can drain budget. Walker mode follows rate-limit middleware across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/app/api/**/route.{ts,tsx,js,jsx,mjs}"
-  - "**/app/**/route.{ts,tsx,js,jsx,mjs}"
-  - "**/pages/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/routes/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/actions/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/server/**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "openai\\.chat\\.completions|anthropic\\.messages|\\bgenerateText\\s*\\(|\\bstreamText\\s*\\("
-    label: "LLM API call"
-  - regex: "resend\\.emails\\.send|sgMail\\.send|twilio\\.messages\\.create|ses\\.sendEmail"
-    label: "Email/SMS send"
-  - regex: "stripe\\.(paymentIntents|charges|customers|subscriptions)\\.create"
-    label: "Stripe billable create"
-  - regex: "(mapbox|googleMaps|geocoder)\\.|images?\\.generate\\s*\\("
-    label: "Geocoding / image generation API"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: openai\.chat\.completions|anthropic\.messages|\bgenerateText\s*\(|\bstreamText\s*\(
+        in:
+          - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/app/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/actions/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/server/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: LLM API call
+      - regex: resend\.emails\.send|sgMail\.send|twilio\.messages\.create|ses\.sendEmail
+        in:
+          - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/app/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/actions/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/server/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Email/SMS send
+      - regex: stripe\.(paymentIntents|charges|customers|subscriptions)\.create
+        in:
+          - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/app/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/actions/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/server/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Stripe billable create
+      - regex: (mapbox|googleMaps|geocoder)\.|images?\.generate\s*\(
+        in:
+          - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/app/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/actions/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/server/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Geocoding / image generation API
+where:
+  filePatterns:
+    - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+    - '**/app/**/route.{ts,tsx,js,jsx,mjs}'
+    - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/actions/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/server/**/*.{ts,tsx,js,jsx,mjs}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: openai\.chat\.completions|anthropic\.messages|\bgenerateText\s*\(|\bstreamText\s*\(
+      label: LLM API call
+    - regex: resend\.emails\.send|sgMail\.send|twilio\.messages\.create|ses\.sendEmail
+      label: Email/SMS send
+    - regex: stripe\.(paymentIntents|charges|customers|subscriptions)\.create
+      label: Stripe billable create
+    - regex: (mapbox|googleMaps|geocoder)\.|images?\.generate\s*\(
+      label: Geocoding / image generation API
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-770
   - CWE-307

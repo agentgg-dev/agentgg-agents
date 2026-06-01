@@ -1,18 +1,33 @@
 ---
 slug: secrets-plaintext-exposure
 name: Decrypted Plaintext Exposure
-description: Decrypted secret values (decryptedValue, plaintext, decryptResponse.plaintext) flowing into logs, HTTP response bodies, error messages, or trace spans.
+description: 'Decrypted secret values (decryptedValue, plaintext, decryptResponse.plaintext) flowing into logs, HTTP response bodies, error messages, or trace spans.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,go}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - go
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - go
 references:
   - CWE-532
   - CWE-201
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing source code that handles decrypted secrets — and

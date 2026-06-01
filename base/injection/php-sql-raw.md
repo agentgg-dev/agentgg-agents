@@ -1,31 +1,57 @@
 ---
 slug: php-sql-raw
 name: Raw SQL Injection (PHP)
-description: PHP SQL execution (PDO, mysqli, Doctrine ORM/DBAL) with string concatenation in the query — including .prepare() with concatenation, which defeats parameterization. Walker mode traces SQL helpers and request sources.
+description: 'PHP SQL execution (PDO, mysqli, Doctrine ORM/DBAL) with string concatenation in the query — including .prepare() with concatenation, which defeats parameterization. Walker mode traces SQL helpers and request sources.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [php]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.php"
-excludePatterns:
-  - "**/vendor/**"
-  - "**/tests/**"
-  - "**/Tests/**"
-preFilter:
-  - regex: "->\\s*(query|exec|prepare)\\s*\\(\\s*[\"'][^\"']*[\"']\\s*\\."
-    label: "PDO query/exec/prepare with .  concatenation"
-  - regex: "mysqli_query\\s*\\([^,]+,\\s*[\"'][^\"']*[\"']\\s*\\."
-    label: "mysqli_query with concatenation"
-  - regex: "->\\s*(executeQuery|executeStatement|createQuery|createNativeQuery)\\s*\\(\\s*[\"'][^\"']*[\"']\\s*\\."
-    label: "Doctrine query with concatenation"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '->\s*(query|exec|prepare)\s*\(\s*["''][^"'']*["'']\s*\.'
+        in:
+          - '**/*.php'
+        notIn:
+          - '**/vendor/**'
+          - '**/tests/**'
+          - '**/Tests/**'
+        label: PDO query/exec/prepare with .  concatenation
+      - regex: 'mysqli_query\s*\([^,]+,\s*["''][^"'']*["'']\s*\.'
+        in:
+          - '**/*.php'
+        notIn:
+          - '**/vendor/**'
+          - '**/tests/**'
+          - '**/Tests/**'
+        label: mysqli_query with concatenation
+      - regex: '->\s*(executeQuery|executeStatement|createQuery|createNativeQuery)\s*\(\s*["''][^"'']*["'']\s*\.'
+        in:
+          - '**/*.php'
+        notIn:
+          - '**/vendor/**'
+          - '**/tests/**'
+          - '**/Tests/**'
+        label: Doctrine query with concatenation
+  prompt: Run only if this project uses php — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - php
+  excludePatterns:
+    - '**/vendor/**'
+    - '**/tests/**'
+    - '**/Tests/**'
+  preFilter:
+    - regex: '->\s*(query|exec|prepare)\s*\(\s*["''][^"'']*["'']\s*\.'
+      label: PDO query/exec/prepare with .  concatenation
+    - regex: 'mysqli_query\s*\([^,]+,\s*["''][^"'']*["'']\s*\.'
+      label: mysqli_query with concatenation
+    - regex: '->\s*(executeQuery|executeStatement|createQuery|createNativeQuery)\s*\(\s*["''][^"'']*["'']\s*\.'
+      label: Doctrine query with concatenation
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing PHP source code for SQL injection in PDO, mysqli,

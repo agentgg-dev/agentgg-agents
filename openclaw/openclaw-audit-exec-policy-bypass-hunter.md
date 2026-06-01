@@ -4,15 +4,23 @@ name: Exec Policy Bypass Audit — Hunter (OpenClaw)
 description: Audits OpenClaw exec-routing surfaces (`system.run`, `tools.exec`, node exec, Docker/SSH wrappers) for policy bypasses where the executed bytes diverge from the approved/allowlisted command, where the allowlist does not understand a shell construct, or where environment variables convert a benign command into attacker code. Reports each call site as safe / risky / broken with the file:line of the approval-vs-exec divergence, the missing allowlist primitive, or the env-injection sink. Pairs with `openclaw-audit-allowlist-identity-hunter` and `openclaw-audit-webhook-ingress-hunter` and is the largest single CVE cluster in the OpenClaw history.
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
-excludePatterns:
-  - "**/e2e/**"
-  - "**/*test*/**"
-  - "**/__tests__/**"
-  - "**/fixtures/**"
+precondition:
+  prompt: |
+    Run only if this codebase IS OpenClaw — the chat-channel automation
+    platform — or one of its first-party extensions/connectors. Skip any
+    project that merely depends on or integrates with OpenClaw. If the recon
+    brief doesn't clearly indicate an OpenClaw codebase, answer no.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs]
+  excludePatterns:
+    - "**/e2e/**"
+    - "**/*test*/**"
+    - "**/__tests__/**"
+    - "**/fixtures/**"
+  preFilter:
+    - { regex: "child_process|exec(Sync|File)?\\s*\\(|spawn\\s*\\(|execa", label: "process exec" }
+    - { regex: "system\\.run|tools\\.exec|allow[_-]?list|docker|\\bssh\\b", label: "exec routing / policy" }
 references:
   - CVE-2026-22168
   - CVE-2026-32978

@@ -1,15 +1,18 @@
 ---
 slug: android-manifest-export
 name: Android Exported Component Without Permission
-description: AndroidManifest.xml Activity / Service / Receiver / Provider with android:exported="true" and no android:permission — any installed app can interact with the component.
+description: 'AndroidManifest.xml Activity / Service / Receiver / Provider with android:exported="true" and no android:permission — any installed app can interact with the component.'
 version: 0.1.0
 author: agentgg
-mode: file
-tech: [android]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/AndroidManifest.xml"
+precondition:
+  regex:
+    files:
+      - '**/AndroidManifest.xml'
+  prompt: Run only if this project uses android — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  filePatterns:
+    - '**/AndroidManifest.xml'
 references:
   - CWE-926
   - OWASP-Mobile-M1

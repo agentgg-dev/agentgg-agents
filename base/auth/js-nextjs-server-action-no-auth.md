@@ -1,33 +1,61 @@
 ---
 slug: js-nextjs-server-action-no-auth
 name: Next.js Server Action Without Auth
-description: "'use server' files where exported functions don't call an auth check — every exported server action is a public POST endpoint. Walker mode follows auth HOFs and shared verifiers."
+description: '''use server'' files where exported functions don''t call an auth check — every exported server action is a public POST endpoint. Walker mode follows auth HOFs and shared verifiers.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [nextjs]
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "^['\"]use server['\"]\\s*;?"
-    label: "File-level 'use server' directive"
-  - regex: "^\\s*['\"]use server['\"]\\s*;?"
-    multiline: true
-    label: "Inline 'use server' directive in function body"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '^[''"]use server[''"]\s*;?'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: File-level 'use server' directive
+      - regex: '^\s*[''"]use server[''"]\s*;?'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Inline 'use server' directive in function body
+  prompt: Run only if this project uses nextjs — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '^[''"]use server[''"]\s*;?'
+      label: File-level 'use server' directive
+    - regex: '^\s*[''"]use server[''"]\s*;?'
+      multiline: true
+      label: Inline 'use server' directive in function body
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-862
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing Next.js server actions for missing authentication.

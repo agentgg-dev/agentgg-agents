@@ -1,18 +1,39 @@
 ---
 slug: cors-wildcard
 name: CORS Wildcard / Reflected Origin
-description: Access-Control-Allow-Origin set to * or to a reflected request Origin header, especially combined with Access-Control-Allow-Credentials — allows arbitrary sites to issue authenticated requests.
+description: 'Access-Control-Allow-Origin set to * or to a reflected request Origin header, especially combined with Access-Control-Allow-Credentials — allows arbitrary sites to issue authenticated requests.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,go,py,rb,conf}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - go
+      - py
+      - rb
+      - conf
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - go
+    - py
+    - rb
+    - conf
 references:
   - CWE-942
   - CWE-346
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for CORS (Cross-Origin Resource Sharing)

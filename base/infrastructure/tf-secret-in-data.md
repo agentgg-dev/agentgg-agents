@@ -1,21 +1,28 @@
 ---
 slug: tf-secret-in-data
 name: Terraform Plaintext Secret in Variable / Data / tfvars
-description: Terraform variables, data sources, or .tfvars files containing plaintext passwords, API keys, or tokens — committed to source and stored in Terraform state.
+description: 'Terraform variables, data sources, or .tfvars files containing plaintext passwords, API keys, or tokens — committed to source and stored in Terraform state.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.tf"
-  - "**/*.tf.json"
-  - "**/*.tfvars"
-  - "**/*.tfvars.json"
-  - "**/terraform.tfvars*"
+precondition:
+  regex:
+    extensions:
+      - tf
+      - tf.json
+      - tfvars
+      - tfvars.json
+where:
+  extensions:
+    - tf
+    - tf.json
+    - tfvars
+    - tfvars.json
+  filePatterns:
+    - '**/terraform.tfvars*'
 references:
   - CWE-798
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing Terraform configuration for plaintext secrets in

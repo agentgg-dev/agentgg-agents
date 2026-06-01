@@ -1,18 +1,35 @@
 ---
 slug: secret-env-var
 name: Secret Env Var Access (Review Handling)
-description: Direct access to env vars whose names contain SECRET, MASTER_KEY, AWS_SECRET, JWT_SECRET, PRIVATE_KEY — flag for review of how the value is handled (storage, logging, transmission).
+description: 'Direct access to env vars whose names contain SECRET, MASTER_KEY, AWS_SECRET, JWT_SECRET, PRIVATE_KEY — flag for review of how the value is handled (storage, logging, transmission).'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,lua,go}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - lua
+      - go
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - lua
+    - go
 references:
   - CWE-200
   - CWE-532
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing source code for access to secret-shaped environment

@@ -1,20 +1,49 @@
 ---
 slug: static-backup-exposure
 name: Exposed Static / Backup Files & Directory Listings
-description: Static-file middleware (express.static, serve-static, serve-index, Spring Resource handler, Django staticfiles) mounted over directories that contain backups, dotfiles, keys, logs, or `.git` — or that enable directory browsing (autoindex).
+description: 'Static-file middleware (express.static, serve-static, serve-index, Spring Resource handler, Django staticfiles) mounted over directories that contain backups, dotfiles, keys, logs, or `.git` — or that enable directory browsing (autoindex).'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{py,rb,go,php,java,kt,cs}"
-  - "**/nginx*.conf"
-  - "**/*.conf"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - rb
+      - go
+      - php
+      - java
+      - kt
+      - cs
+      - conf
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
+    - conf
+  filePatterns:
+    - '**/nginx*.conf'
 references:
   - CWE-538
   - CWE-548
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for exposed static or backup files —

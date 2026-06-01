@@ -1,42 +1,137 @@
 ---
 slug: xss
 name: Cross-Site Scripting (XSS)
-description: Untrusted input rendered as raw HTML — dangerouslySetInnerHTML, innerHTML, v-html, template literals in HTML, document.write, and unescaped server-side templates. Walker mode follows sanitizer wrappers and helpers.
+description: 'Untrusted input rendered as raw HTML — dangerouslySetInnerHTML, innerHTML, v-html, template literals in HTML, document.write, and unescaped server-side templates. Walker mode follows sanitizer wrappers and helpers.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-  - "**/*.{html,ejs,hbs,njk,pug}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/stories/**"
-  - "**/*.stories.{ts,tsx,js,jsx}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "dangerouslySetInnerHTML\\s*=\\s*\\{"
-    label: "React dangerouslySetInnerHTML"
-  - regex: "\\.(innerHTML|outerHTML)\\s*=\\s*[^\"'`][^;]*$"
-    label: ".innerHTML/outerHTML assigned a non-literal"
-  - regex: "document\\.write\\s*\\("
-    label: "document.write call"
-  - regex: "v-html\\s*="
-    label: "Vue v-html binding"
-  - regex: "\\[innerHTML\\]\\s*=|bypassSecurityTrustHtml\\s*\\("
-    label: "Angular [innerHTML] / bypassSecurityTrustHtml"
-  - regex: "<%-\\s|\\{\\{\\{|!=\\s+|\\|\\s*safe\\b"
-    label: "Unescaped server template directive (EJS/Handlebars/Pug/Nunjucks)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'dangerouslySetInnerHTML\s*=\s*\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{html,ejs,hbs,njk,pug}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/stories/**'
+          - '**/*.stories.{ts,tsx,js,jsx}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: React dangerouslySetInnerHTML
+      - regex: '\.(innerHTML|outerHTML)\s*=\s*[^"''`][^;]*$'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{html,ejs,hbs,njk,pug}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/stories/**'
+          - '**/*.stories.{ts,tsx,js,jsx}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: .innerHTML/outerHTML assigned a non-literal
+      - regex: document\.write\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{html,ejs,hbs,njk,pug}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/stories/**'
+          - '**/*.stories.{ts,tsx,js,jsx}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: document.write call
+      - regex: v-html\s*=
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{html,ejs,hbs,njk,pug}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/stories/**'
+          - '**/*.stories.{ts,tsx,js,jsx}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Vue v-html binding
+      - regex: '\[innerHTML\]\s*=|bypassSecurityTrustHtml\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{html,ejs,hbs,njk,pug}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/stories/**'
+          - '**/*.stories.{ts,tsx,js,jsx}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'Angular [innerHTML] / bypassSecurityTrustHtml'
+      - regex: '<%-\s|\{\{\{|!=\s+|\|\s*safe\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{html,ejs,hbs,njk,pug}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/stories/**'
+          - '**/*.stories.{ts,tsx,js,jsx}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Unescaped server template directive (EJS/Handlebars/Pug/Nunjucks)
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - html
+    - ejs
+    - hbs
+    - njk
+    - pug
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/stories/**'
+    - '**/*.stories.{ts,tsx,js,jsx}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'dangerouslySetInnerHTML\s*=\s*\{'
+      label: React dangerouslySetInnerHTML
+    - regex: '\.(innerHTML|outerHTML)\s*=\s*[^"''`][^;]*$'
+      label: .innerHTML/outerHTML assigned a non-literal
+    - regex: document\.write\s*\(
+      label: document.write call
+    - regex: v-html\s*=
+      label: Vue v-html binding
+    - regex: '\[innerHTML\]\s*=|bypassSecurityTrustHtml\s*\('
+      label: 'Angular [innerHTML] / bypassSecurityTrustHtml'
+    - regex: '<%-\s|\{\{\{|!=\s+|\|\s*safe\b'
+      label: Unescaped server template directive (EJS/Handlebars/Pug/Nunjucks)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-79
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing source code for cross-site scripting (XSS) — places

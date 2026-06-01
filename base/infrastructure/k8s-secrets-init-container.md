@@ -4,14 +4,19 @@ name: Kubernetes Init Container Copies Secrets to Shared Volume
 description: Init container that reads a Secret and writes it to an emptyDir volume shared with the main container — the secret is now on disk in a volume any container in the pod can read.
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{yml,yaml}"
+precondition:
+  regex:
+    extensions:
+      - yml
+      - yaml
+where:
+  extensions:
+    - yml
+    - yaml
 references:
   - CWE-526
-  - OWASP-A02:2021
+  - 'OWASP-A02:2021'
 ---
 
 You are reviewing Kubernetes Pod / Deployment manifests for init

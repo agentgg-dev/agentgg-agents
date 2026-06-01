@@ -1,37 +1,71 @@
 ---
 slug: unverified-lookup
 name: Unverified ID Lookup (IDOR)
-description: DB lookup by ID (getProjectById, findById, findUnique by id) where the result is returned to the caller without verifying ownership — classic Insecure Direct Object Reference. Walker mode follows repo helpers to verify scoping.
+description: 'DB lookup by ID (getProjectById, findById, findUnique by id) where the result is returned to the caller without verifying ownership — classic Insecure Direct Object Reference. Walker mode follows repo helpers to verify scoping.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/services/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/apps/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/app/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/pages/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/routes/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/src/**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "(get|find|fetch)[A-Z][a-zA-Z]+By(Id|Uid|Slug)\\s*\\("
-    label: "getXById / findXBySlug helper call"
-  - regex: "\\.(findUnique|findFirst|findOne)\\s*\\(\\s*\\{\\s*where\\s*:\\s*\\{\\s*id\\s*:"
-    label: "ORM findUnique/findFirst with where: { id }"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '(get|find|fetch)[A-Z][a-zA-Z]+By(Id|Uid|Slug)\s*\('
+        in:
+          - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/apps/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/src/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: getXById / findXBySlug helper call
+      - regex: '\.(findUnique|findFirst|findOne)\s*\(\s*\{\s*where\s*:\s*\{\s*id\s*:'
+        in:
+          - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/apps/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/src/**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'ORM findUnique/findFirst with where: { id }'
+where:
+  filePatterns:
+    - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/apps/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/src/**/*.{ts,tsx,js,jsx,mjs}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '(get|find|fetch)[A-Z][a-zA-Z]+By(Id|Uid|Slug)\s*\('
+      label: getXById / findXBySlug helper call
+    - regex: '\.(findUnique|findFirst|findOne)\s*\(\s*\{\s*where\s*:\s*\{\s*id\s*:'
+      label: 'ORM findUnique/findFirst with where: { id }'
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-639
   - CWE-862
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing source code for Insecure Direct Object Reference

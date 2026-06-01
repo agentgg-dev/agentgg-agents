@@ -4,15 +4,23 @@ name: Filesystem Path / Symlink Audit — Hunter (OpenClaw)
 description: Audits OpenClaw filesystem-touching surfaces (FS bridge readFile/writeFile, archive extraction, hook installation, marketplace install, channel media handlers, screen capture out-paths, workspace memory, agent attachments) for path traversal, archive bombs, symlink races, and TOCTOU. Reports each call site as safe / risky / broken with the file:line of the path check, the open/extract/write call, and the specific bypass.
 version: 0.1.0
 author: agentgg
-mode: hunt
 noiseTier: normal
-outputType: finding
-filePatterns: []
-excludePatterns:
-  - "**/e2e/**"
-  - "**/*test*/**"
-  - "**/__tests__/**"
-  - "**/fixtures/**"
+precondition:
+  prompt: |
+    Run only if this codebase IS OpenClaw — the chat-channel automation
+    platform — or one of its first-party extensions/connectors. Skip any
+    project that merely depends on or integrates with OpenClaw. If the recon
+    brief doesn't clearly indicate an OpenClaw codebase, answer no.
+where:
+  extensions: [ts, tsx, js, jsx, mjs, cjs]
+  excludePatterns:
+    - "**/e2e/**"
+    - "**/*test*/**"
+    - "**/__tests__/**"
+    - "**/fixtures/**"
+  preFilter:
+    - { regex: "readFile|writeFile|create(Read|Write)Stream|openSync|extract|unzip|\\btar\\b", label: "filesystem / archive op" }
+    - { regex: "path\\.(join|resolve|normalize)|symlink|realpath|\\.\\./", label: "path handling / traversal" }
 references:
   - CVE-2026-32055
   - CVE-2026-32036

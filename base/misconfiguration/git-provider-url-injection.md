@@ -4,31 +4,71 @@ name: Git Provider URL Built from User Input
 description: GitHub / GitLab / Bitbucket API URLs constructed via template literal interpolation of caller-supplied org / repo / user values — webhook configuration or repo clone URLs can be aimed at attacker-controlled endpoints. Walker mode traces validators across files.
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "`https?://(api\\.)?github\\.com[^`]*\\$\\{"
-    label: "GitHub URL with template-literal interpolation"
-  - regex: "`https?://(api\\.)?gitlab\\.com[^`]*\\$\\{|`https?://[^`]*gitlab[^`]*\\$\\{"
-    label: "GitLab URL with template-literal interpolation"
-  - regex: "`https?://(api\\.)?bitbucket\\.org[^`]*\\$\\{"
-    label: "Bitbucket URL with template-literal interpolation"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '`https?://(api\.)?github\.com[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: GitHub URL with template-literal interpolation
+      - regex: '`https?://(api\.)?gitlab\.com[^`]*\$\{|`https?://[^`]*gitlab[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: GitLab URL with template-literal interpolation
+      - regex: '`https?://(api\.)?bitbucket\.org[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Bitbucket URL with template-literal interpolation
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '`https?://(api\.)?github\.com[^`]*\$\{'
+      label: GitHub URL with template-literal interpolation
+    - regex: '`https?://(api\.)?gitlab\.com[^`]*\$\{|`https?://[^`]*gitlab[^`]*\$\{'
+      label: GitLab URL with template-literal interpolation
+    - regex: '`https?://(api\.)?bitbucket\.org[^`]*\$\{'
+      label: Bitbucket URL with template-literal interpolation
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-918
   - CWE-20
-  - OWASP-A10:2021
+  - 'OWASP-A10:2021'
 ---
 
 You are reviewing source code that builds URLs for Git providers

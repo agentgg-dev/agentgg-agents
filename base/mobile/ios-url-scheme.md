@@ -1,16 +1,24 @@
 ---
 slug: ios-url-scheme
 name: iOS Custom URL Scheme Handler Without Validation
-description: iOS / macOS custom URL scheme handler (application(_:open:options:)) accepting parameters without validation — deeplink parameter injection.
+description: 'iOS / macOS custom URL scheme handler (application(_:open:options:)) accepting parameters without validation — deeplink parameter injection.'
 version: 0.1.0
 author: agentgg
-mode: file
-tech: [ios]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{swift,m,mm}"
-  - "**/Info.plist"
+precondition:
+  regex:
+    extensions:
+      - swift
+      - m
+      - mm
+  prompt: Run only if this project uses ios — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  extensions:
+    - swift
+    - m
+    - mm
+  filePatterns:
+    - '**/Info.plist'
 references:
   - CWE-20
   - OWASP-Mobile-M1

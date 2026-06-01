@@ -1,37 +1,84 @@
 ---
 slug: missing-auth
 name: Missing Authentication on Endpoint
-description: HTTP route handlers (Next.js App Router exports, Express handlers, pages/api default exports) with no authentication check — every export reachable without a session is a public endpoint. Walker mode follows middleware and HOFs across files.
+description: 'HTTP route handlers (Next.js App Router exports, Express handlers, pages/api default exports) with no authentication check — every export reachable without a session is a public endpoint. Walker mode follows middleware and HOFs across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/api/**/*.{ts,tsx,js,jsx}"
-  - "**/app/api/**/*.{ts,tsx,js,jsx}"
-  - "**/pages/api/**/*.{ts,tsx,js,jsx}"
-  - "**/routes/**/*.{ts,tsx,js,jsx}"
-  - "**/server/**/*.{ts,tsx,js,jsx}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "export\\s+(async\\s+function|const|function)\\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\b"
-    label: "App Router HTTP method export"
-  - regex: "export\\s+default\\s+(async\\s+)?function\\s+handler"
-    label: "Pages Router default handler"
-  - regex: "(app|router|fastify)\\.(get|post|put|patch|delete|use)\\s*\\(\\s*[\"'][^\"']*[\"']"
-    label: "Express/Fastify route registration"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: export\s+(async\s+function|const|function)\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b
+        in:
+          - '**/api/**/*.{ts,tsx,js,jsx}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx}'
+          - '**/routes/**/*.{ts,tsx,js,jsx}'
+          - '**/server/**/*.{ts,tsx,js,jsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: App Router HTTP method export
+      - regex: export\s+default\s+(async\s+)?function\s+handler
+        in:
+          - '**/api/**/*.{ts,tsx,js,jsx}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx}'
+          - '**/routes/**/*.{ts,tsx,js,jsx}'
+          - '**/server/**/*.{ts,tsx,js,jsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Pages Router default handler
+      - regex: '(app|router|fastify)\.(get|post|put|patch|delete|use)\s*\(\s*["''][^"'']*["'']'
+        in:
+          - '**/api/**/*.{ts,tsx,js,jsx}'
+          - '**/app/api/**/*.{ts,tsx,js,jsx}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx}'
+          - '**/routes/**/*.{ts,tsx,js,jsx}'
+          - '**/server/**/*.{ts,tsx,js,jsx}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Express/Fastify route registration
+where:
+  filePatterns:
+    - '**/api/**/*.{ts,tsx,js,jsx}'
+    - '**/app/api/**/*.{ts,tsx,js,jsx}'
+    - '**/pages/api/**/*.{ts,tsx,js,jsx}'
+    - '**/routes/**/*.{ts,tsx,js,jsx}'
+    - '**/server/**/*.{ts,tsx,js,jsx}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: export\s+(async\s+function|const|function)\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b
+      label: App Router HTTP method export
+    - regex: export\s+default\s+(async\s+)?function\s+handler
+      label: Pages Router default handler
+    - regex: '(app|router|fastify)\.(get|post|put|patch|delete|use)\s*\(\s*["''][^"'']*["'']'
+      label: Express/Fastify route registration
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-306
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing HTTP route handlers for missing authentication —

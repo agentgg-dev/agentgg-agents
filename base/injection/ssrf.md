@@ -1,39 +1,112 @@
 ---
 slug: ssrf
 name: Server-Side Request Forgery (SSRF)
-description: Server-side HTTP requests (fetch, axios, http.request, ky, undici) where the URL is user-controlled — allows attackers to probe internal networks, cloud metadata endpoints, or localhost services. Walker mode reads related files together to check whether URL allowlists or validation helpers cover each fetch call.
+description: 'Server-side HTTP requests (fetch, axios, http.request, ky, undici) where the URL is user-controlled — allows attackers to probe internal networks, cloud metadata endpoints, or localhost services. Walker mode reads related files together to check whether URL allowlists or validation helpers cover each fetch call.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "fetch\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.|searchParams)"
-    label: "fetch with request-derived URL"
-  - regex: "axios\\.(get|post|put|delete|patch|request)\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|body\\.)"
-    label: "axios with request-derived URL"
-  - regex: "https?\\.request\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "http.request with interpolated URL"
-  - regex: "new\\s+URL\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|body\\.)"
-    label: "new URL from request data"
-  - regex: "fetch\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "fetch with interpolated URL"
-  - regex: "(ky|got|undici|node-fetch|phin)\\.(get|post|put|delete|patch|request)\\s*\\("
-    label: "alt HTTP client call"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: fetch\s*\(\s*(req\.|request\.|params\.|query\.|body\.|parsed\.|searchParams)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: fetch with request-derived URL
+      - regex: axios\.(get|post|put|delete|patch|request)\s*\(\s*(req\.|request\.|params\.|query\.|body\.)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: axios with request-derived URL
+      - regex: 'https?\.request\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: http.request with interpolated URL
+      - regex: new\s+URL\s*\(\s*(req\.|request\.|params\.|query\.|body\.)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: new URL from request data
+      - regex: 'fetch\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: fetch with interpolated URL
+      - regex: (ky|got|undici|node-fetch|phin)\.(get|post|put|delete|patch|request)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: alt HTTP client call
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: fetch\s*\(\s*(req\.|request\.|params\.|query\.|body\.|parsed\.|searchParams)
+      label: fetch with request-derived URL
+    - regex: axios\.(get|post|put|delete|patch|request)\s*\(\s*(req\.|request\.|params\.|query\.|body\.)
+      label: axios with request-derived URL
+    - regex: 'https?\.request\s*\(\s*`[^`]*\$\{'
+      label: http.request with interpolated URL
+    - regex: new\s+URL\s*\(\s*(req\.|request\.|params\.|query\.|body\.)
+      label: new URL from request data
+    - regex: 'fetch\s*\(\s*`[^`]*\$\{'
+      label: fetch with interpolated URL
+    - regex: (ky|got|undici|node-fetch|phin)\.(get|post|put|delete|patch|request)\s*\(
+      label: alt HTTP client call
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-918
-  - OWASP-A10:2021
+  - 'OWASP-A10:2021'
 ---
 
 You are reviewing a batch of Node.js / TypeScript files for

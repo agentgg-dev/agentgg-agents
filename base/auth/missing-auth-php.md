@@ -1,47 +1,169 @@
 ---
 slug: missing-auth-php
 name: Missing Authentication on PHP Endpoint
-description: PHP route handlers (Laravel routes/controllers, Symfony controllers, Slim/raw PHP route files, WordPress REST routes) with no authentication check — every endpoint reachable without a session is public. Walker mode follows route-group middleware, controller-level attributes, and shared base controllers across files.
+description: 'PHP route handlers (Laravel routes/controllers, Symfony controllers, Slim/raw PHP route files, WordPress REST routes) with no authentication check — every endpoint reachable without a session is public. Walker mode follows route-group middleware, controller-level attributes, and shared base controllers across files.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [php, laravel, symfony, slim, yii, cakephp, codeigniter, wordpress, drupal]
 noiseTier: normal
-filePatterns:
-  - "**/routes/**/*.php"
-  - "**/app/Http/Controllers/**/*.php"
-  - "**/src/Controller/**/*.php"
-  - "**/src/Controllers/**/*.php"
-  - "**/Controllers/**/*.php"
-  - "**/public/index.php"
-excludePatterns:
-  - "**/tests/**"
-  - "**/test/**"
-  - "**/Tests/**"
-  - "**/vendor/**"
-  - "**/node_modules/**"
-  - "**/storage/**"
-  - "**/bootstrap/cache/**"
-preFilter:
-  - regex: "Route::(get|post|put|patch|delete|any|match|resource)\\s*\\("
-    label: "Laravel Route::* registration"
-  - regex: "\\$(app|router|slim)->(get|post|put|patch|delete|any|map)\\s*\\("
-    label: "Slim / micro-framework route registration"
-  - regex: "#\\[\\s*Route\\s*\\("
-    label: "Symfony PHP8 #[Route] attribute"
-  - regex: "@Route\\s*\\("
-    label: "Symfony annotation @Route"
-  - regex: "class\\s+\\w+Controller\\s+extends\\s+\\w*Controller\\b"
-    label: "Controller subclass"
-  - regex: "register_rest_route\\s*\\("
-    label: "WordPress register_rest_route()"
-  - regex: "public\\s+function\\s+\\w+\\s*\\([^)]*Request\\b"
-    label: "Public action method receiving Request"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'Route::(get|post|put|patch|delete|any|match|resource)\s*\('
+        in:
+          - '**/routes/**/*.php'
+          - '**/app/Http/Controllers/**/*.php'
+          - '**/src/Controller/**/*.php'
+          - '**/src/Controllers/**/*.php'
+          - '**/Controllers/**/*.php'
+          - '**/public/index.php'
+        notIn:
+          - '**/tests/**'
+          - '**/test/**'
+          - '**/Tests/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/storage/**'
+          - '**/bootstrap/cache/**'
+        label: 'Laravel Route::* registration'
+      - regex: \$(app|router|slim)->(get|post|put|patch|delete|any|map)\s*\(
+        in:
+          - '**/routes/**/*.php'
+          - '**/app/Http/Controllers/**/*.php'
+          - '**/src/Controller/**/*.php'
+          - '**/src/Controllers/**/*.php'
+          - '**/Controllers/**/*.php'
+          - '**/public/index.php'
+        notIn:
+          - '**/tests/**'
+          - '**/test/**'
+          - '**/Tests/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/storage/**'
+          - '**/bootstrap/cache/**'
+        label: Slim / micro-framework route registration
+      - regex: '#\[\s*Route\s*\('
+        in:
+          - '**/routes/**/*.php'
+          - '**/app/Http/Controllers/**/*.php'
+          - '**/src/Controller/**/*.php'
+          - '**/src/Controllers/**/*.php'
+          - '**/Controllers/**/*.php'
+          - '**/public/index.php'
+        notIn:
+          - '**/tests/**'
+          - '**/test/**'
+          - '**/Tests/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/storage/**'
+          - '**/bootstrap/cache/**'
+        label: 'Symfony PHP8 #[Route] attribute'
+      - regex: '@Route\s*\('
+        in:
+          - '**/routes/**/*.php'
+          - '**/app/Http/Controllers/**/*.php'
+          - '**/src/Controller/**/*.php'
+          - '**/src/Controllers/**/*.php'
+          - '**/Controllers/**/*.php'
+          - '**/public/index.php'
+        notIn:
+          - '**/tests/**'
+          - '**/test/**'
+          - '**/Tests/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/storage/**'
+          - '**/bootstrap/cache/**'
+        label: Symfony annotation @Route
+      - regex: class\s+\w+Controller\s+extends\s+\w*Controller\b
+        in:
+          - '**/routes/**/*.php'
+          - '**/app/Http/Controllers/**/*.php'
+          - '**/src/Controller/**/*.php'
+          - '**/src/Controllers/**/*.php'
+          - '**/Controllers/**/*.php'
+          - '**/public/index.php'
+        notIn:
+          - '**/tests/**'
+          - '**/test/**'
+          - '**/Tests/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/storage/**'
+          - '**/bootstrap/cache/**'
+        label: Controller subclass
+      - regex: register_rest_route\s*\(
+        in:
+          - '**/routes/**/*.php'
+          - '**/app/Http/Controllers/**/*.php'
+          - '**/src/Controller/**/*.php'
+          - '**/src/Controllers/**/*.php'
+          - '**/Controllers/**/*.php'
+          - '**/public/index.php'
+        notIn:
+          - '**/tests/**'
+          - '**/test/**'
+          - '**/Tests/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/storage/**'
+          - '**/bootstrap/cache/**'
+        label: WordPress register_rest_route()
+      - regex: 'public\s+function\s+\w+\s*\([^)]*Request\b'
+        in:
+          - '**/routes/**/*.php'
+          - '**/app/Http/Controllers/**/*.php'
+          - '**/src/Controller/**/*.php'
+          - '**/src/Controllers/**/*.php'
+          - '**/Controllers/**/*.php'
+          - '**/public/index.php'
+        notIn:
+          - '**/tests/**'
+          - '**/test/**'
+          - '**/Tests/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/storage/**'
+          - '**/bootstrap/cache/**'
+        label: Public action method receiving Request
+  prompt: 'Run only if this project uses php, laravel, symfony, slim, yii, cakephp, codeigniter, wordpress, drupal — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.'
+where:
+  filePatterns:
+    - '**/routes/**/*.php'
+    - '**/app/Http/Controllers/**/*.php'
+    - '**/src/Controller/**/*.php'
+    - '**/src/Controllers/**/*.php'
+    - '**/Controllers/**/*.php'
+    - '**/public/index.php'
+  excludePatterns:
+    - '**/tests/**'
+    - '**/test/**'
+    - '**/Tests/**'
+    - '**/vendor/**'
+    - '**/node_modules/**'
+    - '**/storage/**'
+    - '**/bootstrap/cache/**'
+  preFilter:
+    - regex: 'Route::(get|post|put|patch|delete|any|match|resource)\s*\('
+      label: 'Laravel Route::* registration'
+    - regex: \$(app|router|slim)->(get|post|put|patch|delete|any|map)\s*\(
+      label: Slim / micro-framework route registration
+    - regex: '#\[\s*Route\s*\('
+      label: 'Symfony PHP8 #[Route] attribute'
+    - regex: '@Route\s*\('
+      label: Symfony annotation @Route
+    - regex: class\s+\w+Controller\s+extends\s+\w*Controller\b
+      label: Controller subclass
+    - regex: register_rest_route\s*\(
+      label: WordPress register_rest_route()
+    - regex: 'public\s+function\s+\w+\s*\([^)]*Request\b'
+      label: Public action method receiving Request
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-306
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing PHP HTTP route handlers for missing authentication —

@@ -1,18 +1,39 @@
 ---
 slug: sensitive-data-in-traces
 name: Sensitive Data in Observability Traces
-description: PII, passwords, credit cards, secrets, or tokens passed as attributes to OpenTelemetry spans, Datadog tracer, Sentry contexts, or other observability tools — data persists in third-party trace storage.
+description: 'PII, passwords, credit cards, secrets, or tokens passed as attributes to OpenTelemetry spans, Datadog tracer, Sentry contexts, or other observability tools — data persists in third-party trace storage.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java,kt}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+      - py
+      - go
+      - java
+      - kt
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - go
+    - java
+    - kt
 references:
   - CWE-359
   - CWE-532
-  - OWASP-A09:2021
+  - 'OWASP-A09:2021'
 ---
 
 You are reviewing source code for sensitive data being attached to

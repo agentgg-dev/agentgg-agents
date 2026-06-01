@@ -4,32 +4,82 @@ name: SOQL Injection (Salesforce)
 description: Salesforce SOQL queries built by string concatenation or template literal interpolation via jsforce / @jsforce/jsforce-node — allows operators and SOQL clauses to be injected. Walker mode confirms jsforce/salesforce context and traces query helpers.
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "\\.(query|queryAll|queryMore)\\s*\\(\\s*`[^`]*SELECT[^`]*\\$\\{"
-    label: "Salesforce-style query() with template-literal SOQL interpolation"
-  - regex: "\\.(query|queryAll|queryMore)\\s*\\(\\s*\"[^\"]*SELECT[^\"]*\"\\s*\\+"
-    label: "Salesforce-style query() with concatenated SOQL"
-  - regex: "tooling\\.query\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "Tooling API query() with template-literal interpolation"
-  - regex: "from\\s+['\"](jsforce|@jsforce/jsforce-node|@salesforce/)"
-    label: "imports jsforce / @salesforce/* (confirms context)"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '\.(query|queryAll|queryMore)\s*\(\s*`[^`]*SELECT[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Salesforce-style query() with template-literal SOQL interpolation
+      - regex: '\.(query|queryAll|queryMore)\s*\(\s*"[^"]*SELECT[^"]*"\s*\+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Salesforce-style query() with concatenated SOQL
+      - regex: 'tooling\.query\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Tooling API query() with template-literal interpolation
+      - regex: 'from\s+[''"](jsforce|@jsforce/jsforce-node|@salesforce/)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: imports jsforce / @salesforce/* (confirms context)
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\.(query|queryAll|queryMore)\s*\(\s*`[^`]*SELECT[^`]*\$\{'
+      label: Salesforce-style query() with template-literal SOQL interpolation
+    - regex: '\.(query|queryAll|queryMore)\s*\(\s*"[^"]*SELECT[^"]*"\s*\+'
+      label: Salesforce-style query() with concatenated SOQL
+    - regex: 'tooling\.query\s*\(\s*`[^`]*\$\{'
+      label: Tooling API query() with template-literal interpolation
+    - regex: 'from\s+[''"](jsforce|@jsforce/jsforce-node|@salesforce/)'
+      label: imports jsforce / @salesforce/* (confirms context)
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-89
-  - OWASP-A03:2021
+  - 'OWASP-A03:2021'
 ---
 
 You are reviewing TypeScript / JavaScript source code for Salesforce

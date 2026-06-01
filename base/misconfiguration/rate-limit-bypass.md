@@ -1,37 +1,81 @@
 ---
 slug: rate-limit-bypass
 name: Sensitive Endpoint Missing or Bypassable Rate Limit
-description: High-risk endpoints (login, password reset, charge, account delete, token generation, invite) without rate limiting, OR rate limits keyed on spoofable headers like X-Forwarded-For. Walker mode follows middleware and limiter helpers.
+description: 'High-risk endpoints (login, password reset, charge, account delete, token generation, invite) without rate limiting, OR rate limits keyed on spoofable headers like X-Forwarded-For. Walker mode follows middleware and limiter helpers.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/app/api/**/route.{ts,tsx,js,jsx,mjs}"
-  - "**/pages/api/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/routes/**/*.{ts,tsx,js,jsx,mjs}"
-  - "**/services/**/endpoints/**/*.ts"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "(login|signin|sign-in|signup|sign-up|password-reset|forgot|reset-password|charge|payment|refund|account.*(delete|remove)|token|invite|magic-link|otp|verify)"
-    label: "Sensitive endpoint name pattern"
-  - regex: "x-forwarded-for|X-Forwarded-For|x-real-ip|cf-connecting-ip"
-    label: "Reference to spoofable client-IP header"
-  - regex: "(rateLimit|rateLimiter|ratelimit|throttle|consume)\\s*[\\.(]"
-    label: "Rate-limit call"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: (login|signin|sign-in|signup|sign-up|password-reset|forgot|reset-password|charge|payment|refund|account.*(delete|remove)|token|invite|magic-link|otp|verify)
+        in:
+          - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/services/**/endpoints/**/*.ts'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Sensitive endpoint name pattern
+      - regex: x-forwarded-for|X-Forwarded-For|x-real-ip|cf-connecting-ip
+        in:
+          - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/services/**/endpoints/**/*.ts'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Reference to spoofable client-IP header
+      - regex: '(rateLimit|rateLimiter|ratelimit|throttle|consume)\s*[\.(]'
+        in:
+          - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+          - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+          - '**/services/**/endpoints/**/*.ts'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Rate-limit call
+where:
+  filePatterns:
+    - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
+    - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/services/**/endpoints/**/*.ts'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: (login|signin|sign-in|signup|sign-up|password-reset|forgot|reset-password|charge|payment|refund|account.*(delete|remove)|token|invite|magic-link|otp|verify)
+      label: Sensitive endpoint name pattern
+    - regex: x-forwarded-for|X-Forwarded-For|x-real-ip|cf-connecting-ip
+      label: Reference to spoofable client-IP header
+    - regex: '(rateLimit|rateLimiter|ratelimit|throttle|consume)\s*[\.(]'
+      label: Rate-limit call
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-307
   - CWE-799
-  - OWASP-A07:2021
+  - 'OWASP-A07:2021'
 ---
 
 You are reviewing HTTP endpoints for missing or bypassable rate

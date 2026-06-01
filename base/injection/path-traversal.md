@@ -1,33 +1,73 @@
 ---
 slug: path-traversal
 name: Path Traversal
-description: File system operations (read, write, unlink, stat) using user-controlled paths without validation — allows reading or writing files outside the intended directory via ../ sequences. Walker mode follows path-sanitizer helpers.
+description: 'File system operations (read, write, unlink, stat) using user-controlled paths without validation — allows reading or writing files outside the intended directory via ../ sequences. Walker mode follows path-sanitizer helpers.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "fs(\\.promises)?\\.(readFile|readFileSync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\\s*\\([^)]*\\b(req|request|params|body|userPath|filename|originalname)\\b"
-    label: "fs operation with request-derived path"
-  - regex: "fs(\\.promises)?\\.(readFile|writeFile|unlink|stat|open|createReadStream|createWriteStream)\\s*\\(\\s*`[^`]*\\$\\{"
-    label: "fs operation with template-literal path"
-  - regex: "path\\.(join|resolve)\\s*\\([^)]*\\b(req|request|params|body|userInput|filename|originalname)\\b"
-    label: "path.join/resolve combining with request data"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: 'fs(\.promises)?\.(readFile|readFileSync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\s*\([^)]*\b(req|request|params|body|userPath|filename|originalname)\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: fs operation with request-derived path
+      - regex: 'fs(\.promises)?\.(readFile|writeFile|unlink|stat|open|createReadStream|createWriteStream)\s*\(\s*`[^`]*\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: fs operation with template-literal path
+      - regex: 'path\.(join|resolve)\s*\([^)]*\b(req|request|params|body|userInput|filename|originalname)\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: path.join/resolve combining with request data
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: 'fs(\.promises)?\.(readFile|readFileSync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\s*\([^)]*\b(req|request|params|body|userPath|filename|originalname)\b'
+      label: fs operation with request-derived path
+    - regex: 'fs(\.promises)?\.(readFile|writeFile|unlink|stat|open|createReadStream|createWriteStream)\s*\(\s*`[^`]*\$\{'
+      label: fs operation with template-literal path
+    - regex: 'path\.(join|resolve)\s*\([^)]*\b(req|request|params|body|userInput|filename|originalname)\b'
+      label: path.join/resolve combining with request data
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-22
-  - OWASP-A01:2021
+  - 'OWASP-A01:2021'
 ---
 
 You are reviewing Node.js / TypeScript source code for path traversal

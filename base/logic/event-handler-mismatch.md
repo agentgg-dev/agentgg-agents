@@ -4,17 +4,26 @@ name: Event Handler Name Contradicts Event Name
 description: Event consumer / webhook dispatcher where the handler function name doesn't match the event type — copy-paste bug that silently calls the wrong handler.
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/event-consumer*.{ts,js,mjs}"
-  - "**/handler*.{ts,js,mjs}"
-  - "**/subscriber*.{ts,js,mjs}"
-  - "**/consumer*.{ts,js,mjs}"
-  - "**/dispatch*.{ts,js,mjs}"
-  - "**/listener*.{ts,js,mjs}"
-  - "**/webhook*.{ts,js,mjs}"
+precondition:
+  regex:
+    files:
+      - '**/event-consumer*.{ts,js,mjs}'
+      - '**/handler*.{ts,js,mjs}'
+      - '**/subscriber*.{ts,js,mjs}'
+      - '**/consumer*.{ts,js,mjs}'
+      - '**/dispatch*.{ts,js,mjs}'
+      - '**/listener*.{ts,js,mjs}'
+      - '**/webhook*.{ts,js,mjs}'
+where:
+  filePatterns:
+    - '**/event-consumer*.{ts,js,mjs}'
+    - '**/handler*.{ts,js,mjs}'
+    - '**/subscriber*.{ts,js,mjs}'
+    - '**/consumer*.{ts,js,mjs}'
+    - '**/dispatch*.{ts,js,mjs}'
+    - '**/listener*.{ts,js,mjs}'
+    - '**/webhook*.{ts,js,mjs}'
 references:
   - CWE-696
 ---

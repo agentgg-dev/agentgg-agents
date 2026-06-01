@@ -1,37 +1,81 @@
 ---
 slug: lambda-aws-handler
 name: AWS Lambda Handler Security
-description: AWS Lambda handler code review — function URL auth, input validation, secrets in env vars, execution role least privilege, response body content type. Walker mode correlates handler with SAM/CDK/Terraform deploy config and IAM role.
+description: 'AWS Lambda handler code review — function URL auth, input validation, secrets in env vars, execution role least privilege, response body content type. Walker mode correlates handler with SAM/CDK/Terraform deploy config and IAM role.'
 version: 0.1.0
 author: agentgg
-mode: walker
-tech: [aws-lambda]
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/lambda/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}"
-  - "**/handler*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}"
-  - "**/lambdas/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs,py,go,rs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/tests/**"
-  - "**/node_modules/**"
-  - "**/vendor/**"
-  - "**/dist/**"
-preFilter:
-  - regex: "export\\s+const\\s+handler\\s*=|exports\\.handler\\s*="
-    label: "Lambda handler export"
-  - regex: "APIGatewayProxyEvent|LambdaFunctionURLEvent|APIGatewayEvent"
-    label: "Lambda event type annotation"
-  - regex: "def\\s+(handler|lambda_handler)\\s*\\("
-    label: "Python Lambda handler"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: export\s+const\s+handler\s*=|exports\.handler\s*=
+        in:
+          - '**/lambda/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+          - '**/handler*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+          - '**/lambdas/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go,rs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+        label: Lambda handler export
+      - regex: APIGatewayProxyEvent|LambdaFunctionURLEvent|APIGatewayEvent
+        in:
+          - '**/lambda/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+          - '**/handler*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+          - '**/lambdas/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go,rs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+        label: Lambda event type annotation
+      - regex: def\s+(handler|lambda_handler)\s*\(
+        in:
+          - '**/lambda/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+          - '**/handler*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+          - '**/lambdas/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go,rs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+        label: Python Lambda handler
+  prompt: Run only if this project uses aws-lambda — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
+where:
+  filePatterns:
+    - '**/lambda/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+    - '**/handler*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+    - '**/lambdas/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs,py,go,rs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/node_modules/**'
+    - '**/vendor/**'
+    - '**/dist/**'
+  preFilter:
+    - regex: export\s+const\s+handler\s*=|exports\.handler\s*=
+      label: Lambda handler export
+    - regex: APIGatewayProxyEvent|LambdaFunctionURLEvent|APIGatewayEvent
+      label: Lambda event type annotation
+    - regex: def\s+(handler|lambda_handler)\s*\(
+      label: Python Lambda handler
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-285
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing AWS Lambda handler implementations for the standard

@@ -1,36 +1,87 @@
 ---
 slug: dev-auth-bypass
 name: Development Auth Bypass Reachable in Production
-description: Dev/test login endpoints, NODE_ENV=development guards, hardcoded test tokens, or mock session helpers that bypass auth — reachable in production if NODE_ENV isn't actually set or the deploy doesn't strip them. Walker mode follows mock helpers and env-flag definitions.
+description: 'Dev/test login endpoints, NODE_ENV=development guards, hardcoded test tokens, or mock session helpers that bypass auth — reachable in production if NODE_ENV isn''t actually set or the deploy doesn''t strip them. Walker mode follows mock helpers and env-flag definitions.'
 version: 0.1.0
 author: agentgg
-mode: walker
 noiseTier: normal
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
-excludePatterns:
-  - "**/__tests__/**"
-  - "**/*.test.{ts,tsx,js,jsx,mjs}"
-  - "**/*.spec.{ts,tsx,js,jsx,mjs}"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.next/**"
-preFilter:
-  - regex: "(NODE_ENV|isDev|IS_TEST|isTest)\\s*(===|==|!==|!=)\\s*[\"'](development|test|dev)[\"']"
-    label: "NODE_ENV / isDev / IS_TEST guard"
-  - regex: "(createMockSession|mockSession|fakeUser|devLogin|testLogin)\\s*\\("
-    label: "Mock-session / dev-login helper"
-  - regex: "[\"'](test_api_key|test-token|dev-token|bypass-secret)[\"']"
-    label: "Hardcoded test token literal"
-  - regex: "(app|router)\\.(get|post|use)\\s*\\(\\s*[\"']/(dev|test|debug|internal)/"
-    label: "Route registered under /dev /test /debug /internal"
-maxTurnsPerBatch: 30
-maxFilesPerBatch: 5
+precondition:
+  regex:
+    patterns:
+      - regex: '(NODE_ENV|isDev|IS_TEST|isTest)\s*(===|==|!==|!=)\s*["''](development|test|dev)["'']'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: NODE_ENV / isDev / IS_TEST guard
+      - regex: (createMockSession|mockSession|fakeUser|devLogin|testLogin)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Mock-session / dev-login helper
+      - regex: '["''](test_api_key|test-token|dev-token|bypass-secret)["'']'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Hardcoded test token literal
+      - regex: '(app|router)\.(get|post|use)\s*\(\s*["'']/(dev|test|debug|internal)/'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Route registered under /dev /test /debug /internal
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '(NODE_ENV|isDev|IS_TEST|isTest)\s*(===|==|!==|!=)\s*["''](development|test|dev)["'']'
+      label: NODE_ENV / isDev / IS_TEST guard
+    - regex: (createMockSession|mockSession|fakeUser|devLogin|testLogin)\s*\(
+      label: Mock-session / dev-login helper
+    - regex: '["''](test_api_key|test-token|dev-token|bypass-secret)["'']'
+      label: Hardcoded test token literal
+    - regex: '(app|router)\.(get|post|use)\s*\(\s*["'']/(dev|test|debug|internal)/'
+      label: Route registered under /dev /test /debug /internal
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-489
   - CWE-1188
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing source code for "dev only" or "test only" auth

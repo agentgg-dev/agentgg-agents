@@ -1,17 +1,30 @@
 ---
 slug: env-var-as-bool
 name: Env Var Used as Boolean ("false" is truthy)
-description: Security flag env vars (DISABLE_AUTH, SKIP_VERIFY, BYPASS_*) compared with if(process.env.X) — the string "false" is truthy in JavaScript, silently disabling the check.
+description: 'Security flag env vars (DISABLE_AUTH, SKIP_VERIFY, BYPASS_*) compared with if(process.env.X) — the string "false" is truthy in JavaScript, silently disabling the check.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: precise
-outputType: finding
-filePatterns:
-  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+precondition:
+  regex:
+    extensions:
+      - ts
+      - tsx
+      - js
+      - jsx
+      - mjs
+      - cjs
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
 references:
   - CWE-1287
-  - OWASP-A05:2021
+  - 'OWASP-A05:2021'
 ---
 
 You are reviewing JavaScript / TypeScript source code for env vars

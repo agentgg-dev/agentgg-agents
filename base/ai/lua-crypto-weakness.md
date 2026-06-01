@@ -1,14 +1,17 @@
 ---
 slug: lua-crypto-weakness
 name: Lua Cryptographic Weakness
-description: OpenResty / Lua code using weak cryptographic primitives — MD5 / SHA1 for security, AES-ECB, hardcoded IVs, timing-unsafe HMAC compare, insecure random.
+description: 'OpenResty / Lua code using weak cryptographic primitives — MD5 / SHA1 for security, AES-ECB, hardcoded IVs, timing-unsafe HMAC compare, insecure random.'
 version: 0.1.0
 author: agentgg
-mode: file
 noiseTier: noisy
-outputType: finding
-filePatterns:
-  - "**/*.lua"
+precondition:
+  regex:
+    extensions:
+      - lua
+where:
+  extensions:
+    - lua
 references:
   - CWE-327
   - CWE-208
