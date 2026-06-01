@@ -1,7 +1,7 @@
 ---
 slug: go-command-injection
 name: Command Injection (Go)
-description: Go exec.Command / exec.CommandContext / syscall.Exec with a shell invocation or a user-controlled command name — allows shell metacharacter injection. Walker mode traces argument origin and any wrapper functions around exec.
+description: Go exec.Command / exec.CommandContext / syscall.Exec with a shell invocation or a user-controlled command name — allows shell metacharacter injection. Traces argument origin and any wrapper functions around exec.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -64,7 +64,7 @@ You are reviewing Go source code for OS command injection —
 the command string or arguments are user-controlled in a way that
 allows shell metacharacter injection or arbitrary command selection.
 
-**Walker mode advantage:** the dangerous part is whether the
+**Cross-file analysis:** the dangerous part is whether the
 argument value crosses a trust boundary. Trace the variable: was it
 `r.URL.Query().Get(...)`, was it derived from a request handler
 parameter, or is it a constant from elsewhere in the package? Open

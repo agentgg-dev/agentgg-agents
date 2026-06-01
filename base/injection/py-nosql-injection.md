@@ -1,7 +1,7 @@
 ---
 slug: py-nosql-injection
 name: NoSQL Injection (Python / MongoDB)
-description: 'PyMongo / Motor queries using $where with f-strings, json.loads on request input fed into queries, or $regex from request values — allows operator smuggling or server-side JS execution. Walker mode traces request data through validators.'
+description: 'PyMongo / Motor queries using $where with f-strings, json.loads on request input fed into queries, or $regex from request values — allows operator smuggling or server-side JS execution. Traces request data through validators.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -103,7 +103,7 @@ Motor, or MongoEngine — patterns where request input reaches a MongoDB
 query in a way that allows an attacker to inject operators or execute
 server-side JavaScript.
 
-**Walker mode advantage:** the request value may be funneled through
+**Cross-file analysis:** the request value may be funneled through
 a pydantic model, a marshmallow schema, or a `re.escape()` helper.
 Follow the variable backwards through imports and function calls —
 if a schema validates the type before the query, the operator-

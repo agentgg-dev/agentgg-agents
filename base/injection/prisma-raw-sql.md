@@ -1,7 +1,7 @@
 ---
 slug: prisma-raw-sql
 name: Prisma Raw SQL Escape Hatch
-description: Prisma $queryRawUnsafe / $executeRawUnsafe accept plain strings and bypass parameterization. Also flags $queryRaw / $executeRaw called as a function rather than a tagged template. Walker mode follows query helpers to verify whether arguments are user-controlled.
+description: Prisma $queryRawUnsafe / $executeRawUnsafe accept plain strings and bypass parameterization. Also flags $queryRaw / $executeRaw called as a function rather than a tagged template. Follows query helpers to verify whether arguments are user-controlled.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -74,7 +74,7 @@ references:
 You are reviewing TypeScript / JavaScript source code for SQL
 injection in Prisma raw-query escape hatches.
 
-**Walker mode advantage:** Prisma raw calls are often wrapped in
+**Cross-file analysis:** Prisma raw calls are often wrapped in
 repository helpers (`lib/db.ts`, `repositories/*.ts`). When the
 candidate site is `userRepo.searchByName(q)`, follow the import to
 the repository and verify whether the helper builds the SQL via

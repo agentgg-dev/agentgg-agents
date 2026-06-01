@@ -1,7 +1,7 @@
 ---
 slug: xss
 name: Cross-Site Scripting (XSS)
-description: 'Untrusted input rendered as raw HTML — dangerouslySetInnerHTML, innerHTML, v-html, template literals in HTML, document.write, and unescaped server-side templates. Walker mode follows sanitizer wrappers and helpers.'
+description: 'Untrusted input rendered as raw HTML — dangerouslySetInnerHTML, innerHTML, v-html, template literals in HTML, document.write, and unescaped server-side templates. Follows sanitizer wrappers and helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -138,7 +138,7 @@ You are reviewing source code for cross-site scripting (XSS) — places
 where untrusted input is rendered as raw HTML without encoding,
 allowing an attacker to inject arbitrary scripts into a page.
 
-**Walker mode advantage:** the value reaching a sink is often the
+**Cross-file analysis:** the value reaching a sink is often the
 output of a `marked()`, `markdown()`, or sanitizer call defined in a
 shared module. Open the import and verify: a DOMPurify-wrapped value
 is safe; a raw markdown-to-HTML result is not. Also trace the

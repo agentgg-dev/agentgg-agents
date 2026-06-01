@@ -1,7 +1,7 @@
 ---
 slug: missing-auth-php
 name: Missing Authentication on PHP Endpoint
-description: 'PHP route handlers (Laravel routes/controllers, Symfony controllers, Slim/raw PHP route files, WordPress REST routes) with no authentication check — every endpoint reachable without a session is public. Walker mode follows route-group middleware, controller-level attributes, and shared base controllers across files.'
+description: 'PHP route handlers (Laravel routes/controllers, Symfony controllers, Slim/raw PHP route files, WordPress REST routes) with no authentication check — every endpoint reachable without a session is public. Follows route-group middleware, controller-level attributes, and shared base controllers across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -170,7 +170,7 @@ You are reviewing PHP HTTP route handlers for missing authentication —
 endpoints that handle requests but never call an auth check, so every
 caller is treated as authorized regardless of session.
 
-**Walker mode advantage:** an unguarded-looking controller action may
+**Cross-file analysis:** an unguarded-looking controller action may
 be covered by route-group middleware (Laravel `Route::group(['middleware'
 => 'auth'], ...)`), a controller-level `__construct` calling
 `$this->middleware('auth')`, a Symfony attribute on the controller

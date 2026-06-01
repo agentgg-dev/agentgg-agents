@@ -1,7 +1,7 @@
 ---
 slug: streaming-endpoint
 name: AI Streaming Endpoint Without Auth / Rate Limit
-description: 'streamText / streamObject / generateText / OpenAI stream:true / SSE endpoints that lack pre-stream auth and rate limiting — unlimited LLM token billing and prompt injection risk. Walker mode follows auth + rate-limit middleware across files.'
+description: 'streamText / streamObject / generateText / OpenAI stream:true / SSE endpoints that lack pre-stream auth and rate limiting — unlimited LLM token billing and prompt injection risk. Follows auth + rate-limit middleware across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -79,7 +79,7 @@ You are reviewing AI streaming endpoints — handlers that call
 `openai.chat.completions.create({ stream: true })` and return a
 streaming response.
 
-**Walker mode advantage:** auth and rate-limit may be applied via
+**Cross-file analysis:** auth and rate-limit may be applied via
 middleware (`withAuth`, `withRateLimit`) or imported helpers. Open
 the wrapper and verify it runs BEFORE the streaming call (auth that
 runs after bytes have started streaming is too late). Also check for

@@ -1,7 +1,7 @@
 ---
 slug: soql-injection
 name: SOQL Injection (Salesforce)
-description: Salesforce SOQL queries built by string concatenation or template literal interpolation via jsforce / @jsforce/jsforce-node — allows operators and SOQL clauses to be injected. Walker mode confirms jsforce/salesforce context and traces query helpers.
+description: Salesforce SOQL queries built by string concatenation or template literal interpolation via jsforce / @jsforce/jsforce-node — allows operators and SOQL clauses to be injected. Confirms jsforce/salesforce context and traces query helpers.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -88,7 +88,7 @@ string concatenation or template literal interpolation of user-
 controlled values, allowing an attacker to append SOQL clauses and
 exfiltrate or modify records they should not access.
 
-**Walker mode advantage:** confirm the import is jsforce /
+**Cross-file analysis:** confirm the import is jsforce /
 `@salesforce/*` — `.query()` is a common method name on many SDKs
 that aren't SOQL. Then follow the SOQL string back through any helper
 to find the construction site, and verify whether interpolated values

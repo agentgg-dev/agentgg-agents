@@ -1,7 +1,7 @@
 ---
 slug: expensive-api-abuse
 name: Expensive API Call Without Abuse Protection
-description: 'Endpoints that invoke paid APIs (LLM, payment, email send, SMS) without rate limiting, captcha, or other abuse gating — single user can drain budget. Walker mode follows rate-limit middleware across files.'
+description: 'Endpoints that invoke paid APIs (LLM, payment, email send, SMS) without rate limiting, captcha, or other abuse gating — single user can drain budget. Follows rate-limit middleware across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -106,7 +106,7 @@ references:
 You are reviewing endpoints that invoke paid / metered APIs for
 missing abuse protection.
 
-**Walker mode advantage:** abuse protection is typically applied via
+**Cross-file analysis:** abuse protection is typically applied via
 shared middleware/wrappers (`withRateLimit`, `requireAuth`,
 `assertCaptcha`). If the candidate route doesn't show them inline,
 look for HOF wrapping or middleware composition — open the wrapper

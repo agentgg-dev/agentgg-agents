@@ -1,7 +1,7 @@
 ---
 slug: js-react-unsafe-json-in-html
 name: Unsafe JSON in HTML Script Tags (React/Next.js)
-description: JSON.stringify output embedded in a script tag or dangerouslySetInnerHTML without escaping </script> — allows closing the script tag early to inject HTML. Walker mode traces any safe-stringify helper imports.
+description: JSON.stringify output embedded in a script tag or dangerouslySetInnerHTML without escaping </script> — allows closing the script tag early to inject HTML. Traces any safe-stringify helper imports.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -73,7 +73,7 @@ You are reviewing React and Next.js code for a specific XSS variant:
 `JSON.stringify` output embedded directly in a `<script>` block or
 `dangerouslySetInnerHTML` without escaping `</script>` sequences.
 
-**Walker mode advantage:** projects commonly have a `safeJsonStringify`
+**Cross-file analysis:** projects commonly have a `safeJsonStringify`
 or `serializeForScript` helper imported from a shared module. If the
 candidate is `safeJsonStringify(state)`, open the helper and verify
 it replaces `<`/`>`/`&` (or equivalent escaping). If it's bare

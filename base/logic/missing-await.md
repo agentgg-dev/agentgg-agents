@@ -1,7 +1,7 @@
 ---
 slug: missing-await
 name: Missing await on Async Call
-description: 'Async function called without await — error is swallowed, return value is a Promise (truthy), and the result is silently discarded. Especially dangerous around auth verifiers, mutex/lock helpers, and transactions. Walker mode follows function definitions to confirm async-ness.'
+description: 'Async function called without await — error is swallowed, return value is a Promise (truthy), and the result is silently discarded. Especially dangerous around auth verifiers, mutex/lock helpers, and transactions. Follows function definitions to confirm async-ness.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -74,7 +74,7 @@ references:
 You are reviewing TypeScript / JavaScript code for async functions
 called without `await`.
 
-**Walker mode advantage:** the verdict depends on whether the called
+**Cross-file analysis:** the verdict depends on whether the called
 function is actually async. Open the function definition: if
 `verifyToken` is declared `async function` (or returns a Promise),
 the unawaited usage in `if (verifyToken(...))` is a bug. If it's

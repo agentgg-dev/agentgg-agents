@@ -1,7 +1,7 @@
 ---
 slug: insecure-crypto
 name: Insecure Cryptographic Primitives
-description: 'Weak hashes (MD5, SHA1), deprecated ciphers (createCipher, DES, RC4, Blowfish), timing-unsafe equality checks on HMACs/digests, and Math.random for security tokens. Walker mode traces helper functions to confirm the security context.'
+description: 'Weak hashes (MD5, SHA1), deprecated ciphers (createCipher, DES, RC4, Blowfish), timing-unsafe equality checks on HMACs/digests, and Math.random for security tokens. Traces helper functions to confirm the security context.'
 version: 0.1.0
 author: agentgg
 noiseTier: noisy
@@ -103,7 +103,7 @@ broken or deprecated cryptographic primitives — weak hashes, removed
 ciphers, non-constant-time comparisons, and PRNGs that aren't
 cryptographically secure.
 
-**Walker mode advantage:** MD5/SHA1 for content addressing (e.g.,
+**Cross-file analysis:** MD5/SHA1 for content addressing (e.g.,
 ETag, dedup) is acceptable; for password hashing or HMAC it's not.
 Trace the call result: where does the hash flow? If it's compared
 against a stored password or used as a session token, it's a finding.

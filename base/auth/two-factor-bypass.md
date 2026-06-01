@@ -1,7 +1,7 @@
 ---
 slug: two-factor-bypass
 name: Two-Factor Authentication Bypass
-description: '2FA / MFA verification steps that can be skipped — full session granted before the second factor is validated, the second-factor endpoint trusts client-supplied "verified" flags, brute-forceable OTP codes, or step-up paths that don''t gate sensitive actions. Walker mode reads the auth flow across login, verify, and session-issuance handlers.'
+description: '2FA / MFA verification steps that can be skipped — full session granted before the second factor is validated, the second-factor endpoint trusts client-supplied "verified" flags, brute-forceable OTP codes, or step-up paths that don''t gate sensitive actions. Reads the auth flow across login, verify, and session-issuance handlers.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -89,7 +89,7 @@ You are reviewing the multi-step authentication flow for 2FA / MFA
 bypass — patterns where the second factor can be skipped, bypassed,
 or made trivial to brute-force.
 
-**Walker mode advantage:** 2FA flows span at least three files —
+**Cross-file analysis:** 2FA flows span at least three files —
 `POST /login` (validates password), `POST /verify-2fa` (validates
 TOTP), and the session-issuance helper. The bug is usually in how
 state is passed between them. Read the whole flow, not just one file.

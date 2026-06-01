@@ -1,7 +1,7 @@
 ---
 slug: non-atomic-operation
 name: Non-Atomic Read-Check-Write (TOCTOU)
-description: 'Read a value, check a condition, then write — between the read and write another request can change the value. Classic race condition affecting balances, counters, quotas, and uniqueness checks. Walker mode follows transaction wrappers across files.'
+description: 'Read a value, check a condition, then write — between the read and write another request can change the value. Classic race condition affecting balances, counters, quotas, and uniqueness checks. Follows transaction wrappers across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -87,7 +87,7 @@ operations — TOCTOU (time-of-check / time-of-use) race conditions
 where a value is read, a decision is made on it, and a write happens,
 all in separate database calls.
 
-**Walker mode advantage:** the read and write may be inside a helper
+**Cross-file analysis:** the read and write may be inside a helper
 that itself runs in a transaction (`withTransaction(async (tx) => ...)`).
 Open the helper to confirm atomicity. Also check whether the write
 uses an atomic operator (`{ increment: 1 }`, `decrement`, SQL

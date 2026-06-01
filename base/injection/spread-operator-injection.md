@@ -1,7 +1,7 @@
 ---
 slug: spread-operator-injection
 name: Mass Assignment via Spread Operator
-description: 'Object spread of req.body / params / query into a DB insert, update, or trusted object — allows callers to set fields the application never intended to expose. Walker mode traces validation between spread and DB write.'
+description: 'Object spread of req.body / params / query into a DB insert, update, or trusted object — allows callers to set fields the application never intended to expose. Traces validation between spread and DB write.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -88,7 +88,7 @@ assignment via the object spread operator — spreading a request body,
 query, or params object into a payload that is sent to the database
 without an explicit allowlist of fields.
 
-**Walker mode advantage:** the spread might happen on a Zod/Joi
+**Cross-file analysis:** the spread might happen on a Zod/Joi
 parse result, not on the raw body. Trace the spread target: if it's
 `parsedBody` where `parsedBody = schema.parse(req.body)` and the
 schema strips unknown keys, the bug is closed. Open the schema and

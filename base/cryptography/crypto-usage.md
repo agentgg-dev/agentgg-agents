@@ -1,7 +1,7 @@
 ---
 slug: crypto-usage
 name: Crypto Primitive Usage (Review Site)
-description: 'Any file touching cryptographic primitives — sign, verify, encrypt, decrypt, hash, HMAC, random, key derivation. Surfaces subtle bugs the narrow insecure-crypto rule misses (IV reuse, missing AEAD tag verify, weak key sizes, algorithm confusion). Walker mode follows key + IV generation across files.'
+description: 'Any file touching cryptographic primitives — sign, verify, encrypt, decrypt, hash, HMAC, random, key derivation. Surfaces subtle bugs the narrow insecure-crypto rule misses (IV reuse, missing AEAD tag verify, weak key sizes, algorithm confusion). Follows key + IV generation across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: noisy
@@ -118,7 +118,7 @@ sizes, replay protection gaps) can be checked manually or by the AI
 pass. The narrow `insecure-crypto` agent catches obvious bad
 algorithms; this agent catches the more nuanced misuses.
 
-**Walker mode advantage:** the most dangerous crypto bugs (IV reuse,
+**Cross-file analysis:** the most dangerous crypto bugs (IV reuse,
 weak key sizes, missing tag verification) require seeing how the
 *key* and *IV* are generated, which is usually in a separate config
 or key-management module. When a candidate calls

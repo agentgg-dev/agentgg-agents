@@ -1,7 +1,7 @@
 ---
 slug: zod-passthrough-mass-assignment
 name: Zod Passthrough Mass Assignment
-description: 'Zod schema using .passthrough() allows arbitrary extra fields through validation — if the parsed output is written to the database, callers can set columns the schema never declared. Walker mode follows imports to see whether parsed output reaches a DB write.'
+description: 'Zod schema using .passthrough() allows arbitrary extra fields through validation — if the parsed output is written to the database, callers can set columns the schema never declared. Follows imports to see whether parsed output reaches a DB write.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -49,7 +49,7 @@ output to include fields beyond those declared in the schema. When the
 result of such a parse is fed directly into a database write, the
 caller can set columns the application never intended to expose.
 
-**Walker mode advantage:** schemas with `.passthrough()` are often
+**Cross-file analysis:** schemas with `.passthrough()` are often
 defined in a `schemas/` or `validators/` module and consumed
 elsewhere. Follow the import of the schema export to find every
 callsite — flag only those where the parsed output reaches a DB

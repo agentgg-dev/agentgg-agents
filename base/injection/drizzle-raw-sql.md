@@ -1,7 +1,7 @@
 ---
 slug: drizzle-raw-sql
 name: Drizzle Raw SQL Escape Hatch
-description: Drizzle ORM's sql.raw() / sql.unsafe() bypass parameterization — user-built strings reach the query engine as-is. Also flags risky concatenation inside sql`` templates. Walker mode follows imports to confirm Drizzle is in use and to trace argument sources.
+description: Drizzle ORM's sql.raw() / sql.unsafe() bypass parameterization — user-built strings reach the query engine as-is. Also flags risky concatenation inside sql`` templates. Follows imports to confirm Drizzle is in use and to trace argument sources.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -76,7 +76,7 @@ expressions inside its `` sql`...` `` tagged template, but the
 `sql.raw()` and `sql.unsafe()` helpers explicitly bypass this — they
 insert the argument string literally into the final SQL.
 
-**Walker mode advantage:** the candidate site may be a repository
+**Cross-file analysis:** the candidate site may be a repository
 helper that wraps `sql.raw(...)`. Follow the import chain to verify
 (a) the file's `sql` import is from `drizzle-orm` (not some other
 `sql` helper), and (b) the string argument actually carries user

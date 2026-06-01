@@ -1,7 +1,7 @@
 ---
 slug: mcp-tool-handler
 name: MCP Tool Handler Security
-description: 'MCP (Model Context Protocol) server tool handlers — verify per-tool authentication, argument validation, and capability scoping. Walker mode follows tool execute helpers and server bootstrap.'
+description: 'MCP (Model Context Protocol) server tool handlers — verify per-tool authentication, argument validation, and capability scoping. Follows tool execute helpers and server bootstrap.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -73,7 +73,7 @@ references:
 You are reviewing MCP (Model Context Protocol) server tool handlers
 for missing authentication and input validation.
 
-**Walker mode advantage:** an MCP server's auth posture depends on
+**Cross-file analysis:** an MCP server's auth posture depends on
 its transport (stdio = local user is the boundary; HTTP/SSE = needs
 explicit auth). Find the server bootstrap file and check which
 transport is in use. Tool `execute` bodies may delegate to shared

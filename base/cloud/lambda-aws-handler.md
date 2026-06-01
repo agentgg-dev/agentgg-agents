@@ -1,7 +1,7 @@
 ---
 slug: lambda-aws-handler
 name: AWS Lambda Handler Security
-description: 'AWS Lambda handler code review — function URL auth, input validation, secrets in env vars, execution role least privilege, response body content type. Walker mode correlates handler with SAM/CDK/Terraform deploy config and IAM role.'
+description: 'AWS Lambda handler code review — function URL auth, input validation, secrets in env vars, execution role least privilege, response body content type. Correlates handler with SAM/CDK/Terraform deploy config and IAM role.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -81,7 +81,7 @@ references:
 You are reviewing AWS Lambda handler implementations for the standard
 set of security issues specific to Lambda.
 
-**Walker mode advantage:** the handler's auth posture depends on its
+**Cross-file analysis:** the handler's auth posture depends on its
 deployment context (Function URL `AuthType`, API Gateway authorizer,
 IAM role). Look for sibling files: `template.yaml`, `serverless.yml`,
 `*.tf`, CDK constructs. Open them and verify the auth setup. Also

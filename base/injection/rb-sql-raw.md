@@ -87,7 +87,7 @@ inside a SQL string passed to a query/execute method — the
 interpolation runs before the SQL is sent to the driver, bypassing
 parameterization.
 
-**Walker mode advantage:** Rails apps often hide raw SQL in model
+**Cross-file analysis:** Rails apps often hide raw SQL in model
 scopes (`scope :search, ->(q) { where("name = '#{q}'") }`) or in
 shared concerns. The controller looks innocuous (`User.search(q)`)
 — follow the import/include chain to the scope definition and check

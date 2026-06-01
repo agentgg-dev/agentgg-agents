@@ -1,7 +1,7 @@
 ---
 slug: go-ssrf
 name: Server-Side Request Forgery (Go)
-description: 'Go HTTP requests (http.Get, http.Post, http.NewRequest) where the URL is built from string concatenation or fmt.Sprintf with caller-controlled input — SSRF risk. Walker mode follows allowlist helpers and HTTP client wrappers.'
+description: 'Go HTTP requests (http.Get, http.Post, http.NewRequest) where the URL is built from string concatenation or fmt.Sprintf with caller-controlled input — SSRF risk. Follows allowlist helpers and HTTP client wrappers.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -65,7 +65,7 @@ string concatenation, `fmt.Sprintf`, or `url.Parse` using a value
 that originates from caller input (HTTP request, queue message, CLI
 flag, configuration from an external source).
 
-**Walker mode advantage:** Go projects commonly have a `pkg/httpx` or
+**Cross-file analysis:** Go projects commonly have a `pkg/httpx` or
 `internal/safehttp` wrapper that enforces an allowlist or blocks
 private IPs. If a candidate routes through `safehttp.Get(url)`, open
 the wrapper and verify what it actually does. Trace the URL

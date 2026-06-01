@@ -1,7 +1,7 @@
 ---
 slug: azure-function-handler
 name: Azure Function Handler Security
-description: 'Azure Functions — HTTP trigger authLevel anonymous on sensitive operations, missing input validation, managed identity misuse, secrets in app settings. Walker mode correlates function.json bindings with handler code.'
+description: 'Azure Functions — HTTP trigger authLevel anonymous on sensitive operations, missing input validation, managed identity misuse, secrets in app settings. Correlates function.json bindings with handler code.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -102,7 +102,7 @@ references:
 You are reviewing Azure Function implementations for the standard
 set of security issues.
 
-**Walker mode advantage:** the auth posture is split between
+**Cross-file analysis:** the auth posture is split between
 `function.json` (or the C# attribute) declaring `authLevel`, and the
 handler body. Open both — `anonymous` is fine ONLY if the handler
 does its own auth check. Also check sibling files for Key Vault

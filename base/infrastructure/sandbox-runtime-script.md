@@ -1,7 +1,7 @@
 ---
 slug: sandbox-runtime-script
 name: Sandbox / VM Runtime Executing User Code
-description: 'vm.runInNewContext, vm.runInThisContext, vm2, isolated-vm, ses-shim, py-sandbox, Lua sandbox, or similar runtimes executing caller-supplied code — most are not true sandboxes and can be escaped. Walker mode follows sandbox-setup helpers and exposed globals.'
+description: 'vm.runInNewContext, vm.runInThisContext, vm2, isolated-vm, ses-shim, py-sandbox, Lua sandbox, or similar runtimes executing caller-supplied code — most are not true sandboxes and can be escaped. Follows sandbox-setup helpers and exposed globals.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -100,7 +100,7 @@ references:
 You are reviewing source code for code-evaluation runtimes that
 execute caller-supplied JavaScript / Python / Lua scripts.
 
-**Walker mode advantage:** sandboxing posture depends on what's
+**Cross-file analysis:** sandboxing posture depends on what's
 exposed to the sandbox context — `fs`, `child_process`, fetch, host
 references — and on memory/time budgets. When the candidate calls
 `runInNewContext(code, sandbox)`, open the `sandbox` object's

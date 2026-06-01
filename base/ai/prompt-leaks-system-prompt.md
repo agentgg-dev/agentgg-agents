@@ -1,7 +1,7 @@
 ---
 slug: prompt-leaks-system-prompt
 name: System Prompt Embeds Secrets / Env Vars
-description: 'LLM system prompts (system / instructions / role:system messages) that embed env-var secrets or hardcoded API tokens — values can be extracted via prompt injection or appear in trace logs. Walker mode follows prompt builders across files.'
+description: 'LLM system prompts (system / instructions / role:system messages) that embed env-var secrets or hardcoded API tokens — values can be extracted via prompt injection or appear in trace logs. Follows prompt builders across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -77,7 +77,7 @@ instructions embed secrets — API keys, tokens, passwords — that
 could be extracted by an attacker via prompt injection or leak via
 trace logs / model output / LLM-as-a-judge pipelines.
 
-**Walker mode advantage:** the system prompt may be built by a
+**Cross-file analysis:** the system prompt may be built by a
 `buildSystemPrompt(ctx)` helper that interpolates secrets internally.
 Follow the call to the prompt builder and check what it stitches in.
 Also confirm whether referenced env vars hold actual secrets (e.g.,

@@ -1,7 +1,7 @@
 ---
 slug: drizzle-mass-assignment
 name: Drizzle ORM Mass Assignment
-description: Drizzle insert/update where .values() or .set() receives a request body directly or via spread — caller can write to columns the application never intended to expose. Walker mode traces the payload source and any schema parser between request and DB call.
+description: Drizzle insert/update where .values() or .set() receives a request body directly or via spread — caller can write to columns the application never intended to expose. Traces the payload source and any schema parser between request and DB call.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -88,7 +88,7 @@ ORM — specifically `db.insert(table).values(payload)` and
 `db.update(table).set(payload)` where `payload` is a request body or
 spread of one, allowing callers to write to any column the table has.
 
-**Walker mode advantage:** the payload variable is often defined a few
+**Cross-file analysis:** the payload variable is often defined a few
 lines or one helper away. Trace it: was it `await req.json()`, was it
 `schema.parse(...)` (Zod), or did it come from a sanitizing helper?
 Also read the schema definition — `.passthrough()` defeats Zod's

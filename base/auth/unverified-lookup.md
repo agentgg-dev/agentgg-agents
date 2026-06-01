@@ -1,7 +1,7 @@
 ---
 slug: unverified-lookup
 name: Unverified ID Lookup (IDOR)
-description: 'DB lookup by ID (getProjectById, findById, findUnique by id) where the result is returned to the caller without verifying ownership — classic Insecure Direct Object Reference. Walker mode follows repo helpers to verify scoping.'
+description: 'DB lookup by ID (getProjectById, findById, findUnique by id) where the result is returned to the caller without verifying ownership — classic Insecure Direct Object Reference. Follows repo helpers to verify scoping.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -73,7 +73,7 @@ You are reviewing source code for Insecure Direct Object Reference
 checking whether the authenticated user owns or has access to that
 record.
 
-**Walker mode advantage:** the ownership check may live in the helper
+**Cross-file analysis:** the ownership check may live in the helper
 itself. Open `getProjectById` — does it accept the session user and
 scope the query, or does it just look up by id? Some repos have two
 flavors (`getProjectById` raw vs. `getProjectForUser` scoped); the

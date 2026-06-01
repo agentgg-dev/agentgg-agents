@@ -1,7 +1,7 @@
 ---
 slug: rs-sql-raw
 name: Raw SQL Injection (Rust)
-description: 'Rust SQL execution (sqlx runtime form with format!, diesel sql_query with format!, sea-orm Statement::from_string) with format! interpolation — note that sqlx::query!() macro is compile-time-checked and safe. Walker mode disambiguates macro vs function-call form.'
+description: 'Rust SQL execution (sqlx runtime form with format!, diesel sql_query with format!, sea-orm Statement::from_string) with format! interpolation — note that sqlx::query!() macro is compile-time-checked and safe. Disambiguates macro vs function-call form.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -70,7 +70,7 @@ sea-orm, and rusqlite. The unsafe pattern is using `format!()` (or
 user-controlled values, then passing the resulting `String` to a
 runtime query function.
 
-**Walker mode advantage:** `sqlx::query!()` (macro, safe) and
+**Cross-file analysis:** `sqlx::query!()` (macro, safe) and
 `sqlx::query()` (function, unsafe with `format!`) look nearly
 identical at a glance. Walker can confirm which is in use, follow the
 SQL string back through helper functions, and check whether any

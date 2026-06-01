@@ -1,7 +1,7 @@
 ---
 slug: fs-write-symlink-boundary
 name: Filesystem Write Without Symlink Boundary Check
-description: fs.writeFile / fs.mkdir / fs.copyFile to a non-literal path without realpath / startsWith(rootDir) validation — attacker can place a symlink to escape the intended root. Walker mode follows path-resolver helpers.
+description: fs.writeFile / fs.mkdir / fs.copyFile to a non-literal path without realpath / startsWith(rootDir) validation — attacker can place a symlink to escape the intended root. Follows path-resolver helpers.
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -62,7 +62,7 @@ You are reviewing Node.js source code for filesystem writes that
 operate on a user-influenced path without verifying the path resolves
 inside an allowed root.
 
-**Walker mode advantage:** projects commonly have a `safeWrite()` or
+**Cross-file analysis:** projects commonly have a `safeWrite()` or
 `resolveWithinRoot()` helper that does the `realpath + startsWith`
 check. When the candidate file uses such a helper, open it to verify
 the check is correct — common mistakes: comparing to `ROOT` without

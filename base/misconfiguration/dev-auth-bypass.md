@@ -1,7 +1,7 @@
 ---
 slug: dev-auth-bypass
 name: Development Auth Bypass Reachable in Production
-description: 'Dev/test login endpoints, NODE_ENV=development guards, hardcoded test tokens, or mock session helpers that bypass auth — reachable in production if NODE_ENV isn''t actually set or the deploy doesn''t strip them. Walker mode follows mock helpers and env-flag definitions.'
+description: 'Dev/test login endpoints, NODE_ENV=development guards, hardcoded test tokens, or mock session helpers that bypass auth — reachable in production if NODE_ENV isn''t actually set or the deploy doesn''t strip them. Follows mock helpers and env-flag definitions.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -92,7 +92,7 @@ reachable if:
 - The deploy doesn't tree-shake the dev paths
 - An attacker can flip `NODE_ENV` via env injection
 
-**Walker mode advantage:** the candidate may use a `createMockSession`
+**Cross-file analysis:** the candidate may use a `createMockSession`
 or `devAuth()` helper imported from a `dev-tools/` module. Open the
 helper to confirm it actually grants admin or skips checks. Also
 verify whether the `NODE_ENV` branch sets user state (a finding) or

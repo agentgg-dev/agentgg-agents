@@ -1,7 +1,7 @@
 ---
 slug: php-sql-raw
 name: Raw SQL Injection (PHP)
-description: 'PHP SQL execution (PDO, mysqli, Doctrine ORM/DBAL) with string concatenation in the query — including .prepare() with concatenation, which defeats parameterization. Walker mode traces SQL helpers and request sources.'
+description: 'PHP SQL execution (PDO, mysqli, Doctrine ORM/DBAL) with string concatenation in the query — including .prepare() with concatenation, which defeats parameterization. Traces SQL helpers and request sources.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -60,7 +60,7 @@ PHP string concatenation (`.`) used to build the SQL string from user
 input, including `prepare()` calls — concatenation defeats
 parameterization even when prepare/execute is used.
 
-**Walker mode advantage:** Symfony/Laravel apps typically funnel SQL
+**Cross-file analysis:** Symfony/Laravel apps typically funnel SQL
 through repository or service classes. The dangerous concatenation
 may be one method away from the controller. Follow `use` statements
 and class hierarchies to find the real execution site, and trace

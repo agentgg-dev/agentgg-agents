@@ -1,7 +1,7 @@
 ---
 slug: py-sql-raw
 name: Raw SQL Injection (Python)
-description: 'Python SQL execution (SQLAlchemy, psycopg, pymysql, sqlite3, asyncpg, Django ORM raw) with f-string, %-format, .format(), or + concatenation in the SQL string. Walker mode traces query helpers across modules.'
+description: 'Python SQL execution (SQLAlchemy, psycopg, pymysql, sqlite3, asyncpg, Django ORM raw) with f-string, %-format, .format(), or + concatenation in the SQL string. Traces query helpers across modules.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -116,7 +116,7 @@ APIs. The danger signal is the SQL string being built from user
 input via f-strings, `%`-formatting, `.format()`, or `+`
 concatenation — all of which bypass the driver's parameterization.
 
-**Walker mode advantage:** Python projects routinely centralize SQL
+**Cross-file analysis:** Python projects routinely centralize SQL
 in `repositories/` or `services/` modules. When a view function calls
 `UserRepo.search(q)`, follow the import and read the repo to verify
 whether the SQL uses bind parameters. Also trace `q` to confirm it

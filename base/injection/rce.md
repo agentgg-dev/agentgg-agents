@@ -1,7 +1,7 @@
 ---
 slug: rce
 name: Remote Code Execution (eval / exec)
-description: 'eval(), new Function(), child_process.exec with a shell, vm.runInContext, and Python/Ruby equivalents with user-controlled input — allows arbitrary code execution. Walker mode traces the argument origin.'
+description: 'eval(), new Function(), child_process.exec with a shell, vm.runInContext, and Python/Ruby equivalents with user-controlled input — allows arbitrary code execution. Traces the argument origin.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -177,7 +177,7 @@ You are reviewing source code for remote code execution sinks —
 functions that evaluate a string as code or spawn a shell command
 built from user input.
 
-**Walker mode advantage:** the dangerous argument is often built one
+**Cross-file analysis:** the dangerous argument is often built one
 or two function calls upstream. Trace the variable: a `cmd` passed to
 `exec(cmd)` may be assembled from `req.body.action` in a helper. The
 walker should follow the call graph and confirm the trust boundary

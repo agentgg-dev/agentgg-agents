@@ -1,7 +1,7 @@
 ---
 slug: dangerous-html
 name: Dangerous HTML DOM APIs
-description: 'Less-obvious HTML injection sinks — insertAdjacentHTML, DOMParser, Range.createContextualFragment, template innerHTML, and Sanitizer API misuse. Walker mode follows sanitizer wrappers and HTML helpers to verify configuration.'
+description: 'Less-obvious HTML injection sinks — insertAdjacentHTML, DOMParser, Range.createContextualFragment, template innerHTML, and Sanitizer API misuse. Follows sanitizer wrappers and HTML helpers to verify configuration.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -101,7 +101,7 @@ less commonly caught than `innerHTML` — specifically `insertAdjacentHTML`,
 `DOMParser`, `Range.createContextualFragment`, template element tricks,
 and misuse of the Sanitizer API.
 
-**Walker mode advantage:** sinks are often hidden behind helpers
+**Cross-file analysis:** sinks are often hidden behind helpers
 (`safeAppend`, `renderHTML`, `mountFragment`). Follow imports to
 verify whether the wrapper sanitizes (DOMPurify, a correctly-configured
 Sanitizer) before the underlying sink is called. Sanitizer configs are

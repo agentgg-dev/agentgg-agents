@@ -1,7 +1,7 @@
 ---
 slug: rate-limit-bypass
 name: Sensitive Endpoint Missing or Bypassable Rate Limit
-description: 'High-risk endpoints (login, password reset, charge, account delete, token generation, invite) without rate limiting, OR rate limits keyed on spoofable headers like X-Forwarded-For. Walker mode follows middleware and limiter helpers.'
+description: 'High-risk endpoints (login, password reset, charge, account delete, token generation, invite) without rate limiting, OR rate limits keyed on spoofable headers like X-Forwarded-For. Follows middleware and limiter helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -81,7 +81,7 @@ references:
 You are reviewing HTTP endpoints for missing or bypassable rate
 limiting on sensitive operations.
 
-**Walker mode advantage:** rate limiting is usually applied via a
+**Cross-file analysis:** rate limiting is usually applied via a
 shared middleware/wrapper (`withRateLimit`, `rateLimit({ ... })`).
 Open the helper to verify what it keys on — `X-Forwarded-For`
 without an edge-strip layer is bypassable. Also check whether the

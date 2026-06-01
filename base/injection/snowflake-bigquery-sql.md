@@ -1,7 +1,7 @@
 ---
 slug: snowflake-bigquery-sql
 name: Analytics SQL Injection (Snowflake / BigQuery / ClickHouse / DuckDB)
-description: Snowflake / BigQuery / ClickHouse / DuckDB queries built with template literal interpolation or string concatenation — analytics endpoints are real query engines and these patterns are SQL injection. Walker mode confirms the warehouse SDK is in use and follows query helpers.
+description: Snowflake / BigQuery / ClickHouse / DuckDB queries built with template literal interpolation or string concatenation — analytics endpoints are real query engines and these patterns are SQL injection. Confirms the warehouse SDK is in use and follows query helpers.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -101,7 +101,7 @@ ClickHouse, DuckDB, Databricks. These look like "analytics" code, but
 the destination is a real query engine; template-literal
 interpolation is exploitable the same way as on Postgres.
 
-**Walker mode advantage:** analytics SDKs often have project-specific
+**Cross-file analysis:** analytics SDKs often have project-specific
 wrappers (`lib/warehouse.ts`, `analytics/query.ts`) where the
 unsafe pattern hides. Follow imports to verify whether the wrapper
 parameterizes (`binds`, `params`, `query_params`) or just forwards

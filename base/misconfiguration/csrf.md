@@ -1,7 +1,7 @@
 ---
 slug: csrf
 name: Missing CSRF Protection
-description: 'State-changing endpoints reachable via cookie-based auth without CSRF token verification, SameSite cookies, or origin/referer checks. Walker mode reads the app entry point and shared middleware to confirm whether csurf / equivalent is mounted globally before flagging.'
+description: 'State-changing endpoints reachable via cookie-based auth without CSRF token verification, SameSite cookies, or origin/referer checks. Reads the app entry point and shared middleware to confirm whether csurf / equivalent is mounted globally before flagging.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -107,7 +107,7 @@ Forgery (CSRF) protection — state-changing endpoints that authenticate
 the caller via cookies but do not require an additional unguessable
 token, a strict SameSite cookie, or an origin/referer check.
 
-**Walker mode advantage:** CSRF middleware is almost always wired up
+**Cross-file analysis:** CSRF middleware is almost always wired up
 once in `app.ts`/`server.ts`/`middleware.ts` and applies to the whole
 router. Before flagging a handler in `routes/...`, Read the app
 entrypoint and any router-factory file to check whether `csurf()`,

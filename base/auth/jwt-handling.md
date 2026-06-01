@@ -1,7 +1,7 @@
 ---
 slug: jwt-handling
 name: 'JWT Handling (Signing, Verification, Key Management)'
-description: 'JWT signing and verification (jose, jsonwebtoken, custom) — verify algorithm pinning, key management, secret strength, and audience/issuer/expiration checks. Walker mode follows key sources and verifier helpers.'
+description: 'JWT signing and verification (jose, jsonwebtoken, custom) — verify algorithm pinning, key management, secret strength, and audience/issuer/expiration checks. Follows key sources and verifier helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -88,7 +88,7 @@ You are reviewing source code that signs, verifies, encrypts, or
 decrypts JWTs — looking for misconfigurations that lead to token
 forgery or authentication bypass.
 
-**Walker mode advantage:** the signing key and verifier options are
+**Cross-file analysis:** the signing key and verifier options are
 usually centralized in `lib/jwt.ts` or `auth/config.ts`. Open the
 config to verify: is the key strong (env-sourced, not a default
 fallback)? Are the verifier defaults pinning algorithms, audience,

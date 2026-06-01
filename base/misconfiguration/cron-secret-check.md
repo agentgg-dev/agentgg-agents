@@ -1,7 +1,7 @@
 ---
 slug: cron-secret-check
 name: Cron / Scheduler Endpoint Missing Secret Check
-description: 'Cron route handlers (Vercel Cron, custom scheduler endpoints) that lack a CRON_SECRET / scheduler-signature check — anyone on the internet can trigger the job. Walker mode follows verifier helpers and scheduler library wrappers.'
+description: 'Cron route handlers (Vercel Cron, custom scheduler endpoints) that lack a CRON_SECRET / scheduler-signature check — anyone on the internet can trigger the job. Follows verifier helpers and scheduler library wrappers.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -83,7 +83,7 @@ service — never by external callers. Without a secret check or
 signature verification, any unauthenticated request triggers the job
 (potentially repeatedly, multiplying load and side effects).
 
-**Walker mode advantage:** the secret check may live in a shared
+**Cross-file analysis:** the secret check may live in a shared
 `verifyCron()` helper or middleware. When the candidate handler is
 bare, look for an HOF wrapper or imported guard. For scheduler-
 library exports (`inngest.serve(...)`), confirm the library actually

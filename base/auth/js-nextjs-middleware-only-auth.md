@@ -1,7 +1,7 @@
 ---
 slug: js-nextjs-middleware-only-auth
 name: Next.js Middleware-Only Auth
-description: 'Next.js route handlers under a "protected" route group with no per-handler auth check, relying solely on middleware.ts — bypassable via direct RSC fetch or by middleware misconfiguration. Walker mode reads middleware.ts and verifies its matcher covers the route.'
+description: 'Next.js route handlers under a "protected" route group with no per-handler auth check, relying solely on middleware.ts — bypassable via direct RSC fetch or by middleware misconfiguration. Reads middleware.ts and verifies its matcher covers the route.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -46,7 +46,7 @@ You are reviewing Next.js App Router route handlers that have no
 per-handler authentication check, apparently relying on the global
 `middleware.ts` to guard them. This is a real risk:
 
-**Walker mode advantage:** this finding is inherently cross-file.
+**Cross-file analysis:** this finding is inherently cross-file.
 For each candidate handler, locate the project's `middleware.ts`
 (usually at the project root or `src/`) and read its `matcher` config.
 Verify whether the candidate's route is actually covered, and whether

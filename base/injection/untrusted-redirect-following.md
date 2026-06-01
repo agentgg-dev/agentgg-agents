@@ -1,7 +1,7 @@
 ---
 slug: untrusted-redirect-following
 name: Untrusted Redirect Following (SSRF via 3xx)
-description: Server-side fetch follows HTTP redirects from a caller-controlled URL — the initial URL passes allowlist checks but a 302 redirect to an internal address bypasses them. Walker mode follows fetch helpers to verify redirect handling.
+description: Server-side fetch follows HTTP redirects from a caller-controlled URL — the initial URL passes allowlist checks but a 302 redirect to an internal address bypasses them. Follows fetch helpers to verify redirect handling.
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -90,7 +90,7 @@ target server responds with a `302 Location: http://169.254.169.254/`
 and the fetch client follows it — bypassing the per-hop allowlist
 check because only the first URL was validated.
 
-**Walker mode advantage:** the fetch is often wrapped in a project
+**Cross-file analysis:** the fetch is often wrapped in a project
 helper (`fetchExternal`, `safeFetch`) and the redirect option is set
 once there. Open the helper to verify it actually sets
 `redirect: "manual"` (fetch), `maxRedirects: 0` (axios), or

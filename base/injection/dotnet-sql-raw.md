@@ -1,7 +1,7 @@
 ---
 slug: dotnet-sql-raw
 name: Raw SQL Injection (.NET)
-description: '.NET SQL execution (ADO.NET SqlCommand, Dapper, EF Core FromSqlRaw / ExecuteSqlRaw) with string concatenation or C# $"" interpolation — FromSqlInterpolated is safe. Walker mode traces helper methods to verify the SQL source.'
+description: '.NET SQL execution (ADO.NET SqlCommand, Dapper, EF Core FromSqlRaw / ExecuteSqlRaw) with string concatenation or C# $"" interpolation — FromSqlInterpolated is safe. Traces helper methods to verify the SQL source.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -124,7 +124,7 @@ SQL string being built via `+` concatenation or C# string
 interpolation (`$"..."`) before being passed to a SQL execution
 method.
 
-**Walker mode advantage:** SQL is often constructed in a repository
+**Cross-file analysis:** SQL is often constructed in a repository
 class or extension method and passed to the executing call. Follow
 the call graph: a `FromSqlRaw(GetUserQuery(id))` is safe if
 `GetUserQuery` returns a constant + adds positional parameters,

@@ -1,7 +1,7 @@
 ---
 slug: auth-bypass
 name: Authentication Bypass
-description: 'Auth checks that can be bypassed — weak boolean comparisons against client data, dev-mode skip flags, truthy session checks that don''t validate the session, missing await on async verifiers. Walker mode traces verifier helpers and env-flag definitions.'
+description: 'Auth checks that can be bypassed — weak boolean comparisons against client data, dev-mode skip flags, truthy session checks that don''t validate the session, missing await on async verifiers. Traces verifier helpers and env-flag definitions.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -125,7 +125,7 @@ You are reviewing source code for authentication bypass — patterns
 where an auth check exists but is structured in a way that lets an
 unauthenticated or unprivileged caller slip through.
 
-**Walker mode advantage:** to judge the "missing await" pattern,
+**Cross-file analysis:** to judge the "missing await" pattern,
 open the verifier definition — if it's `async function verifyToken`
 then `if (verifyToken(...))` is always truthy and a bug. For env-var
 bypasses, search the repo for where the flag is set (CI configs,

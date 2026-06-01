@@ -1,7 +1,7 @@
 ---
 slug: js-nextjs-catch-all-route-auth
 name: Next.js Catch-All Route Auth Coverage
-description: 'Next.js catch-all routes ([...slug], [[...rest]]) and Payload CMS / GraphQL endpoints — auth must cover every sub-path, not just the explicit ones in the codebase. Walker mode follows route handlers and HOF wrappers.'
+description: 'Next.js catch-all routes ([...slug], [[...rest]]) and Payload CMS / GraphQL endpoints — auth must cover every sub-path, not just the explicit ones in the codebase. Follows route handlers and HOF wrappers.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -74,7 +74,7 @@ missing auth coverage. The risk: the route catches every sub-path the
 file system rule matches, and an auth check that only covers some
 sub-paths leaves the rest exposed.
 
-**Walker mode advantage:** catch-all dispatchers commonly delegate
+**Cross-file analysis:** catch-all dispatchers commonly delegate
 to a registry of sub-handlers (`payloadHandler`, `executeGraphQL`,
 `adminRoutes`). Follow the import to verify whether the delegated
 function performs per-request auth, or whether it accepts whatever

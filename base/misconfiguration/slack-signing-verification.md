@@ -1,7 +1,7 @@
 ---
 slug: slack-signing-verification
 name: Slack Webhook Handler Missing Signing Verification
-description: 'Slack command/action/event/view/shortcut handlers (raw Next.js route handlers, not @slack/bolt receivers) without HMAC signing secret verification or replay protection. Walker mode follows verifier helpers across files.'
+description: 'Slack command/action/event/view/shortcut handlers (raw Next.js route handlers, not @slack/bolt receivers) without HMAC signing secret verification or replay protection. Follows verifier helpers across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -76,7 +76,7 @@ using the app's signing secret; without verifying, anyone can forge
 requests to trigger slash commands, button actions, or workflow
 modals.
 
-**Walker mode advantage:** verification may live in a shared
+**Cross-file analysis:** verification may live in a shared
 `lib/slack.ts` (`verifySlackRequest`, `assertSlackSignature`) — open
 it and verify it does HMAC SHA-256 on `v0:timestamp:body`, constant-
 time-compares against the header, AND enforces the 5-minute timestamp

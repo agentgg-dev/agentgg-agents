@@ -1,7 +1,7 @@
 ---
 slug: cache-key-poisoning
 name: Cache Key Poisoning
-description: 'CDN / proxy / application cache keyed using Host, custom headers, or unkeyed parameters — attacker can craft a request that poisons the cache for other users. Walker mode follows cache wrappers to verify key construction.'
+description: 'CDN / proxy / application cache keyed using Host, custom headers, or unkeyed parameters — attacker can craft a request that poisons the cache for other users. Follows cache wrappers to verify key construction.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -91,7 +91,7 @@ poisoning — the cache key includes an attacker-controlled value
 crafting a request stores a malicious response under a key that
 serves other users.
 
-**Walker mode advantage:** key construction is often funneled through
+**Cross-file analysis:** key construction is often funneled through
 a helper (`makeCacheKey`, `cacheKeyFor`, `buildKey`). Open the helper
 and verify whether the components are server-derived or client-
 controlled. Also check whether the corresponding response handler

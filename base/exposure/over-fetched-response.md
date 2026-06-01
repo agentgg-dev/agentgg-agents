@@ -1,7 +1,7 @@
 ---
 slug: over-fetched-response
 name: Over-Fetched / Over-Serialized API Response
-description: 'API responses that return a full ORM model or DB row to the client without an explicit field allowlist, leaking sensitive columns (password hashes, security answers, internal flags, audit metadata). Walker mode reads the model definition to identify which columns are sensitive.'
+description: 'API responses that return a full ORM model or DB row to the client without an explicit field allowlist, leaking sensitive columns (password hashes, security answers, internal flags, audit metadata). Reads the model definition to identify which columns are sensitive.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -112,7 +112,7 @@ Classic example: a `GET /api/users/me` returns the whole `User` row
 including `password` (the hash), `passwordResetToken`, `totpSecret`,
 `securityAnswer`, `internalNotes`, or `stripeCustomerId`.
 
-**Walker mode advantage:** to know whether a returned object leaks
+**Cross-file analysis:** to know whether a returned object leaks
 sensitive fields, you must Read the model definition — Sequelize
 `User.init(...)`, Mongoose `new Schema({...})`, Prisma `model User {}`
 in `schema.prisma`, TypeORM `@Entity` class, Django models. The route

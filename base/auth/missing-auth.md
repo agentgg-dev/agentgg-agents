@@ -1,7 +1,7 @@
 ---
 slug: missing-auth
 name: Missing Authentication on Endpoint
-description: 'HTTP route handlers (Next.js App Router exports, Express handlers, pages/api default exports) with no authentication check — every export reachable without a session is a public endpoint. Walker mode follows middleware and HOFs across files.'
+description: 'HTTP route handlers (Next.js App Router exports, Express handlers, pages/api default exports) with no authentication check — every export reachable without a session is a public endpoint. Follows middleware and HOFs across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -85,7 +85,7 @@ You are reviewing HTTP route handlers for missing authentication —
 endpoints that handle requests but never call an auth verifier, so
 every caller is treated as authorized regardless of session.
 
-**Walker mode advantage:** an unguarded-looking handler may be wrapped
+**Cross-file analysis:** an unguarded-looking handler may be wrapped
 by an HOF (`withAuth(handler)`) or covered by middleware (`middleware.ts`,
 an Express `app.use(authMiddleware)`). Open those before reporting:
 read the HOF to confirm it enforces auth, and for Next.js verify the

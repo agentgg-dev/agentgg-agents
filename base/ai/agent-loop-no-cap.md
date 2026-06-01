@@ -1,7 +1,7 @@
 ---
 slug: agent-loop-no-cap
 name: Agent Loop / LLM Call Without Cap
-description: streamText / generateText / Claude Agent SDK query without maxSteps / maxTurns / stopWhen / abortSignal — unbounded tool-use loops can drain budget and never terminate. Walker mode follows shared config and helper wrappers.
+description: streamText / generateText / Claude Agent SDK query without maxSteps / maxTurns / stopWhen / abortSignal — unbounded tool-use loops can drain budget and never terminate. Follows shared config and helper wrappers.
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -73,7 +73,7 @@ references:
 You are reviewing LLM / agent invocations for missing termination
 caps.
 
-**Walker mode advantage:** projects often centralize agent config
+**Cross-file analysis:** projects often centralize agent config
 (`createAgent`, `defaultAgentConfig`, `withDefaults`) in a shared
 module. If the candidate call passes `...defaults`, open that helper
 to see whether the caps (`maxSteps`, `maxTurns`, `abortSignal`) are

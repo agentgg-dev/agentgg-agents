@@ -1,7 +1,7 @@
 ---
 slug: js-nosql-injection
 name: NoSQL Injection (JavaScript / MongoDB)
-description: 'Mongoose / MongoDB driver queries built with $where, JSON.parse(req.*), or uncoerced request values — allows query operator smuggling or server-side JS execution. Walker mode traces the value source and any coercion/validation helpers.'
+description: 'Mongoose / MongoDB driver queries built with $where, JSON.parse(req.*), or uncoerced request values — allows query operator smuggling or server-side JS execution. Traces the value source and any coercion/validation helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -89,7 +89,7 @@ in MongoDB / Mongoose — patterns where user input influences a MongoDB
 query in ways that allow an attacker to inject operators, execute
 server-side JavaScript, or bypass authentication.
 
-**Walker mode advantage:** the request value may have been parsed,
+**Cross-file analysis:** the request value may have been parsed,
 coerced, or validated before the query call — possibly in a
 middleware, a Zod schema, or a helper. Follow imports to verify:
 `String(req.body.email)`, `emailSchema.parse(...)`, or

@@ -1,7 +1,7 @@
 ---
 slug: path-traversal
 name: Path Traversal
-description: 'File system operations (read, write, unlink, stat) using user-controlled paths without validation — allows reading or writing files outside the intended directory via ../ sequences. Walker mode follows path-sanitizer helpers.'
+description: 'File system operations (read, write, unlink, stat) using user-controlled paths without validation — allows reading or writing files outside the intended directory via ../ sequences. Follows path-sanitizer helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -75,7 +75,7 @@ You are reviewing Node.js / TypeScript source code for path traversal
 the file path, allowing an attacker to escape the intended directory
 with `../` sequences and read or write arbitrary files on the server.
 
-**Walker mode advantage:** repositories often have a `safeJoin()` /
+**Cross-file analysis:** repositories often have a `safeJoin()` /
 `confineToDir()` / `assertWithin()` helper that does the right
 `resolve()` + `startsWith()` check. If the candidate file calls one,
 open the helper and verify the boundary check is correct — common

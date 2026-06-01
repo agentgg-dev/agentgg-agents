@@ -1,7 +1,7 @@
 ---
 slug: non-atomic-read-delete
 name: Non-Atomic Read-Then-Delete
-description: 'redis.get followed by redis.del (or DB find followed by delete) — two concurrent requests both succeed in reading the value before either deletes it, processing it twice. Walker mode follows token/cache helpers across files.'
+description: 'redis.get followed by redis.del (or DB find followed by delete) — two concurrent requests both succeed in reading the value before either deletes it, processing it twice. Follows token/cache helpers across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -77,7 +77,7 @@ sequences — a common one-time-token / single-use-record race where
 two concurrent requests both observe the value, both proceed to use
 it, and only one of them actually wins the delete.
 
-**Walker mode advantage:** the read-then-delete may be inside a
+**Cross-file analysis:** the read-then-delete may be inside a
 `consumeMagicLink` / `useOneTimeToken` helper imported from a shared
 module. Open it to verify it uses `GETDEL`, a transaction, or
 `DELETE ... RETURNING` — all of which close the race window.

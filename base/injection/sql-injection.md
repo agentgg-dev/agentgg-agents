@@ -1,7 +1,7 @@
 ---
 slug: sql-injection
 name: SQL Injection
-description: SQL queries built by concatenating or interpolating untrusted input into a query string instead of using parameterized queries. Walker mode follows query helpers and ORM wrappers to verify whether parameterization is actually applied.
+description: SQL queries built by concatenating or interpolating untrusted input into a query string instead of using parameterized queries. Follows query helpers and ORM wrappers to verify whether parameterization is actually applied.
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -179,7 +179,7 @@ You are reviewing a batch of source files for SQL injection — query
 strings built from untrusted input via concatenation, template
 interpolation, or unescaped substitution instead of parameter binding.
 
-**Walker mode advantage:** SQL is frequently routed through shared
+**Cross-file analysis:** SQL is frequently routed through shared
 helpers (`lib/db.ts`, `repositories/users.ts`, `utils/query.ts`) and
 ORM escape hatches that look safe by name. You have file-system tools
 — use them. When a candidate file calls `db.run(sql)` or

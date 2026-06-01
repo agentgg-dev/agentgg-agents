@@ -1,7 +1,7 @@
 ---
 slug: agent-tool-definition
 name: AI Agent Tool Definition Surface
-description: 'AI agent tool / function-calling definitions — review the execute body for shell exec, fs writes, network egress, DB writes, or other high-privilege capabilities exposed to LLM-controlled arguments. Walker mode follows execute helpers into the rest of the codebase.'
+description: 'AI agent tool / function-calling definitions — review the execute body for shell exec, fs writes, network egress, DB writes, or other high-privilege capabilities exposed to LLM-controlled arguments. Follows execute helpers into the rest of the codebase.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -88,7 +88,7 @@ remote-procedure-call exposed to the LLM, so the tool body must
 treat the arguments as untrusted (they came from a prompt-injected
 or hallucinating model) and limit what the tool can do.
 
-**Walker mode advantage:** tool `execute` bodies frequently delegate
+**Cross-file analysis:** tool `execute` bodies frequently delegate
 to a helper (`runShell`, `userRepo.update`, `mailer.send`). Open the
 helper to assess actual capability — a tool wrapper that looks
 narrow may unwrap into raw `child_process.exec` or arbitrary fetch.

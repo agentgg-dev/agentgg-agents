@@ -1,7 +1,7 @@
 ---
 slug: weak-password-policy
 name: Weak Password Policy
-description: 'Registration/password-change paths that accept short, common, or trivially-guessable passwords because no minimum-length, common-password-deny, or strength check is enforced before hashing. Walker mode reads the model/validator helpers to confirm the absence of enforcement.'
+description: 'Registration/password-change paths that accept short, common, or trivially-guessable passwords because no minimum-length, common-password-deny, or strength check is enforced before hashing. Reads the model/validator helpers to confirm the absence of enforcement.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -90,7 +90,7 @@ the user supplied **without first** rejecting trivially-weak inputs
 (too short, in the top-N common-password list, equal to the username
 or email).
 
-**Walker mode advantage:** the enforcement (or absence thereof) often
+**Cross-file analysis:** the enforcement (or absence thereof) often
 lives in a model setter (`User.init({ password: { set(...) { ... } } })`),
 a validator helper (`lib/validators.ts`, `services/passwordPolicy.py`),
 or a schema (Zod, Joi, class-validator). When you find a password

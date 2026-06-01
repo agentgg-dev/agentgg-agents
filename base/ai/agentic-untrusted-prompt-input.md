@@ -1,7 +1,7 @@
 ---
 slug: agentic-untrusted-prompt-input
 name: LLM Prompt Built from Untrusted External Data
-description: 'LLM call (streamText, generateText, anthropic.messages, openai.chat) where the prompt or messages interpolate variables originating from external sources — indirect prompt injection sink. Walker mode traces the prompt-source variable back across imports.'
+description: 'LLM call (streamText, generateText, anthropic.messages, openai.chat) where the prompt or messages interpolate variables originating from external sources — indirect prompt injection sink. Traces the prompt-source variable back across imports.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -92,7 +92,7 @@ interpolating data fetched from external sources (web pages,
 emails, customer notes, knowledge base documents, support tickets,
 Salesforce, Snowflake, scraped content, file uploads).
 
-**Walker mode advantage:** the interpolated variable is often loaded
+**Cross-file analysis:** the interpolated variable is often loaded
 in a helper a couple of files away. Trace it: was `notes` set by
 `getCustomerNotes(id)` (DB-stored user content — untrusted)? Was
 `pageContent` produced by `fetchPage(url)` (scraped — untrusted)?

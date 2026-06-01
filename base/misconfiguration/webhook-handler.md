@@ -1,7 +1,7 @@
 ---
 slug: webhook-handler
 name: Webhook Endpoint Missing Signature Verification
-description: 'Inbound webhook handlers (Stripe, GitHub, Linear, Sentry, custom integrations) without HMAC / signature / shared-secret verification — anyone on the internet can forge events. Walker mode follows verifier helpers across files.'
+description: 'Inbound webhook handlers (Stripe, GitHub, Linear, Sentry, custom integrations) without HMAC / signature / shared-secret verification — anyone on the internet can forge events. Follows verifier helpers across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -84,7 +84,7 @@ from third parties — Stripe, GitHub, Slack, Linear, Sentry, custom
 integrations. Without a signature check, attackers can craft fake
 events.
 
-**Walker mode advantage:** verification is often centralized in a
+**Cross-file analysis:** verification is often centralized in a
 helper (`verifyStripe`, `verifyGitHubWebhook`, `assertWebhookHMAC`).
 When the handler calls such a helper, open it and confirm it
 performs a `crypto.timingSafeEqual` (or equivalent) against a real

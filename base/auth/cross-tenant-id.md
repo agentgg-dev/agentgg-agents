@@ -1,7 +1,7 @@
 ---
 slug: cross-tenant-id
 name: Cross-Tenant ID Access
-description: Tenant/team/org ID taken from request input and used in a DB lookup without verifying the authenticated user belongs to that tenant — allows reading or modifying other tenants' data. Walker mode follows DB helpers to verify scoping.
+description: Tenant/team/org ID taken from request input and used in a DB lookup without verifying the authenticated user belongs to that tenant — allows reading or modifying other tenants' data. Follows DB helpers to verify scoping.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -87,7 +87,7 @@ where a multi-tenant application accepts a tenant/team/org/owner ID
 from the request and uses it directly in a database query without
 checking that the authenticated user belongs to that tenant.
 
-**Walker mode advantage:** ownership scoping often happens in a
+**Cross-file analysis:** ownership scoping often happens in a
 repository helper (`getTeamForUser`, `requireTeamMember`,
 `assertOrgAccess`). When a candidate file calls `getTeamById(id)`,
 open the helper and verify whether it also takes the session user

@@ -1,7 +1,7 @@
 ---
 slug: object-injection
 name: Prototype Pollution / Object Injection
-description: 'Object.assign, lodash merge, or defaultsDeep called with user-controlled input — allows an attacker to set properties on Object.prototype and affect all objects in the process. Walker mode traces validation helpers between request and merge.'
+description: 'Object.assign, lodash merge, or defaultsDeep called with user-controlled input — allows an attacker to set properties on Object.prototype and affect all objects in the process. Traces validation helpers between request and merge.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -89,7 +89,7 @@ assignment using user-controlled input writes to `__proto__`,
 `constructor`, or `prototype` on the plain object prototype chain,
 affecting every object in the application process.
 
-**Walker mode advantage:** the merged value may have been validated
+**Cross-file analysis:** the merged value may have been validated
 (Zod, Joi, ajv with `additionalProperties: false`) one step upstream.
 Follow imports to verify — a `userSchema.parse(req.body)` before the
 merge neutralizes the prototype-pollution surface. Also check whether

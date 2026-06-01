@@ -1,7 +1,7 @@
 ---
 slug: command-injection
 name: Command Injection
-description: 'Shell or process invocations that include untrusted input in the command string, allowing arbitrary commands to be executed by an attacker. Walker mode follows exec wrappers to trace argument origin.'
+description: 'Shell or process invocations that include untrusted input in the command string, allowing arbitrary commands to be executed by an attacker. Follows exec wrappers to trace argument origin.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -211,7 +211,7 @@ process invocation that includes untrusted input in the command string,
 letting an attacker execute arbitrary commands by injecting metacharacters
 like `;`, `&&`, `|`, backticks, or `$(...)`.
 
-**Walker mode advantage:** the command string is often assembled in a
+**Cross-file analysis:** the command string is often assembled in a
 helper a few hops from the request handler. Trace the variable back —
 a value labeled `cmd` may be `req.body.action` after some prefixing,
 or it may be a constant. Open the caller to confirm whether the

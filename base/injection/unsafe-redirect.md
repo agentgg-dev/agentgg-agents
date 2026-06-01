@@ -1,7 +1,7 @@
 ---
 slug: unsafe-redirect
 name: Unsafe Redirect (Allowlist Bypass)
-description: 'Redirect destination that passes a superficial validation check but can still be bypassed — URL parsing inconsistencies, double-slash, unicode, open redirect_uri matching. Walker mode reads validation helpers to check for known bypass patterns.'
+description: 'Redirect destination that passes a superficial validation check but can still be bypassed — URL parsing inconsistencies, double-slash, unicode, open redirect_uri matching. Reads validation helpers to check for known bypass patterns.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -89,7 +89,7 @@ distinct from the `open-redirect` agent (which finds completely
 unvalidated redirects) — this agent focuses on validation logic that
 exists but is incomplete or bypassable.
 
-**Walker mode advantage:** the validator is typically a shared helper
+**Cross-file analysis:** the validator is typically a shared helper
 (`isAllowedRedirect`, `validateReturnUrl`, `safeNext`). Open it and
 look specifically for the bypass patterns: `startsWith("/")` without
 also rejecting `//`; `new URL(input, base)` without re-checking the

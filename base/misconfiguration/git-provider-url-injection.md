@@ -1,7 +1,7 @@
 ---
 slug: git-provider-url-injection
 name: Git Provider URL Built from User Input
-description: GitHub / GitLab / Bitbucket API URLs constructed via template literal interpolation of caller-supplied org / repo / user values — webhook configuration or repo clone URLs can be aimed at attacker-controlled endpoints. Walker mode traces validators across files.
+description: GitHub / GitLab / Bitbucket API URLs constructed via template literal interpolation of caller-supplied org / repo / user values — webhook configuration or repo clone URLs can be aimed at attacker-controlled endpoints. Traces validators across files.
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -75,7 +75,7 @@ You are reviewing source code that builds URLs for Git providers
 (GitHub, GitLab, Bitbucket, self-hosted Git) by interpolating
 caller-supplied values into the URL.
 
-**Walker mode advantage:** repositories often validate org/repo
+**Cross-file analysis:** repositories often validate org/repo
 values in a shared `isValidGitRef()` / `assertValidRepoName()`
 helper. Open it and verify the regex matches the provider's actual
 identifier spec (e.g., GitHub usernames are `/^[a-z0-9-]{1,39}$/i`).

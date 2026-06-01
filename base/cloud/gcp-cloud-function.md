@@ -1,7 +1,7 @@
 ---
 slug: gcp-cloud-function
 name: GCP Cloud Function Security
-description: 'GCP Cloud Functions (1st and 2nd gen) — unauthenticated invocation, missing trigger validation, IAM bindings for allUsers, secrets in env vars. Walker mode correlates handler with Terraform IAM bindings.'
+description: 'GCP Cloud Functions (1st and 2nd gen) — unauthenticated invocation, missing trigger validation, IAM bindings for allUsers, secrets in env vars. Correlates handler with Terraform IAM bindings.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -98,7 +98,7 @@ references:
 You are reviewing Google Cloud Function implementations and their
 deployment configuration for the standard set of security issues.
 
-**Walker mode advantage:** the function's auth posture spans code
+**Cross-file analysis:** the function's auth posture spans code
 (handler) and infrastructure (Terraform IAM bindings, ingress
 settings). When you see an unauthenticated-looking handler, search
 sibling `.tf` files for the function's IAM bindings — `allUsers` is

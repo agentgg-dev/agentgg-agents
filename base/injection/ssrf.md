@@ -1,7 +1,7 @@
 ---
 slug: ssrf
 name: Server-Side Request Forgery (SSRF)
-description: 'Server-side HTTP requests (fetch, axios, http.request, ky, undici) where the URL is user-controlled — allows attackers to probe internal networks, cloud metadata endpoints, or localhost services. Walker mode reads related files together to check whether URL allowlists or validation helpers cover each fetch call.'
+description: 'Server-side HTTP requests (fetch, axios, http.request, ky, undici) where the URL is user-controlled — allows attackers to probe internal networks, cloud metadata endpoints, or localhost services. Reads related files together to check whether URL allowlists or validation helpers cover each fetch call.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -115,7 +115,7 @@ URLs are influenced by user input, letting an attacker make the
 server issue requests to arbitrary internal hosts, cloud metadata
 endpoints, or localhost services.
 
-**Walker mode advantage:** the URL allowlist / validator helper is
+**Cross-file analysis:** the URL allowlist / validator helper is
 almost always in a shared module (e.g., `lib/url.ts`,
 `utils/safeFetch.ts`, `config/allowed-hosts.ts`). You have file-system
 tools available — use them. When you find a `fetch(...)` candidate

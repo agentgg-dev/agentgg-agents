@@ -1,7 +1,7 @@
 ---
 slug: js-sql-raw
 name: Raw SQL Injection (JavaScript / TypeScript)
-description: 'Raw SQL escape hatches across JS/TS drivers (pg, mysql2, TypeORM, Sequelize, Knex, Kysely, postgres.js, better-sqlite3) built with template literal interpolation or string concatenation. Walker mode follows query helpers to verify safe parameterization.'
+description: 'Raw SQL escape hatches across JS/TS drivers (pg, mysql2, TypeORM, Sequelize, Knex, Kysely, postgres.js, better-sqlite3) built with template literal interpolation or string concatenation. Follows query helpers to verify safe parameterization.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -129,7 +129,7 @@ query builders — places where the SQL string is built via template
 literal interpolation or `+` concatenation with user-controlled
 values, bypassing the driver's parameterized-query mechanism.
 
-**Walker mode advantage:** raw-SQL calls are commonly wrapped in
+**Cross-file analysis:** raw-SQL calls are commonly wrapped in
 repository helpers (`db/users.ts`, `repositories/orders.ts`). When
 the candidate is `userRepo.search(q)` rather than the raw driver
 call, follow the import and read the helper — verify it uses

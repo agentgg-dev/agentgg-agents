@@ -1,7 +1,7 @@
 ---
 slug: security-behind-flag
 name: Security Check Behind Feature Flag
-description: 'Auth, CSRF, WAF, encryption, or signature verification gated by a feature flag (LaunchDarkly, Statsig, custom isEnabled) — disabling the flag turns off the protection without code changes. Walker mode follows flag helpers and verifier definitions.'
+description: 'Auth, CSRF, WAF, encryption, or signature verification gated by a feature flag (LaunchDarkly, Statsig, custom isEnabled) — disabling the flag turns off the protection without code changes. Follows flag helpers and verifier definitions.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -89,7 +89,7 @@ operators can flip without a deploy or PR — and remote configuration
 systems (LaunchDarkly, Statsig, Optimizely, internal flag services)
 are themselves potential attack surfaces.
 
-**Walker mode advantage:** the body of the `if` may call a helper
+**Cross-file analysis:** the body of the `if` may call a helper
 like `requireAuth()` or `verifyCsrf()` — open it to confirm that's a
 real security verb (not a logging or instrumentation helper). Also
 check whether the unflagged path has a parallel baseline check; if

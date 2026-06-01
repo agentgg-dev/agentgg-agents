@@ -1,7 +1,7 @@
 ---
 slug: unsafe-deserialization
 name: Unsafe Deserialization
-description: 'JSON.parse / yaml.load / pickle.loads / Java ObjectInputStream on user input without schema validation — allows prototype pollution, code execution (Python/Java), or untyped objects reaching trusted paths. Walker mode follows downstream usage to confirm severity.'
+description: 'JSON.parse / yaml.load / pickle.loads / Java ObjectInputStream on user input without schema validation — allows prototype pollution, code execution (Python/Java), or untyped objects reaching trusted paths. Follows downstream usage to confirm severity.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -137,7 +137,7 @@ references:
 You are reviewing source code for deserialization of untrusted input
 without schema validation.
 
-**Walker mode advantage:** the parsed result may be passed through a
+**Cross-file analysis:** the parsed result may be passed through a
 Zod/Joi/pydantic schema in the next function call, which closes the
 bug. Trace the value: was `data` validated before being used as
 `db.user.update({ data })`? Also follow `yaml.load(...)` to confirm

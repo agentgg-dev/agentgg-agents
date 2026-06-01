@@ -1,7 +1,7 @@
 ---
 slug: oauth-flow
 name: OAuth Flow Issues
-description: 'OAuth authorize / callback handlers — missing state parameter, missing PKCE, open redirect_uri matching, access_token in URL fragment, code in URL query persisted in logs. Walker mode follows OAuth flow across authorize/callback files and shared validators.'
+description: 'OAuth authorize / callback handlers — missing state parameter, missing PKCE, open redirect_uri matching, access_token in URL fragment, code in URL query persisted in logs. Follows OAuth flow across authorize/callback files and shared validators.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -118,7 +118,7 @@ references:
 You are reviewing OAuth 2.0 / OIDC flow code for the standard set of
 implementation mistakes that allow account takeover or token theft.
 
-**Walker mode advantage:** OAuth flows span at least two files
+**Cross-file analysis:** OAuth flows span at least two files
 (authorize initiation and callback). The `state` you generate in
 authorize must be the one validated in callback — confirm the binding
 by reading both. PKCE check: if the authorize side stores

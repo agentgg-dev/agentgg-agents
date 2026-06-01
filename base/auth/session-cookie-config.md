@@ -1,7 +1,7 @@
 ---
 slug: session-cookie-config
 name: Session Cookie Configuration
-description: 'Session/auth cookies set without httpOnly, secure, or sameSite — exposed to XSS theft, insecure HTTP transit, or CSRF. Walker mode follows cookie-setter helpers and library configs.'
+description: 'Session/auth cookies set without httpOnly, secure, or sameSite — exposed to XSS theft, insecure HTTP transit, or CSRF. Follows cookie-setter helpers and library configs.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -89,7 +89,7 @@ You are reviewing source code for session / authentication cookies
 set without the security attributes needed to protect them from XSS
 theft, insecure transit, and CSRF.
 
-**Walker mode advantage:** projects usually centralize cookie writes
+**Cross-file analysis:** projects usually centralize cookie writes
 in a `setSession` / `setAuthCookie` helper or a session library
 config. When the candidate calls such a helper, open it and verify
 the cookie options at the source. For library configs (NextAuth,

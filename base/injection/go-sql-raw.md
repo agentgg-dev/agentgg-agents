@@ -1,7 +1,7 @@
 ---
 slug: go-sql-raw
 name: Raw SQL Injection (Go)
-description: 'Go SQL execution (database/sql, GORM, sqlx, pgx) with fmt.Sprintf or string concatenation in the query — bypasses parameterization. Walker mode traces the query source and any repository helpers.'
+description: 'Go SQL execution (database/sql, GORM, sqlx, pgx) with fmt.Sprintf or string concatenation in the query — bypasses parameterization. Traces the query source and any repository helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -65,7 +65,7 @@ string being built with `fmt.Sprintf` or `+` concatenation that
 incorporates user-controlled values — both bypass the driver's
 parameter binding (`?` for MySQL/SQLite, `$1` for PostgreSQL).
 
-**Walker mode advantage:** queries are commonly assembled in a
+**Cross-file analysis:** queries are commonly assembled in a
 repository function (`userRepo.FindByName(ctx, q)`) and the
 `fmt.Sprintf` is several files away from the request handler. Follow
 the call chain: trace where the query string comes from and whether

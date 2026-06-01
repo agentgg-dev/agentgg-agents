@@ -1,7 +1,7 @@
 ---
 slug: cache-key-scope
 name: Cache Key Missing User / Tenant Scope
-description: 'Per-user or per-tenant cache keys (feature flags, configs, tokens) without a userId / tenantId in the key — one user''s value gets served to another. Walker mode follows key-builder helpers.'
+description: 'Per-user or per-tenant cache keys (feature flags, configs, tokens) without a userId / tenantId in the key — one user''s value gets served to another. Follows key-builder helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -62,7 +62,7 @@ You are reviewing source code for cache keys that should be scoped to
 a user, team, or tenant but aren't — leading to cross-user data
 leakage when one user's cached value is served to another.
 
-**Walker mode advantage:** key construction often happens in a
+**Cross-file analysis:** key construction often happens in a
 helper like `getFlagKey(name)` or `cacheKeyFor(...)`. Open it and
 verify the userId/tenantId is actually part of the constructed key.
 Also trace the cached value's loader function to confirm the value

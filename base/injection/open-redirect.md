@@ -1,7 +1,7 @@
 ---
 slug: open-redirect
 name: Open Redirect
-description: 'Redirect responses (res.redirect, Next.js redirect(), router.push, Location header) where the destination URL comes from user input without validation — allows phishing via trusted domain. Walker mode follows redirect-allowlist helpers.'
+description: 'Redirect responses (res.redirect, Next.js redirect(), router.push, Location header) where the destination URL comes from user input without validation — allows phishing via trusted domain. Follows redirect-allowlist helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -115,7 +115,7 @@ URL is taken from user-supplied input without validating that it
 points to an allowed origin, enabling an attacker to redirect victims
 from your trusted domain to a phishing or malware site.
 
-**Walker mode advantage:** redirect destinations are often funneled
+**Cross-file analysis:** redirect destinations are often funneled
 through a shared `safeRedirect()` or `validateReturnUrl()` helper.
 Read those before flagging — verify they enforce a strict prefix
 check (`/` start, no `//`, no `https?://`), an origin allowlist, or

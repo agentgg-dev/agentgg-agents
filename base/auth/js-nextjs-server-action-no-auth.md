@@ -1,7 +1,7 @@
 ---
 slug: js-nextjs-server-action-no-auth
 name: Next.js Server Action Without Auth
-description: '''use server'' files where exported functions don''t call an auth check — every exported server action is a public POST endpoint. Walker mode follows auth HOFs and shared verifiers.'
+description: '''use server'' files where exported functions don''t call an auth check — every exported server action is a public POST endpoint. Follows auth HOFs and shared verifiers.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -60,7 +60,7 @@ references:
 
 You are reviewing Next.js server actions for missing authentication.
 
-**Walker mode advantage:** projects commonly define an auth HOF
+**Cross-file analysis:** projects commonly define an auth HOF
 (`withAuth`, `withServerActionAuth`) in a shared module. When an
 export is `withAuth(async (...) => {...})`, open the HOF to confirm
 it actually verifies a session before invoking the wrapped action.

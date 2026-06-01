@@ -1,7 +1,7 @@
 ---
 slug: jvm-sql-raw
 name: Raw SQL Injection (JVM — Java / Kotlin)
-description: 'JDBC, JPA/Hibernate, Spring JdbcTemplate, MyBatis, jOOQ, and Exposed raw SQL built by string concatenation or interpolation. Walker mode traces repository/service helpers across files.'
+description: 'JDBC, JPA/Hibernate, Spring JdbcTemplate, MyBatis, jOOQ, and Exposed raw SQL built by string concatenation or interpolation. Traces repository/service helpers across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -109,7 +109,7 @@ Exposed. The pattern is the same in every flavor: a SQL string built
 by concatenation (`+`) or Kotlin string interpolation (`${...}`) with
 user-controlled values, bypassing parameterization.
 
-**Walker mode advantage:** Spring/JEE codebases route queries through
+**Cross-file analysis:** Spring/JEE codebases route queries through
 repository or DAO classes (`UserRepository`, `OrderDao`). The
 concat may live in the repo while the request handler just calls
 `repo.findByName(name)`. Follow imports/extends to verify whether
