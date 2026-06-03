@@ -22,6 +22,13 @@ where:
     - jsx
     - mjs
     - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
 references:
   - CWE-915
   - 'OWASP-A08:2021'

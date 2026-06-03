@@ -125,6 +125,32 @@ precondition:
           - '**/build/**'
           - '**/.next/**'
         label: Dynamic ORDER BY built from input
+      - regex: '`\s*(?:SELECT|INSERT|UPDATE|DELETE)[^`]{0,400}\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: Template-literal SQL with interpolation (any call site)
+      - regex: '["''](?:SELECT|INSERT|UPDATE|DELETE)[^"'']{0,400}["'']\s*\+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,rs,php,java,kt,cs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: SQL string literal followed by concatenation (any call site)
 where:
   extensions:
     - ts
@@ -168,6 +194,10 @@ where:
       label: Go fmt.Sprintf building SQL
     - regex: 'ORDER\s+BY\s+`?\s*\+|ORDER\s+BY\s+["`]?\$\{'
       label: Dynamic ORDER BY built from input
+    - regex: '`\s*(?:SELECT|INSERT|UPDATE|DELETE)[^`]{0,400}\$\{'
+      label: Template-literal SQL with interpolation (any call site)
+    - regex: '["''](?:SELECT|INSERT|UPDATE|DELETE)[^"'']{0,400}["'']\s*\+'
+      label: SQL string literal followed by concatenation (any call site)
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

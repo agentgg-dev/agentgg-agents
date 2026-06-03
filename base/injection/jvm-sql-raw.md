@@ -71,6 +71,24 @@ precondition:
           - '**/target/**'
           - '**/build/**'
         label: 'Kotlin SQL exec with ${} interpolation'
+      - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}\$\{'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: SQL string literal with Kotlin interpolation (any method)
+      - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}"\s*\+'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: SQL string literal followed by concatenation (any method)
   prompt: Run only if this project uses jvm — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
@@ -96,6 +114,10 @@ where:
       label: jOOQ DSL.field/condition with concatenation
     - regex: 'exec\s*\(\s*"[^"]*\$\{'
       label: 'Kotlin SQL exec with ${} interpolation'
+    - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}\$\{'
+      label: SQL string literal with Kotlin interpolation (any method)
+    - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}"\s*\+'
+      label: SQL string literal followed by concatenation (any method)
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

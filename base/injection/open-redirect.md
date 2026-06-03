@@ -74,6 +74,28 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: window.location set from URL search params
+      - regex: '\b(res\.redirect|NextResponse\.redirect|router\.(push|replace))\s*\(\s*[A-Za-z_$`]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: redirect call with a variable/template destination (trace origin)
+      - regex: returnUrl|redirectUrl|returnTo|redirect_uri
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: redirect destination parameter name present
 where:
   extensions:
     - ts
@@ -102,6 +124,10 @@ where:
       label: Raw Location header set from request data
     - regex: window\.location(\.href)?\s*=\s*(searchParams|new\s+URLSearchParams|location\.search)
       label: window.location set from URL search params
+    - regex: '\b(res\.redirect|NextResponse\.redirect|router\.(push|replace))\s*\(\s*[A-Za-z_$`]'
+      label: redirect call with a variable/template destination (trace origin)
+    - regex: returnUrl|redirectUrl|returnTo|redirect_uri
+      label: redirect destination parameter name present
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

@@ -85,6 +85,28 @@ precondition:
           - '**/bin/**'
           - '**/obj/**'
         label: EF Core SqlRaw with string concatenation
+      - regex: '\$"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}\{'
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: C# interpolated SQL string (any method)
+      - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}"\s*\+'
+        in:
+          - '**/*.cs'
+        notIn:
+          - '**/Tests/**'
+          - '**/UnitTests/**'
+          - '**/IntegrationTests/**'
+          - '**/*.Tests/**'
+          - '**/bin/**'
+          - '**/obj/**'
+        label: SQL string literal followed by concatenation (any method)
   prompt: Run only if this project uses dotnet — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
@@ -111,6 +133,10 @@ where:
       label: EF Core ExecuteSqlRaw with $"..." (use ExecuteSqlInterpolated)
     - regex: '(FromSqlRaw|ExecuteSqlRaw)\s*\([^,)]*\+'
       label: EF Core SqlRaw with string concatenation
+    - regex: '\$"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}\{'
+      label: C# interpolated SQL string (any method)
+    - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}"\s*\+'
+      label: SQL string literal followed by concatenation (any method)
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

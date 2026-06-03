@@ -128,6 +128,51 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Python eval()/exec() with variable
+      - regex: '\bspawnSync\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: spawnSync
+      - regex: 'require\s*\(\s*[''"]child_process[''"]|from\s+[''"]child_process[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: child_process import (trace command source)
+      - regex: '`[^`]*#\{|%x\{[^}]*#\{|\bKernel\.(system|exec)\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Ruby backtick / %x / Kernel.system|exec
 where:
   extensions:
     - ts
@@ -165,6 +210,12 @@ where:
       label: Python subprocess with shell=True
     - regex: '\beval\s*\(|\bexec\s*\(\s*[a-zA-Z_]'
       label: Python eval()/exec() with variable
+    - regex: '\bspawnSync\s*\('
+      label: spawnSync
+    - regex: 'require\s*\(\s*[''"]child_process[''"]|from\s+[''"]child_process[''"]'
+      label: child_process import (trace command source)
+    - regex: '`[^`]*#\{|%x\{[^}]*#\{|\bKernel\.(system|exec)\s*\('
+      label: Ruby backtick / %x / Kernel.system|exec
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

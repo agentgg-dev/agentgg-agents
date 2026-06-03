@@ -26,7 +26,7 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Node child_process.exec/execSync with interpolation/concat
-      - regex: 'spawn\s*\([^)]*\bshell\s*:\s*true\b'
+      - regex: 'spawn(Sync)?\s*\([^)]*\bshell\s*:\s*true\b'
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
           - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
@@ -152,6 +152,60 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Go exec.Command shell invocation
+      - regex: '`[^`]*#\{|\bIO\.popen\s*\(\s*["''`][^"''`]*#\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Ruby backtick / IO.popen with interpolation
+      - regex: '\bos\.popen\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python os.popen
+      - regex: 'Process\.Start\s*\(|new\s+ProcessStartInfo'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: .NET Process.Start / ProcessStartInfo
 where:
   extensions:
     - ts
@@ -185,7 +239,7 @@ where:
   preFilter:
     - regex: '\bexec(Sync)?\s*\(\s*[`"''][^`"'']*\$\{|\bexec(Sync)?\s*\([^)]*\+'
       label: Node child_process.exec/execSync with interpolation/concat
-    - regex: 'spawn\s*\([^)]*\bshell\s*:\s*true\b'
+    - regex: 'spawn(Sync)?\s*\([^)]*\bshell\s*:\s*true\b'
       label: 'Node spawn({ shell: true })'
     - regex: 'os\.system\s*\([^)]*[+%]|os\.system\s*\(\s*f[''"]'
       label: Python os.system with concat/format
@@ -199,6 +253,12 @@ where:
       label: PHP shell-exec family with variable
     - regex: 'exec\.(Command|CommandContext)\s*\(\s*["`](sh|bash|/bin/sh)'
       label: Go exec.Command shell invocation
+    - regex: '`[^`]*#\{|\bIO\.popen\s*\(\s*["''`][^"''`]*#\{'
+      label: Ruby backtick / IO.popen with interpolation
+    - regex: '\bos\.popen\s*\('
+      label: Python os.popen
+    - regex: 'Process\.Start\s*\(|new\s+ProcessStartInfo'
+      label: .NET Process.Start / ProcessStartInfo
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

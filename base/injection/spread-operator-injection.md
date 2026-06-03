@@ -19,7 +19,7 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: 'Spread of req/request.{body,query,params}'
-      - regex: '\{\s*\.\.\.\s*(body|payload|input|formData|parsed)\s*[,}]'
+      - regex: '\{\s*\.\.\.\s*(body|payload|input|formData|parsed|data|json|args)\s*[,}]'
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
         notIn:
@@ -70,7 +70,7 @@ where:
   preFilter:
     - regex: '\{\s*\.\.\.\s*(req|request)\.(body|query|params)'
       label: 'Spread of req/request.{body,query,params}'
-    - regex: '\{\s*\.\.\.\s*(body|payload|input|formData|parsed)\s*[,}]'
+    - regex: '\{\s*\.\.\.\s*(body|payload|input|formData|parsed|data|json|args)\s*[,}]'
       label: Spread of body/payload/input variable
     - regex: '\{\s*\.\.\.\s*searchParams\s*[,}]'
       label: Spread of searchParams

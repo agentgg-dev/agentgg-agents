@@ -74,6 +74,17 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: alt HTTP client call
+      - regex: '\b(fetch|axios\.(get|post|put|delete|patch|request))\s*\(\s*[A-Za-z_$][\w$.\[\]]*\s*[,)]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: HTTP client call with a variable URL (trace origin)
 where:
   extensions:
     - ts
@@ -102,6 +113,8 @@ where:
       label: fetch with interpolated URL
     - regex: (ky|got|undici|node-fetch|phin)\.(get|post|put|delete|patch|request)\s*\(
       label: alt HTTP client call
+    - regex: '\b(fetch|axios\.(get|post|put|delete|patch|request))\s*\(\s*[A-Za-z_$][\w$.\[\]]*\s*[,)]'
+      label: HTTP client call with a variable URL (trace origin)
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

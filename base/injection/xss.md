@@ -22,7 +22,7 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: React dangerouslySetInnerHTML
-      - regex: '\.(innerHTML|outerHTML)\s*=\s*[^"''`][^;]*$'
+      - regex: '\.(innerHTML|outerHTML)\s*='
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
           - '**/*.{html,ejs,hbs,njk,pug}'
@@ -35,7 +35,7 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
-        label: .innerHTML/outerHTML assigned a non-literal
+        label: .innerHTML/outerHTML assignment
       - regex: document\.write\s*\(
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
@@ -117,8 +117,8 @@ where:
   preFilter:
     - regex: 'dangerouslySetInnerHTML\s*=\s*\{'
       label: React dangerouslySetInnerHTML
-    - regex: '\.(innerHTML|outerHTML)\s*=\s*[^"''`][^;]*$'
-      label: .innerHTML/outerHTML assigned a non-literal
+    - regex: '\.(innerHTML|outerHTML)\s*='
+      label: .innerHTML/outerHTML assignment
     - regex: document\.write\s*\(
       label: document.write call
     - regex: v-html\s*=

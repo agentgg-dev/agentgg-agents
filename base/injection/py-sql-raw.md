@@ -78,6 +78,26 @@ precondition:
           - '**/migrations/**'
           - '**/__pycache__/**'
         label: asyncpg-style execute with f-string
+      - regex: '\btext\s*\(\s*["''][^"'']*["'']\s*(?:[%+]|\.format\s*\()'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: SQLAlchemy text() with %/+/.format
+      - regex: '\.objects\.(raw|extra)\s*\(\s*["''][^"'']*["'']\s*(?:[%+]|\.format\s*\()'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/migrations/**'
+          - '**/__pycache__/**'
+        label: Django raw/extra with %/+/.format
   prompt: Run only if this project uses python — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
@@ -103,6 +123,10 @@ where:
       label: Django objects.raw/extra with f-string
     - regex: '(await\s+)?\w+\.execute\s*\(\s*f["'']'
       label: asyncpg-style execute with f-string
+    - regex: '\btext\s*\(\s*["''][^"'']*["'']\s*(?:[%+]|\.format\s*\()'
+      label: SQLAlchemy text() with %/+/.format
+    - regex: '\.objects\.(raw|extra)\s*\(\s*["''][^"'']*["'']\s*(?:[%+]|\.format\s*\()'
+      label: Django raw/extra with %/+/.format
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

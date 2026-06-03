@@ -8,7 +8,7 @@ noiseTier: normal
 precondition:
   regex:
     patterns:
-      - regex: '\.find_by_sql\s*\(\s*["''][^"'']*#\{'
+      - regex: '\.find_by_sql\s*\(\s*["''][^#]{0,400}#\{'
         in:
           - '**/*.rb'
         notIn:
@@ -17,7 +17,7 @@ precondition:
           - '**/*_spec.rb'
           - '**/*_test.rb'
         label: 'find_by_sql with #{} interpolation'
-      - regex: '\.where\s*\(\s*["''][^"'']*#\{'
+      - regex: '\.where\s*\(\s*["''][^#]{0,400}#\{'
         in:
           - '**/*.rb'
         notIn:
@@ -26,7 +26,7 @@ precondition:
           - '**/*_spec.rb'
           - '**/*_test.rb'
         label: .where with string-fragment interpolation
-      - regex: '\.connection\.execute\s*\(\s*["''][^"'']*#\{'
+      - regex: '\.connection\.execute\s*\(\s*["''][^#]{0,400}#\{'
         in:
           - '**/*.rb'
         notIn:
@@ -35,7 +35,7 @@ precondition:
           - '**/*_spec.rb'
           - '**/*_test.rb'
         label: connection.execute with interpolation
-      - regex: 'Sequel\.lit\s*\(\s*["''][^"'']*#\{'
+      - regex: 'Sequel\.lit\s*\(\s*["''][^#]{0,400}#\{'
         in:
           - '**/*.rb'
         notIn:
@@ -44,7 +44,7 @@ precondition:
           - '**/*_spec.rb'
           - '**/*_test.rb'
         label: Sequel.lit with interpolation
-      - regex: '\.exec\s*\(\s*["''][^"'']*#\{'
+      - regex: '\.exec\s*\(\s*["''][^#]{0,400}#\{'
         in:
           - '**/*.rb'
         notIn:
@@ -53,6 +53,15 @@ precondition:
           - '**/*_spec.rb'
           - '**/*_test.rb'
         label: pg exec with interpolation
+      - regex: '\.fetch\s*\(\s*["''][^#]{0,400}#\{'
+        in:
+          - '**/*.rb'
+        notIn:
+          - '**/spec/**'
+          - '**/test/**'
+          - '**/*_spec.rb'
+          - '**/*_test.rb'
+        label: Sequel DB.fetch with interpolation
   prompt: Run only if this project uses ruby — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
@@ -63,16 +72,18 @@ where:
     - '**/*_spec.rb'
     - '**/*_test.rb'
   preFilter:
-    - regex: '\.find_by_sql\s*\(\s*["''][^"'']*#\{'
+    - regex: '\.find_by_sql\s*\(\s*["''][^#]{0,400}#\{'
       label: 'find_by_sql with #{} interpolation'
-    - regex: '\.where\s*\(\s*["''][^"'']*#\{'
+    - regex: '\.where\s*\(\s*["''][^#]{0,400}#\{'
       label: .where with string-fragment interpolation
-    - regex: '\.connection\.execute\s*\(\s*["''][^"'']*#\{'
+    - regex: '\.connection\.execute\s*\(\s*["''][^#]{0,400}#\{'
       label: connection.execute with interpolation
-    - regex: 'Sequel\.lit\s*\(\s*["''][^"'']*#\{'
+    - regex: 'Sequel\.lit\s*\(\s*["''][^#]{0,400}#\{'
       label: Sequel.lit with interpolation
-    - regex: '\.exec\s*\(\s*["''][^"'']*#\{'
+    - regex: '\.exec\s*\(\s*["''][^#]{0,400}#\{'
       label: pg exec with interpolation
+    - regex: '\.fetch\s*\(\s*["''][^#]{0,400}#\{'
+      label: Sequel DB.fetch with interpolation
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

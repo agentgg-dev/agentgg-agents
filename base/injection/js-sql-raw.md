@@ -85,6 +85,28 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: TypeORM @Query decorator with interpolation
+      - regex: '`\s*(?:SELECT|INSERT|UPDATE|DELETE)[^`]{0,400}\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Template-literal SQL with interpolation (any call site)
+      - regex: '\.prepare\s*\([^)]*\+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: better-sqlite3 prepare with concatenation
   prompt: Run only if this project uses node — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
@@ -116,6 +138,10 @@ where:
       label: better-sqlite3 prepare with template-literal interpolation
     - regex: '@Query\s*\(\s*`[^`]*\$\{'
       label: TypeORM @Query decorator with interpolation
+    - regex: '`\s*(?:SELECT|INSERT|UPDATE|DELETE)[^`]{0,400}\$\{'
+      label: Template-literal SQL with interpolation (any call site)
+    - regex: '\.prepare\s*\([^)]*\+'
+      label: better-sqlite3 prepare with concatenation
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

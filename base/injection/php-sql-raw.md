@@ -32,6 +32,22 @@ precondition:
           - '**/tests/**'
           - '**/Tests/**'
         label: Doctrine query with concatenation
+      - regex: '->\s*(whereRaw|orderByRaw|havingRaw|selectRaw|fromRaw)\s*\(|DB::(select|statement|raw|insert|update|delete|unprepared)\s*\('
+        in:
+          - '**/*.php'
+        notIn:
+          - '**/vendor/**'
+          - '**/tests/**'
+          - '**/Tests/**'
+        label: Laravel raw query API
+      - regex: '["''](?:SELECT|INSERT|UPDATE|DELETE)[^"'']{0,400}["'']\s*\.|\$\w+\s*\.\s*["''](?:SELECT|INSERT|UPDATE|DELETE)'
+        in:
+          - '**/*.php'
+        notIn:
+          - '**/vendor/**'
+          - '**/tests/**'
+          - '**/Tests/**'
+        label: SQL string literal concatenated with a variable (PHP)
   prompt: Run only if this project uses php — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
@@ -47,6 +63,10 @@ where:
       label: mysqli_query with concatenation
     - regex: '->\s*(executeQuery|executeStatement|createQuery|createNativeQuery)\s*\(\s*["''][^"'']*["'']\s*\.'
       label: Doctrine query with concatenation
+    - regex: '->\s*(whereRaw|orderByRaw|havingRaw|selectRaw|fromRaw)\s*\(|DB::(select|statement|raw|insert|update|delete|unprepared)\s*\('
+      label: Laravel raw query API
+    - regex: '["''](?:SELECT|INSERT|UPDATE|DELETE)[^"'']{0,400}["'']\s*\.|\$\w+\s*\.\s*["''](?:SELECT|INSERT|UPDATE|DELETE)'
+      label: SQL string literal concatenated with a variable (PHP)
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

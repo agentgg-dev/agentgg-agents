@@ -38,6 +38,20 @@ where:
     - java
     - kt
     - cs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/*_test.go'
+    - '**/spec/**'
+    - '**/vendor/**'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/build/**'
+    - '**/.next/**'
 references:
   - CWE-611
   - CWE-776

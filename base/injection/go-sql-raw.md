@@ -36,6 +36,20 @@ precondition:
           - '**/*_test.go'
           - '**/vendor/**'
         label: GORM Raw/Where concatenating strings
+      - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}"\s*\+\s*\w'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: SQL string literal followed by concatenation (any call site)
+      - regex: 'fmt\.Sprintf\s*\(\s*"[^"]*(?:SELECT|INSERT|UPDATE|DELETE)'
+        in:
+          - '**/*.go'
+        notIn:
+          - '**/*_test.go'
+          - '**/vendor/**'
+        label: fmt.Sprintf building a SQL string (any call site)
   prompt: Run only if this project uses go — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
@@ -52,6 +66,10 @@ where:
       label: GORM/sqlx call wrapping fmt.Sprintf
     - regex: '\.(Raw|Where)\s*\(\s*"[^"]*"\s*\+'
       label: GORM Raw/Where concatenating strings
+    - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}"\s*\+\s*\w'
+      label: SQL string literal followed by concatenation (any call site)
+    - regex: 'fmt\.Sprintf\s*\(\s*"[^"]*(?:SELECT|INSERT|UPDATE|DELETE)'
+      label: fmt.Sprintf building a SQL string (any call site)
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

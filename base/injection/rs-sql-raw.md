@@ -40,6 +40,14 @@ precondition:
           - '**/examples/**'
           - '**/target/**'
         label: rusqlite execute/query with format!
+      - regex: 'format!\s*\(\s*"\s*(?:SELECT|INSERT|UPDATE|DELETE)'
+        in:
+          - '**/*.rs'
+        notIn:
+          - '**/tests/**'
+          - '**/examples/**'
+          - '**/target/**'
+        label: format! building a SQL string (any wrapper)
   prompt: Run only if this project uses rust — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
@@ -57,6 +65,8 @@ where:
       label: 'sea-orm Statement::from_string with format!'
     - regex: \.execute\s*\(\s*&?format!\s*\(|\.query\s*\(\s*&?format!\s*\(
       label: rusqlite execute/query with format!
+    - regex: 'format!\s*\(\s*"\s*(?:SELECT|INSERT|UPDATE|DELETE)'
+      label: format! building a SQL string (any wrapper)
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:
