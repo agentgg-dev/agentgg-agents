@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-browser-route-pivot-hunter
-name: Browser Route Pivot / SSRF Audit — Hunter (OpenClaw)
+slug: openclaw-audit-browser-route-pivot
+name: Browser Route Pivot / SSRF Audit (OpenClaw)
 description: Audits OpenClaw browser-automation and SSRF-guarded fetch surfaces for places attacker-controlled (or model-driven) navigation/interaction reaches an internal address, the cloud-metadata endpoint, a different origin, or a local file. Reports each route as safe / risky / broken with the file:line of the SSRF guard, the navigation primitive, and the bypass shape (IPv4-mapped IPv6, DNS rebinding, trailing-dot host, cross-origin redirect, second-hop CDP, interaction-triggered navigation).
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "\\.(goto|navigate)\\s*\\(|fetch\\s*\\(|axios|got\\s*\\(", label: "navigation / outbound fetch" }
-    - { regex: "169\\.254|metadata|isPrivate|rebind|puppeteer|playwright|CDP", label: "SSRF guard / browser driver" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-26324
   - CVE-2026-43527

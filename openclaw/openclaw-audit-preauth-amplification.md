@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-preauth-amplification-hunter
-name: Pre-auth Amplification Audit — Hunter (OpenClaw)
+slug: openclaw-audit-preauth-amplification
+name: Pre-auth Amplification Audit (OpenClaw)
 description: Audits OpenClaw pre-auth ingress paths (webhook bodies, WebSocket upgrades, base64 media decoders, archive extractors, audio preflight, JWKS fetch on inbound auth, Nostr inbound DM crypto) for places a small attacker request causes large server work *before* the auth boundary. Narrowly scoped to amplification or limit-bypass; pure performance DoS is explicitly out of scope under SECURITY.md.
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "webhook|upgrade\\s*\\(|WebSocket|jwks|req\\.(body|rawBody)", label: "pre-auth ingress" }
-    - { regex: "base64|decode|extract|unzip|\\btar\\b|decompress", label: "decode / extract (amplification)" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-28478
   - CVE-2026-29609

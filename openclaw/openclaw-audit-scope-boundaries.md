@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-scope-boundaries-hunter
-name: Scope Boundaries Audit — Hunter (OpenClaw)
+slug: openclaw-audit-scope-boundaries
+name: Scope Boundaries Audit (OpenClaw)
 description: Audits OpenClaw operator-scope graph for places a `operator.read` request reaches `operator.write`, an `operator.write` request reaches `operator.admin`, a non-pairing scope reaches `operator.pairing`, or a device-level token mints credentials for another device. Reports each privileged sink as safe / risky / broken with the file:line of the missing scope check and the path that reaches it. Excludes shared-secret bearer paths (which SECURITY.md documents as full operator access).
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "operator\\.(read|write|admin|pairing)", label: "operator scope" }
-    - { regex: "\\bscope\\b|requireScope|hasScope|checkScope|permission", label: "scope check" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-22172
   - CVE-2026-32922

@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-auth-lifecycle-hunter
-name: Auth Lifecycle Audit — Hunter (OpenClaw)
+slug: openclaw-audit-auth-lifecycle
+name: Auth Lifecycle Audit (OpenClaw)
 description: Audits OpenClaw token, session, secret, and dedupe state through their lifecycle (rotation, revocation, config reload, device removal, replay-cache, queue context). Reports each holder of long-lived auth/dedupe state as safe / risky / broken with the file:line where the lifecycle event happens and the file:line of the holder that does not observe it.
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "\\b(rotate|revoke|refresh|reload|invalidate|expire)\\w*", label: "lifecycle event" }
-    - { regex: "\\b(token|session|secret|dedupe|replay)\\b", label: "auth / dedupe state" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-34503
   - CVE-2026-41916

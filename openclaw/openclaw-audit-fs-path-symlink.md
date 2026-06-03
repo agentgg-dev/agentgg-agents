@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-fs-path-symlink-hunter
-name: Filesystem Path / Symlink Audit — Hunter (OpenClaw)
+slug: openclaw-audit-fs-path-symlink
+name: Filesystem Path / Symlink Audit (OpenClaw)
 description: Audits OpenClaw filesystem-touching surfaces (FS bridge readFile/writeFile, archive extraction, hook installation, marketplace install, channel media handlers, screen capture out-paths, workspace memory, agent attachments) for path traversal, archive bombs, symlink races, and TOCTOU. Reports each call site as safe / risky / broken with the file:line of the path check, the open/extract/write call, and the specific bypass.
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "readFile|writeFile|create(Read|Write)Stream|openSync|extract|unzip|\\btar\\b", label: "filesystem / archive op" }
-    - { regex: "path\\.(join|resolve|normalize)|symlink|realpath|\\.\\./", label: "path handling / traversal" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-32055
   - CVE-2026-32036

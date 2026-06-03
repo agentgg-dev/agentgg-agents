@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-allowlist-identity-hunter
-name: Allowlist Identity Audit — Hunter (OpenClaw chat-channel extensions)
+slug: openclaw-audit-allowlist-identity
+name: Allowlist Identity Audit (OpenClaw chat-channel extensions)
 description: Audits chat-channel extensions for allowlist-bypass bugs where inbound sender/group identity is matched against a mutable field (display name, username, handle, email, group title) without the operator's `dangerouslyAllowNameMatching` opt-in. An attacker who can rename themselves to an allowlisted value slips past the allowlist without the operator ever flipping a dangerous flag.
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "allow[_-]?list|allowList", label: "allowlist reference" }
-    - { regex: "senderUsername|from\\.username|displayName|dangerouslyAllowNameMatching|groupTitle", label: "mutable identity field" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - GHSA-c29c-2q9c-pc86
   - GHSA-8c59-hr4w-qg69

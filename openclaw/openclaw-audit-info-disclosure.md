@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-info-disclosure-hunter
-name: Information Disclosure Audit — Hunter (OpenClaw)
+slug: openclaw-audit-info-disclosure
+name: Information Disclosure Audit (OpenClaw)
 description: Audits OpenClaw read-scoped surfaces (config readers, redaction layers, hello/snapshot endpoints, OAuth/PKCE state, comparator timing, browser snapshot/screenshot, control UI bootstrap) for places sensitive state leaks below its required scope. Reports each leak as safe / risky / broken with the file:line of the read, the field exposed, and the scope mismatch. Narrowly scoped because most "read returns more than expected" findings are out of scope under the trusted-operator model.
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "redact|snapshot|screenshot|bootstrap|\\bhello\\b|pkce", label: "read-scoped surface" }
-    - { regex: "timingSafeEqual|\\bsecret\\b|\\btoken\\b|res\\.(json|send)\\s*\\(", label: "sensitive state / response" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-26326
   - CVE-2026-43528

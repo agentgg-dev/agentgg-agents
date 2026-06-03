@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-control-ui-csrf-xss-hunter
-name: Control UI CSRF / Stored XSS Audit — Hunter (OpenClaw)
+slug: openclaw-audit-control-ui-csrf-xss
+name: Control UI CSRF / Stored XSS Audit (OpenClaw)
 description: Audits OpenClaw Control UI / loopback browser-mutation endpoints / canvas / a2ui surfaces for CSRF (no origin / Referer / SameSite / token check on a state-changing route reachable from a user's browser) and stored XSS (untrusted external bytes rendered into inline-script or HTML context). Reports each route as safe / risky / broken with the file:line of the handler, the sink, and the documented attacker primitive.
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "\\.(post|put|patch|delete)\\s*\\(|csrf|sameSite|referer|\\borigin\\b", label: "state-changing route / CSRF check" }
-    - { regex: "innerHTML|dangerouslySetInnerHTML|<script|\\.render\\s*\\(", label: "HTML / script sink" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-26317
   - CVE-2026-27485

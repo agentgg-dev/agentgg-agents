@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-trusted-event-ingress-hunter
-name: Trusted Event Ingress Audit — Hunter (OpenClaw)
+slug: openclaw-audit-trusted-event-ingress
+name: Trusted Event Ingress Audit (OpenClaw)
 description: 'Audits OpenClaw event/queue producers and consumers for trust transitions where untrusted external input is enqueued onto a channel that downstream code treats as a trusted system event (System: prompt channel, /hooks/wake, agent hook events, exec-event, channel-setup, cron awareness, heartbeat owner). Reports each producer/consumer pair as safe / risky / broken with the file:line of the producer, the consumer that does not re-sanitize, and the trust class crossed.'
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "enqueue|\\.emit\\s*\\(|\\bqueue\\b|hooks/wake|exec-event", label: "event / queue producer" }
-    - { regex: "System:|heartbeat|\\bcron\\b|channel-setup|\\.on\\s*\\(", label: "trusted event consumer" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-43534
   - CVE-2026-43566

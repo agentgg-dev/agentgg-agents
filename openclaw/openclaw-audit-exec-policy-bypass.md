@@ -1,6 +1,6 @@
 ---
-slug: openclaw-audit-exec-policy-bypass-hunter
-name: Exec Policy Bypass Audit — Hunter (OpenClaw)
+slug: openclaw-audit-exec-policy-bypass
+name: Exec Policy Bypass Audit (OpenClaw)
 description: Audits OpenClaw exec-routing surfaces (`system.run`, `tools.exec`, node exec, Docker/SSH wrappers) for policy bypasses where the executed bytes diverge from the approved/allowlisted command, where the allowlist does not understand a shell construct, or where environment variables convert a benign command into attacker code. Reports each call site as safe / risky / broken with the file:line of the approval-vs-exec divergence, the missing allowlist primitive, or the env-injection sink. Pairs with `openclaw-audit-allowlist-identity-hunter` and `openclaw-audit-webhook-ingress-hunter` and is the largest single CVE cluster in the OpenClaw history.
 version: 0.1.0
 author: agentgg
@@ -18,9 +18,10 @@ where:
     - "**/*test*/**"
     - "**/__tests__/**"
     - "**/fixtures/**"
-  preFilter:
-    - { regex: "child_process|exec(Sync|File)?\\s*\\(|spawn\\s*\\(|execa", label: "process exec" }
-    - { regex: "system\\.run|tools\\.exec|allow[_-]?list|docker|\\bssh\\b", label: "exec routing / policy" }
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
+    - "**/*.spec.ts"
+    - "**/*.spec.tsx"
 references:
   - CVE-2026-22168
   - CVE-2026-32978
