@@ -7,21 +7,45 @@ author: agentgg
 noiseTier: normal
 precondition:
   regex:
-    extensions:
-      - ts
-      - tsx
-      - js
-      - jsx
-      - mjs
-      - cjs
-      - py
-      - rb
-      - go
-      - rs
-      - php
-      - java
-      - kt
-      - cs
+    patterns:
+      - regex: '[xX][mM][lL]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: references XML (broad keyword)
+      - regex: '\b(DocumentBuilderFactory|SAXParser(Factory)?|SAXBuilder|XMLReader|XmlReader|libxml|etree|ElementTree|minidom|simplexml_load|simpleXML|expat|lxml|defusedxml|DOMParser|pulldom|XmlDocument|nokogiri|Nokogiri)\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: XML parser API or library
 where:
   extensions:
     - ts
@@ -52,6 +76,13 @@ where:
     - '**/dist/**'
     - '**/build/**'
     - '**/.next/**'
+  preFilter:
+    - regex: '[xX][mM][lL]'
+      label: references XML (broad keyword)
+    - regex: '\b(DocumentBuilderFactory|SAXParser(Factory)?|SAXBuilder|XMLReader|XmlReader|libxml|etree|ElementTree|minidom|simplexml_load|simpleXML|expat|lxml|defusedxml|DOMParser|pulldom|XmlDocument|nokogiri|Nokogiri)\b'
+      label: XML parser API or library
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-611
   - CWE-776

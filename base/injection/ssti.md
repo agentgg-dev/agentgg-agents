@@ -7,20 +7,45 @@ author: agentgg
 noiseTier: normal
 precondition:
   regex:
-    extensions:
-      - ts
-      - tsx
-      - js
-      - jsx
-      - mjs
-      - cjs
-      - py
-      - rb
-      - go
-      - php
-      - java
-      - kt
-      - cs
+    patterns:
+      - regex: '\b(pug|jade|handlebars|mustache|nunjucks|ejs|eta|liquid|jinja2|jinja|mako|freemarker|velocity|thymeleaf|smarty|twig|blade|haml|slim|squirrelly|dustjs|doT|markojs|Marko)\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: template engine library referenced
+      - regex: '\brenderString\b|\bfrom_string\b|\brender_template_string\b|\bERB\.new\b|\bnew\s+Template\b|\bcompileString\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: template compiled/rendered from a string source
 where:
   extensions:
     - ts
@@ -50,6 +75,13 @@ where:
     - '**/dist/**'
     - '**/build/**'
     - '**/.next/**'
+  preFilter:
+    - regex: '\b(pug|jade|handlebars|mustache|nunjucks|ejs|eta|liquid|jinja2|jinja|mako|freemarker|velocity|thymeleaf|smarty|twig|blade|haml|slim|squirrelly|dustjs|doT|markojs|Marko)\b'
+      label: template engine library referenced
+    - regex: '\brenderString\b|\bfrom_string\b|\brender_template_string\b|\bERB\.new\b|\bnew\s+Template\b|\bcompileString\b'
+      label: template compiled/rendered from a string source
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-1336
   - CWE-94

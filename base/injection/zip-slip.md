@@ -7,20 +7,45 @@ author: agentgg
 noiseTier: normal
 precondition:
   regex:
-    extensions:
-      - ts
-      - tsx
-      - js
-      - jsx
-      - mjs
-      - cjs
-      - py
-      - rb
-      - go
-      - php
-      - java
-      - kt
-      - cs
+    patterns:
+      - regex: '\bzip\b|\bunzip\b|\btar\b|\bgunzip\b|\bgzip\b|archive/zip'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: archive keyword (zip/tar/gzip)
+      - regex: '\b(unzipper|adm-zip|AdmZip|jszip|JSZip|yauzl|node-stream-zip|zipfile|tarfile|ZipInputStream|ZipFile|ZipEntry|TarInputStream|GZIPInputStream|extractall|extractAll|extractAllTo|getNextEntry|OpenReader|ZipArchive)\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: archive library or extraction API
 where:
   extensions:
     - ts
@@ -50,6 +75,13 @@ where:
     - '**/dist/**'
     - '**/build/**'
     - '**/.next/**'
+  preFilter:
+    - regex: '\bzip\b|\bunzip\b|\btar\b|\bgunzip\b|\bgzip\b|archive/zip'
+      label: archive keyword (zip/tar/gzip)
+    - regex: '\b(unzipper|adm-zip|AdmZip|jszip|JSZip|yauzl|node-stream-zip|zipfile|tarfile|ZipInputStream|ZipFile|ZipEntry|TarInputStream|GZIPInputStream|extractall|extractAll|extractAllTo|getNextEntry|OpenReader|ZipArchive)\b'
+      label: archive library or extraction API
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - CWE-23
