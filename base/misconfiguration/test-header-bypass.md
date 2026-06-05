@@ -22,6 +22,16 @@ where:
     - jsx
     - mjs
     - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
+  preFilter:
+    - regex: '[Hh]eader|x-[A-Za-z]|req(uest)?\.headers|getHeader|HTTP_|\.META\b'
+      label: Request header access
 references:
   - CWE-287
   - CWE-489

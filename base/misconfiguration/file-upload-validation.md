@@ -36,6 +36,9 @@ where:
     - java
     - kt
     - cs
+  preFilter:
+    - regex: '[Ff]ile|upload|multipart|multer|busboy|formidable|\$_FILES|move_uploaded'
+      label: File upload handling
 references:
   - CWE-434
   - CWE-400

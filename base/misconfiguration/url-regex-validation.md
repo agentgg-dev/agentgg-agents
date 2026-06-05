@@ -22,6 +22,16 @@ where:
     - jsx
     - mjs
     - cjs
+    - py
+    - rb
+    - go
+    - php
+    - java
+    - kt
+    - cs
+  preFilter:
+    - regex: 'RegExp|regexp|preg_|Pattern\.compile|\bre\.|=~|\.match\s*\(|\.test\s*\(|[Uu]rl|[Hh]ost|[Dd]omain|[Rr]edirect'
+      label: Regex usage
 references:
   - CWE-1287
   - CWE-918

@@ -22,6 +22,9 @@ where:
     - jsx
     - mjs
     - cjs
+  preFilter:
+    - regex: 'postMessage\s*\(|\.onmessage\s*=|addEventListener\([^)]*message'
+      label: postMessage listener/sender
 references:
   - CWE-346
   - 'OWASP-A05:2021'

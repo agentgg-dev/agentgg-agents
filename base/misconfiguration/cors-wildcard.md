@@ -30,6 +30,9 @@ where:
     - py
     - rb
     - conf
+  preFilter:
+    - regex: '[Oo]rigin|Access-Control|[Cc]ors|cross[_-]?origin|AllowedOrigins|allow_origins'
+      label: CORS origin configuration
 references:
   - CWE-942
   - CWE-346
