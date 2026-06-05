@@ -176,28 +176,17 @@ where:
     - '**/build/**'
     - '**/.next/**'
   preFilter:
-    - regex: '\.(query|execute|exec|run|raw)\s*\(\s*`[^`]*\$\{'
-      label: SQL call with template-literal interpolation
-    - regex: '\.(query|execute|exec|run|raw)\s*\([^)]*\+\s*(req|params|body|input|args|query|userInput)'
-      label: SQL call concatenating request data
-    - regex: '(execute|cursor|conn)\s*\(\s*f[''"]'
-      label: Python SQL with f-string
-    - regex: '(execute|cursor|conn)\s*\([^)]*%\s*\('
-      label: Python SQL with %-format placeholder
-    - regex: 'sqlalchemy\.text\s*\(\s*(f[''"]|.*\+)'
-      label: SQLAlchemy text() with interpolation
-    - regex: 'find_by_sql\s*\(.*#\{'
-      label: 'ActiveRecord find_by_sql with #{} interpolation'
-    - regex: 'Sequel\.lit\s*\(.*#\{'
-      label: 'Sequel.lit with #{} interpolation'
-    - regex: 'fmt\.Sprintf\s*\([^)]*(SELECT|INSERT|UPDATE|DELETE)'
-      label: Go fmt.Sprintf building SQL
-    - regex: 'ORDER\s+BY\s+`?\s*\+|ORDER\s+BY\s+["`]?\$\{'
-      label: Dynamic ORDER BY built from input
-    - regex: '`\s*(?:SELECT|INSERT|UPDATE|DELETE)[^`]{0,400}\$\{'
-      label: Template-literal SQL with interpolation (any call site)
-    - regex: '["''](?:SELECT|INSERT|UPDATE|DELETE)[^"'']{0,400}["'']\s*\+'
-      label: SQL string literal followed by concatenation (any call site)
+    - regex: '[.>]\s*([Qq]uery|[Ee]xec|[Rr]aw|execute|executemany|executescript|run|prepare|prepareStatement|createQuery|createNativeQuery|createQueryBuilder|executeQuery|executeUpdate|exec_query|exec_driver_sql|find_by_sql|rawQuery)\w*\s*\('
+      label: SQL execution call (any language, . or ->, any case)
+    - regex: '\$(queryRaw|executeRaw|queryRawUnsafe|executeRawUnsafe)|FromSqlRaw|FromSqlInterpolated|knex\.raw|sequelize\.(query|literal)|Sequel\.lit|sqlalchemy\.text|SqlCommand|cursor\s*\.\s*execute'
+      label: ORM / driver raw-SQL marker
+    - regex: '\b(mysqli?_query|mysqli_multi_query|pg_query|pg_send_query|sqlite_query|mssql_query|oci_parse|dbExecute|query_db)\s*\('
+      label: Procedural DB query function
+    - regex: '\bsql\s*[`(]|@Query\b|PreparedStatement|\bStatement\s+\w+\s*='
+      label: Tagged-template SQL / JDBC statement / @Query
+    - regex: '\bSELECT\b[\s\S]{0,500}\bFROM\b|\bINSERT\s+INTO\b|\bUPDATE\b[\s\S]{0,160}\bSET\b|\bDELETE\s+FROM\b|\bUNION\b[\s\S]{0,40}\bSELECT\b|\bDROP\s+TABLE\b|\bALTER\s+TABLE\b|\bCREATE\s+TABLE\b|\bTRUNCATE\s+TABLE\b|\bMERGE\s+INTO\b|\bREPLACE\s+INTO\b'
+      label: Raw SQL statement keywords (any execution mechanism)
+      multiline: true
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:
