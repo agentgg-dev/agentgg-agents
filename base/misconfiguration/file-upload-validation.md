@@ -7,20 +7,11 @@ author: agentgg
 noiseTier: precise
 precondition:
   regex:
-    extensions:
-      - ts
-      - tsx
-      - js
-      - jsx
-      - mjs
-      - cjs
-      - py
-      - rb
-      - go
-      - php
-      - java
-      - kt
-      - cs
+    patterns:
+      - regex: 'multer|busboy|formidable|MultipartFile|move_uploaded_file|\$_FILES|request\.files|request\.FILES|CarrierWave|shrine|paperclip'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,php,java,kt,cs}'
+        label: file upload library or pattern
 where:
   extensions:
     - ts
@@ -37,8 +28,24 @@ where:
     - kt
     - cs
   preFilter:
-    - regex: '[Ff]ile|upload|multipart|multer|busboy|formidable|\$_FILES|move_uploaded'
-      label: File upload handling
+    - regex: 'multer|busboy|formidable|express-fileupload|multiparty|@fastify/multipart'
+      label: Node.js upload middleware
+    - regex: 'req\.(file|files)\b'
+      label: Express/multer req.file result
+    - regex: 'request\.(files|FILES)\[|\bFileStorage\b|\bUploadedFile\b'
+      label: Python Flask/Django upload
+    - regex: 'MultipartFile|MultipartHttpServletRequest|@RequestPart|CommonsMultipartFile|ServletFileUpload|DiskFileItemFactory|\bFileItem\b'
+      label: Java/Kotlin multipart
+    - regex: 'request\.getPart\(|request\.getParts\('
+      label: Java Servlet Part API
+    - regex: '\$_FILES|move_uploaded_file|is_uploaded_file'
+      label: PHP file upload
+    - regex: 'CarrierWave|shrine|paperclip|ActionDispatch::Http::UploadedFile|original_filename'
+      label: Ruby upload library
+    - regex: 'r\.FormFile\(|ParseMultipartForm|multipart\.FileHeader'
+      label: Go multipart upload
+    - regex: '\bIFormFile\b|HttpPostedFileBase|Request\.Files\b|MultipartFormDataContent'
+      label: C# file upload
 references:
   - CWE-434
   - CWE-400

@@ -22,6 +22,19 @@ where:
     - jsx
     - mjs
     - cjs
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/node_modules/**'
+    - '**/dist/**'
+  preFilter:
+    - regex: 'process\.env\.(DISABLE_|SKIP_|BYPASS_|NO_|ENABLE_|REQUIRE_)'
+      label: security-control env var access
+    - regex: 'process\.env\.[A-Z_]*(AUTH|VERIFY|CHECK|VALIDATE|SECURE|SSL|TLS)[A-Z_]*'
+      label: auth/verify env var access
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-1287
   - 'OWASP-A05:2021'
