@@ -1,6 +1,6 @@
 ---
-slug: xxe
-name: XML External Entity (XXE)
+slug: xxe-deep
+name: XML External Entity (XXE) (Deep)
 description: 'XML parsers configured to resolve external entities or DTDs, allowing attacker-controlled XML to read local files, perform SSRF, or trigger entity-expansion DoS (billion laughs).'
 version: 0.1.0
 author: agentgg
@@ -8,7 +8,7 @@ noiseTier: normal
 precondition:
   regex:
     patterns:
-      - regex: '(noent\s*[:=]\s*[Tt]rue|processEntities\s*:\s*true|resolve_entities\s*=\s*True|no_network\s*=\s*False|LIBXML_NOENT|LIBXML_DTDLOAD|libxml_disable_entity_loader\s*\(\s*(false|FALSE|0)|new\s+XmlUrlResolver|XmlResolver\s*=\s*new|DtdProcessing\s*\.\s*Parse|setExpandEntityReferences\s*\(\s*true|setFeature\s*\([^)]*disallow-doctype-decl[^)]*,\s*false)'
+      - regex: '\b(DocumentBuilderFactory|SAXParser(?:Factory)?|SAXBuilder|XMLReader|XmlReader|XMLInputFactory|TransformerFactory|SchemaFactory|XPathFactory|libxmljs?|etree|ElementTree|minidom|simplexml_load|simpleXML|expat|lxml|defusedxml|DOMParser|pulldom|XmlDocument|nokogiri|Nokogiri|xml2js|XMLParser|xmldom|parseXml(?:String)?)\b|fast-xml-parser'
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
           - '**/*.{py,rb,go,rs,php,java,kt,cs}'
@@ -26,7 +26,19 @@ precondition:
           - '**/dist/**'
           - '**/build/**'
           - '**/.next/**'
-        label: Explicit unsafe XML entity/DTD configuration
+        label: XML parser API or library
+      - regex: '(?:require|import).*[xX][mM][lL]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: XML library import
 where:
   extensions:
     - ts
@@ -58,8 +70,10 @@ where:
     - '**/build/**'
     - '**/.next/**'
   preFilter:
-    - regex: '(noent\s*[:=]\s*[Tt]rue|processEntities\s*:\s*true|resolve_entities\s*=\s*True|no_network\s*=\s*False|LIBXML_NOENT|LIBXML_DTDLOAD|libxml_disable_entity_loader\s*\(\s*(false|FALSE|0)|new\s+XmlUrlResolver|XmlResolver\s*=\s*new|DtdProcessing\s*\.\s*Parse|setExpandEntityReferences\s*\(\s*true|setFeature\s*\([^)]*disallow-doctype-decl[^)]*,\s*false)'
-      label: Explicit unsafe XML entity/DTD configuration
+    - regex: '\b(DocumentBuilderFactory|SAXParser(?:Factory)?|SAXBuilder|XMLReader|XmlReader|XMLInputFactory|TransformerFactory|SchemaFactory|XPathFactory|libxmljs?|etree|ElementTree|minidom|simplexml_load|simpleXML|expat|lxml|defusedxml|DOMParser|pulldom|XmlDocument|nokogiri|Nokogiri|xml2js|XMLParser|xmldom|parseXml(?:String)?)\b|fast-xml-parser'
+      label: XML parser API or library
+    - regex: '(?:require|import).*[xX][mM][lL]'
+      label: XML library import
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:
@@ -77,15 +91,6 @@ entity chain (DoS).
 The defining mistake is parsing untrusted XML with a parser whose
 external-entity / DTD handling is left at its unsafe default or
 explicitly enabled.
-
-**Scope of this (light) check.** This strict pass only flags parsers with
-an *explicitly* unsafe entity/DTD setting (`noent: true`,
-`resolve_entities=True`, `LIBXML_NOENT`, `XmlUrlResolver`,
-`DtdProcessing.Parse`, `disallow-doctype-decl` set to `false`, etc.). The
-broader "unsafe by default" analysis — e.g. a `DocumentBuilderFactory` or
-`lxml` parser that simply omits hardening — requires reading each parser
-site and lives in the `xxe-deep` agent (deep tier). Don't widen your
-search here beyond the explicit-flag cases.
 
 ## What to look for
 

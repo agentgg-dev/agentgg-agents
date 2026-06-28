@@ -1,14 +1,14 @@
 ---
-slug: security-behind-flag
-name: Security Check Behind Feature Flag
-description: 'Auth, CSRF, WAF, encryption, or signature verification gated by a feature flag (LaunchDarkly, Statsig, custom isEnabled) — disabling the flag turns off the protection without code changes. Follows flag helpers and verifier definitions.'
+slug: security-behind-flag-deep
+name: Security Check Behind Feature Flag (Deep)
+description: 'Broad-net pass: reads every feature-flag check (LaunchDarkly, Statsig, custom isEnabled, generic flag helpers) and opens the guarded block to see whether it wraps a security verb. High coverage, high file count. The fast, strict variant is `security-behind-flag` in base.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
 precondition:
   regex:
     patterns:
-      - regex: (variation|checkGate|isEnabled|getFlag|getVariant|flag_enabled|flagFor|featureFlag)\s*\(\s*['"][^'"]*(auth|authz|mfa|2fa|otp|csrf|xsrf|encrypt|decrypt|signature|verif|firewall|waf|rate.?limit|throttl|sanitiz|escap|secur|permission|token|jwt|tls|ssl|cors|captcha|lockout|rbac|acl)
+      - regex: (LaunchDarkly|statsig|Optimizely|Unleash|growthbook)\b
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
         notIn:
@@ -20,7 +20,33 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
-        label: Feature-flag check on a security-named flag
+        label: Feature-flag provider reference
+      - regex: \.(variation|checkGate|isEnabled|getFlag|getVariant)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Feature-flag check call
+      - regex: \b(isEnabled|flag_enabled|flagFor|featureFlag)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Generic feature-flag helper
 where:
   extensions:
     - ts
@@ -44,8 +70,12 @@ where:
     - '**/dist/**'
     - '**/.next/**'
   preFilter:
-    - regex: (variation|checkGate|isEnabled|getFlag|getVariant|flag_enabled|flagFor|featureFlag)\s*\(\s*['"][^'"]*(auth|authz|mfa|2fa|otp|csrf|xsrf|encrypt|decrypt|signature|verif|firewall|waf|rate.?limit|throttl|sanitiz|escap|secur|permission|token|jwt|tls|ssl|cors|captcha|lockout|rbac|acl)
-      label: Feature-flag check on a security-named flag
+    - regex: (LaunchDarkly|statsig|Optimizely|Unleash|growthbook)\b
+      label: Feature-flag provider reference
+    - regex: \.(variation|checkGate|isEnabled|getFlag|getVariant)\s*\(
+      label: Feature-flag check call
+    - regex: \b(isEnabled|flag_enabled|flagFor|featureFlag)\s*\(
+      label: Generic feature-flag helper
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:
@@ -58,14 +88,6 @@ flags. A feature flag that disables a security check is a switch
 operators can flip without a deploy or PR — and remote configuration
 systems (LaunchDarkly, Statsig, Optimizely, internal flag services)
 are themselves potential attack surfaces.
-
-**Scope of this (light) check.** This strict pass only fires when the
-flag's *name string* itself names a security concept (`require-mfa`,
-`csrf-check`, `auth-required`, `validate-signature`, etc.) — the
-high-confidence cases. Flags with opaque names (`g-1234`,
-`FLAGS.NEW_PATH`) or whose security nature is only visible from the
-guarded block require reading every flag site and live in the
-`security-behind-flag-deep` agent (deep tier).
 
 **Cross-file analysis:** the body of the `if` may call a helper
 like `requireAuth()` or `verifyCsrf()` — open it to confirm that's a

@@ -1,30 +1,26 @@
 ---
-slug: missing-access-control
-name: Missing Access Control
-description: Authenticated endpoints that read or modify a resource without verifying the requester owns it — IDOR / horizontal privilege escalation.
+slug: missing-access-control-deep
+name: Missing Access Control (Deep)
+description: 'Broad-net pass for missing access control: reads every authenticated route handler and traces ownership/scoping across middleware and services. High coverage, high file count. The fast, strict variant is `missing-access-control` in base.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
 precondition:
-  regex:
-    patterns:
-      - regex: "['\"][^'\"]{0,60}[:{<]\\s*[a-zA-Z_]*([Ii]d|[Pp]k)\\b"
-        in:
-          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,php,java,kt,cs}'
-        notIn:
-          - '**/__tests__/**'
-          - '**/*.{test,spec}.*'
-          - '**/node_modules/**'
-        label: Route with a resource-id path parameter
+  prompt: |
+    Run only if this project exposes authenticated HTTP endpoints (a web
+    API, backend service, or server-rendered app with sessions) that read
+    or mutate per-user or per-tenant resources. Skip pure CLIs, static
+    sites, and libraries with no request handlers.
 where:
   extensions: [ts, tsx, js, jsx, mjs, cjs, py, rb, go, php, java, kt, cs]
   excludePatterns:
     - "**/*.{test,spec}.*"
     - "**/__tests__/**"
-    - "**/node_modules/**"
   preFilter:
-    - { regex: "['\"][^'\"]{0,60}[:{<]\\s*[a-zA-Z_]*([Ii]d|[Pp]k)\\b", label: "Route path with a resource-id parameter (IDOR-shaped)" }
-    - { regex: "@(PathVariable|PathParam)\\b", label: "Spring / JAX-RS path-parameter binding" }
+    - { regex: "\\.(get|post|put|patch|delete|all)\\s*\\(\\s*['\"]", label: "HTTP route handler (Express / Fastify / router)" }
+    - { regex: "@(Get|Post|Put|Patch|Delete|Controller|RequestMapping|GetMapping|PostMapping)\\s*\\(", label: "controller route decorator / annotation" }
+    - { regex: "Route::(get|post|put|patch|delete|resource|apiResource)\\s*\\(", label: "Laravel route definition" }
+    - { regex: "@(app|router|blueprint)\\.(route|get|post|put|patch|delete)\\s*\\(|def \\w+\\s*\\([^)]*request", label: "Python view (Flask / Django / FastAPI)" }
 references:
   - CWE-862
   - CWE-639
@@ -33,14 +29,6 @@ references:
 
 You are hunting for missing access-control checks across this
 repository.
-
-**Scope of this (light) check.** This strict pass only surfaces handlers
-whose route declares a resource-id path parameter (`/users/:id`, `{id}`,
-`<int:pk>`, or a Spring/JAX-RS `@PathVariable`) — the canonical IDOR
-shape. Broader tracing of ids taken from the request body / query string,
-namespace-scoped routes, and resource-style route tables lives in the
-`missing-access-control-deep` agent (deep tier). Within a candidate file,
-still follow imports and middleware to confirm scoping.
 
 ## What this bug looks like
 

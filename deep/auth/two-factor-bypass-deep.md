@@ -1,6 +1,6 @@
 ---
-slug: two-factor-bypass
-name: Two-Factor Authentication Bypass
+slug: two-factor-bypass-deep
+name: Two-Factor Authentication Bypass (Deep)
 description: '2FA / MFA verification steps that can be skipped — full session granted before the second factor is validated, the second-factor endpoint trusts client-supplied "verified" flags, brute-forceable OTP codes, or step-up paths that don''t gate sensitive actions. Reads the auth flow across login, verify, and session-issuance handlers.'
 version: 0.1.0
 author: agentgg
@@ -8,7 +8,7 @@ noiseTier: precise
 precondition:
   regex:
     patterns:
-      - regex: (speakeasy|otplib|@otplib|pyotp|rotp|node-2fa|google-authenticator|twofactor|two-factor-auth)
+      - regex: (totp|otp|mfa|twoFactor|two_factor|2fa)
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
           - '**/*.{py,rb,go,php,java,kt,cs}'
@@ -17,8 +17,18 @@ precondition:
           - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
           - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
           - '**/node_modules/**'
-        label: TOTP/MFA library
-      - regex: (verify|validate|check)[._]?([Tt]otp|[Oo]tp|[Mm]fa|[Tt]wo[_]?[Ff]actor|2fa)\b|(totp|authenticator|otplib)\s*\.\s*(verify|check|validate)
+        label: 2FA reference
+      - regex: (speakeasy|otplib|@otplib|pyotp|rotp|node-2fa)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: TOTP library
+      - regex: (verifyToken|verifyOtp|verify_otp|verifyMfa|verifyTwoFactor)
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
           - '**/*.{py,rb,go,php,java,kt,cs}'
@@ -28,7 +38,7 @@ precondition:
           - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
           - '**/node_modules/**'
         label: 2FA verification call
-      - regex: (totpSecret|mfaSecret|otp_secret|two_factor_secret|twoFactorEnabled|is_two_factor_enabled|mfaEnabled)
+      - regex: (jwt\.sign|createSession|issueToken|setSession)\s*\(
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
           - '**/*.{py,rb,go,php,java,kt,cs}'
@@ -37,7 +47,7 @@ precondition:
           - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
           - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
           - '**/node_modules/**'
-        label: 2FA secret / enrollment field
+        label: Session/token issuance
 where:
   extensions:
     - ts
@@ -59,12 +69,14 @@ where:
     - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
     - '**/node_modules/**'
   preFilter:
-    - regex: (speakeasy|otplib|@otplib|pyotp|rotp|node-2fa|google-authenticator|twofactor|two-factor-auth)
-      label: TOTP/MFA library
-    - regex: (verify|validate|check)[._]?([Tt]otp|[Oo]tp|[Mm]fa|[Tt]wo[_]?[Ff]actor|2fa)\b|(totp|authenticator|otplib)\s*\.\s*(verify|check|validate)
+    - regex: (totp|otp|mfa|twoFactor|two_factor|2fa)
+      label: 2FA reference
+    - regex: (speakeasy|otplib|@otplib|pyotp|rotp|node-2fa)
+      label: TOTP library
+    - regex: (verifyToken|verifyOtp|verify_otp|verifyMfa|verifyTwoFactor)
       label: 2FA verification call
-    - regex: (totpSecret|mfaSecret|otp_secret|two_factor_secret|twoFactorEnabled|is_two_factor_enabled|mfaEnabled)
-      label: 2FA secret / enrollment field
+    - regex: (jwt\.sign|createSession|issueToken|setSession)\s*\(
+      label: Session/token issuance
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:
@@ -76,14 +88,6 @@ references:
 You are reviewing the multi-step authentication flow for 2FA / MFA
 bypass — patterns where the second factor can be skipped, bypassed,
 or made trivial to brute-force.
-
-**Scope of this (light) check.** This strict pass only activates on files
-carrying a concrete 2FA signal — a TOTP/MFA library, a 2FA verification
-call, or a stored 2FA secret / enrollment field. The broad sweep that
-also reads generic session/JWT-issuance sites (`jwt.sign`,
-`createSession`, etc.) to catch "full session issued before 2FA" lives in
-the `two-factor-bypass-deep` agent (deep tier). Still follow the flow
-into the login/session handlers those signal files reference.
 
 **Cross-file analysis:** 2FA flows span at least three files —
 `POST /login` (validates password), `POST /verify-2fa` (validates
