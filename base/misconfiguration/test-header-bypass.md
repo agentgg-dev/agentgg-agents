@@ -30,8 +30,8 @@ where:
     - kt
     - cs
   preFilter:
-    - regex: '[Hh]eader|x-[A-Za-z]|req(uest)?\.headers|getHeader|HTTP_|\.META\b'
-      label: Request header access
+    - regex: '[Xx]-(?:test|automated|debug|bypass|skip|no-|internal|admin|mock|impersonate|environment|mode)'
+      label: Suspicious bypass header name
 references:
   - CWE-287
   - CWE-489

@@ -70,7 +70,7 @@ knows others):**
 - `node-ipc` `10.1.1` / `10.1.2` (protestware sabotage).
 - `colors` `1.4.44-liberty-2` (protestware infinite loop).
 - `marsdb` (abandoned + known issues; flag any pin).
-- `juicy-evil-wasp` / `epilogue-js` / `marsdb` / `express-jwt < 6.0` —
+- `epilogue-js` / `marsdb` / `express-jwt < 6.0` —
   illustrative.
 
 **Typosquat-shaped names:** look for one-letter edits from popular

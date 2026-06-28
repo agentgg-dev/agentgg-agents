@@ -30,8 +30,14 @@ where:
     - kt
     - cs
   preFilter:
-    - regex: 'RegExp|regexp|preg_|Pattern\.compile|\bre\.|=~|\.match\s*\(|\.test\s*\(|[Uu]rl|[Hh]ost|[Dd]omain|[Rr]edirect'
-      label: Regex usage
+    - regex: '(?:\.test\s*\(|RegExp\s*\(|preg_match|re\.(?:match|search|compile)|Pattern\.compile).*(?:url|URL|host|domain|redirect)|(?:url|URL|host|domain|redirect).*(?:\.test\s*\(|RegExp\s*\(|preg_match|Pattern\.compile)'
+      label: Regex and URL context co-occurrence
+    - regex: '\.(?:endsWith|includes|startsWith)\s*\([^)]*\.(?:com|org|net|io|dev|app|co)\b'
+      label: String method as domain safety gate
+    - regex: 'https?:.*[*+].*\.'
+      label: URL-matching pattern with wildcard quantifier
+    - regex: '(?:url|URL|Url|host|Host|redirect|Redirect)\.(?:includes|startsWith|endsWith)\s*\('
+      label: String method on URL or host variable
 references:
   - CWE-1287
   - CWE-918

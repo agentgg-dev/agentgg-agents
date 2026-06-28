@@ -8,26 +8,7 @@ noiseTier: normal
 precondition:
   regex:
     patterns:
-      - regex: '[xX][mM][lL]'
-        in:
-          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
-          - '**/*.{py,rb,go,rs,php,java,kt,cs}'
-        notIn:
-          - '**/__tests__/**'
-          - '**/*.test.{ts,tsx,js,jsx,mjs}'
-          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
-          - '**/tests/**'
-          - '**/test_*.py'
-          - '**/*_test.py'
-          - '**/*_test.go'
-          - '**/spec/**'
-          - '**/vendor/**'
-          - '**/node_modules/**'
-          - '**/dist/**'
-          - '**/build/**'
-          - '**/.next/**'
-        label: references XML (broad keyword)
-      - regex: '\b(DocumentBuilderFactory|SAXParser(Factory)?|SAXBuilder|XMLReader|XmlReader|libxml|etree|ElementTree|minidom|simplexml_load|simpleXML|expat|lxml|defusedxml|DOMParser|pulldom|XmlDocument|nokogiri|Nokogiri)\b'
+      - regex: '\b(DocumentBuilderFactory|SAXParser(?:Factory)?|SAXBuilder|XMLReader|XmlReader|XMLInputFactory|TransformerFactory|SchemaFactory|XPathFactory|libxmljs?|etree|ElementTree|minidom|simplexml_load|simpleXML|expat|lxml|defusedxml|DOMParser|pulldom|XmlDocument|nokogiri|Nokogiri|xml2js|XMLParser|xmldom|parseXml(?:String)?)\b|fast-xml-parser'
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
           - '**/*.{py,rb,go,rs,php,java,kt,cs}'
@@ -46,6 +27,18 @@ precondition:
           - '**/build/**'
           - '**/.next/**'
         label: XML parser API or library
+      - regex: '(?:require|import).*[xX][mM][lL]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.next/**'
+        label: XML library import
 where:
   extensions:
     - ts
@@ -77,10 +70,10 @@ where:
     - '**/build/**'
     - '**/.next/**'
   preFilter:
-    - regex: '[xX][mM][lL]'
-      label: references XML (broad keyword)
-    - regex: '\b(DocumentBuilderFactory|SAXParser(Factory)?|SAXBuilder|XMLReader|XmlReader|libxml|etree|ElementTree|minidom|simplexml_load|simpleXML|expat|lxml|defusedxml|DOMParser|pulldom|XmlDocument|nokogiri|Nokogiri)\b'
+    - regex: '\b(DocumentBuilderFactory|SAXParser(?:Factory)?|SAXBuilder|XMLReader|XmlReader|XMLInputFactory|TransformerFactory|SchemaFactory|XPathFactory|libxmljs?|etree|ElementTree|minidom|simplexml_load|simpleXML|expat|lxml|defusedxml|DOMParser|pulldom|XmlDocument|nokogiri|Nokogiri|xml2js|XMLParser|xmldom|parseXml(?:String)?)\b|fast-xml-parser'
       label: XML parser API or library
+    - regex: '(?:require|import).*[xX][mM][lL]'
+      label: XML library import
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:
