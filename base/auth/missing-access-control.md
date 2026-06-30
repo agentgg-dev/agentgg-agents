@@ -8,22 +8,50 @@ noiseTier: normal
 precondition:
   regex:
     patterns:
-      - regex: "['\"][^'\"]{0,60}[:{<]\\s*[a-zA-Z_]*([Ii]d|[Pp]k)\\b"
+      - regex: "['\"][^'\"]*/[^'\"]*[:{<]\\s*(id|pk|[A-Za-z]+Id|[A-Za-z]+[_-](id|pk))\\b"
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,php,java,kt,cs}'
         notIn:
           - '**/__tests__/**'
+          - '**/test/**'
+          - '**/tests/**'
+          - '**/spec/**'
           - '**/*.{test,spec}.*'
+          - '**/*_test.{py,go}'
+          - '**/test_*.py'
           - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/target/**'
+          - '**/*.min.js'
         label: Route with a resource-id path parameter
+      - regex: "@(PathVariable|PathParam)\\b"
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/test/**'
+          - '**/tests/**'
+          - '**/target/**'
+        label: Spring / JAX-RS path-parameter binding
 where:
   extensions: [ts, tsx, js, jsx, mjs, cjs, py, rb, go, php, java, kt, cs]
   excludePatterns:
     - "**/*.{test,spec}.*"
     - "**/__tests__/**"
+    - "**/test/**"
+    - "**/tests/**"
+    - "**/spec/**"
+    - "**/*_test.{py,go}"
+    - "**/test_*.py"
     - "**/node_modules/**"
+    - "**/vendor/**"
+    - "**/dist/**"
+    - "**/build/**"
+    - "**/target/**"
+    - "**/*.min.js"
   preFilter:
-    - { regex: "['\"][^'\"]{0,60}[:{<]\\s*[a-zA-Z_]*([Ii]d|[Pp]k)\\b", label: "Route path with a resource-id parameter (IDOR-shaped)" }
+    - { regex: "['\"][^'\"]*/[^'\"]*[:{<]\\s*(id|pk|[A-Za-z]+Id|[A-Za-z]+[_-](id|pk))\\b", label: "Route path with a resource-id path parameter (IDOR-shaped)" }
     - { regex: "@(PathVariable|PathParam)\\b", label: "Spring / JAX-RS path-parameter binding" }
 references:
   - CWE-862
