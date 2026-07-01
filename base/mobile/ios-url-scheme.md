@@ -19,6 +19,17 @@ where:
     - mm
   filePatterns:
     - '**/Info.plist'
+  preFilter:
+    - regex: 'open\s+url\s*:\s*URL|application\s*:\s*didFinishLaunchingWithOptions[\s\S]*openURL|handleOpenURL|openURL\s*:'
+      label: application(_:open:) / handleOpenURL URL handler
+    - regex: 'openURLContexts|UIOpenURLContext'
+      label: SceneDelegate openURLContexts handler
+    - regex: 'NSUserActivityTypeBrowsingWeb|continue\s+userActivity|webpageURL'
+      label: Universal Link (NSUserActivity) handler
+    - regex: 'CFBundleURLSchemes|CFBundleURLTypes'
+      label: Info.plist custom URL scheme declaration
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
 references:
   - CWE-20
   - OWASP-Mobile-M1

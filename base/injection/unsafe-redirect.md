@@ -68,14 +68,12 @@ where:
     - '**/dist/**'
     - '**/.next/**'
   preFilter:
-    - regex: '\.startsWith\s*\(\s*["'']/["'']\s*\)'
-      label: startsWith('/') check — verify it also rejects '//'
+    - regex: 'redirect_uri|redirect_url|returnUrl|return_url|returnTo|redirectUrl|[Rr]edirectTo|[Nn]extUrl|[Cc]allbackUrl'
+      label: redirect destination identifier — validation logic likely nearby
+    - regex: '\.redirect\s*\(|sendRedirect\s*\(|res\.redirect|response\.redirect|window\.location\s*[.=]|location\.href\s*=|[`"'']Location[`"'']'
+      label: redirect sink — verify the destination is validated
     - regex: 'new\s+URL\s*\([^,)]+,\s*["'']https?://'
       label: 'new URL(input, base) — verify base is enforced'
-    - regex: '\.includes\s*\(\s*["''][^"'']*\.[a-z]{2,}["'']'
-      label: .includes() domain match — substring bypassable
-    - regex: redirect_uri|returnUrl|returnTo|redirectUrl
-      label: redirect_uri / returnUrl identifier — validation logic likely nearby
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

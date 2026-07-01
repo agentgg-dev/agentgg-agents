@@ -7,17 +7,18 @@ author: agentgg
 noiseTier: normal
 precondition:
   regex:
-    extensions:
-      - ts
-      - tsx
-      - js
-      - jsx
-      - mjs
-      - cjs
-      - go
-      - py
-      - rb
-      - conf
+    patterns:
+      - regex: 'Access-Control|[Cc]ors\s*[\(\{]|crossorigin|cross[_-]origin|[Aa]llow(ed)?[_-]?[Oo]rigins?|\$http_origin|[Hh]eaders?\s*[.\[]\s*[`"'']?[Oo]rigin'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,go,py,rb,conf}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: CORS origin configuration
 where:
   extensions:
     - ts
@@ -31,7 +32,7 @@ where:
     - rb
     - conf
   preFilter:
-    - regex: '[Oo]rigin|Access-Control|[Cc]ors|cross[_-]?origin|AllowedOrigins|allow_origins'
+    - regex: 'Access-Control|[Cc]ors\s*[\(\{]|crossorigin|cross[_-]origin|[Aa]llow(ed)?[_-]?[Oo]rigins?|\$http_origin|[Hh]eaders?\s*[.\[]\s*[`"'']?[Oo]rigin'
       label: CORS origin configuration
 references:
   - CWE-942

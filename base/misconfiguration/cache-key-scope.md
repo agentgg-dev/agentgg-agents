@@ -19,7 +19,7 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Cache call with per-user-shaped key prefix
-      - regex: 'new\s+Map\s*\(\s*\)[\s\S]{0,200}\.set\s*\(|\.get\s*\('
+      - regex: '(?:[Cc]ache|[Ss]tore|[Mm]emo)\w*\s*=\s*new\s+(?:Map|WeakMap)\s*\('
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
         notIn:
@@ -29,7 +29,7 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
-        label: In-memory Map used as cache (verify per-user scope)
+        label: In-memory Map/WeakMap used as a cache (verify per-user scope)
 where:
   extensions:
     - ts
@@ -48,8 +48,8 @@ where:
   preFilter:
     - regex: '(redis|cache|kv)\.(get|set|setex|hget|hset|mget)\s*\(\s*[`"''](feature|config|token|flag|user|profile)'
       label: Cache call with per-user-shaped key prefix
-    - regex: 'new\s+Map\s*\(\s*\)[\s\S]{0,200}\.set\s*\(|\.get\s*\('
-      label: In-memory Map used as cache (verify per-user scope)
+    - regex: '(?:[Cc]ache|[Ss]tore|[Mm]emo)\w*\s*=\s*new\s+(?:Map|WeakMap)\s*\('
+      label: In-memory Map/WeakMap used as a cache (verify per-user scope)
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:
