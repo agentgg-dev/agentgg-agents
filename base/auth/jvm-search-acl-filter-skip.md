@@ -67,9 +67,9 @@ where:
   preFilter:
     - regex: '\.(get|has|remove|put|set|path|findValue)\s*\(\s*["'']query["'']'
       label: JSON "query" node accessed on a parsed request body
-    - regex: '(?i)(permission|visibilit|owner|group|access|published|draft|portal|tenant)\w*(filter|clause)'
+    - regex: '([Pp]ermission|[Vv]isibilit|[Oo]wner|[Gg]roup|[Aa]ccess|[Pp]ublished|[Dd]raft|[Pp]ortal|[Tt]enant)\w*([Ff]ilter|[Cc]lause)'
       label: Permission/visibility filter identifier
-    - regex: '(?i)(build|add|inject|apply|append|insert|prepend|wrap)\w*filter\b'
+    - regex: '([Bb]uild|[Aa]dd|[Ii]nject|[Aa]pply|[Aa]ppend|[Ii]nsert|[Pp]repend|[Ww]rap)\w*[Ff]ilter\b'
       label: Filter-injection method
     - regex: '["'']/?_search\b'
       label: Elasticsearch/OpenSearch _search endpoint string
