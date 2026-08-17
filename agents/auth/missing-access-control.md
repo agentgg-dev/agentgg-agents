@@ -53,6 +53,7 @@ where:
   preFilter:
     - { regex: "['\"][^'\"]*/[^'\"]*[:{<]\\s*(id|pk|[A-Za-z]+Id|[A-Za-z]+[_-](id|pk))\\b", label: "Route path with a resource-id path parameter (IDOR-shaped)" }
     - { regex: "@(PathVariable|PathParam)\\b", label: "Spring / JAX-RS path-parameter binding" }
+    - { semgrepRule: "http-endpoints", label: "HTTP request handler (route declared by file position, not by a path string)" }
 references:
   - CWE-862
   - CWE-639

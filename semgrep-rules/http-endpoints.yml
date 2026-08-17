@@ -1,0 +1,35 @@
+rules:
+  # Finds the entry point of an HTTP request handler. Used as a `where`
+  # anchor so an agent starts at the request boundary instead of guessing
+  # from a filename.
+  - id: http-endpoint-handler
+    message: HTTP endpoint handler
+    languages: [typescript, javascript]
+    severity: INFO
+    patterns:
+      - pattern-either:
+          # Next.js App Router / Remix: a function named for the verb.
+          - pattern: function $METHOD(...) { ... }
+          - pattern: async function $METHOD(...) { ... }
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)$
+
+  # Express, Fastify, Hono, Koa router: `app.get("/path", handler)`.
+  # The path metavariable is constrained to a string starting with "/",
+  # which is what keeps `map.get(k)` and `searchParams.get(k)` out.
+  - id: http-route-registration
+    message: HTTP route registered at $PATH
+    languages: [typescript, javascript]
+    severity: INFO
+    patterns:
+      - pattern-either:
+          - pattern: $APP.get($PATH, ...)
+          - pattern: $APP.post($PATH, ...)
+          - pattern: $APP.put($PATH, ...)
+          - pattern: $APP.patch($PATH, ...)
+          - pattern: $APP.delete($PATH, ...)
+          - pattern: $APP.all($PATH, ...)
+      - metavariable-regex:
+          metavariable: $PATH
+          regex: ^["'`]/
