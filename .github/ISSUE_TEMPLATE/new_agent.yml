@@ -15,8 +15,8 @@ body:
     id: category
     attributes:
       label: Suggested category
-      description: Which folder would this live in? (e.g. base/injection, base/auth, recon)
-      placeholder: base/injection
+      description: Which folder would this live in? (e.g. agents/injection, agents/auth, agents/deep)
+      placeholder: agents/injection
     validations:
       required: false
 

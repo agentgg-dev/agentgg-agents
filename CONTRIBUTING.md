@@ -88,7 +88,7 @@ You are reviewing source code for <vulnerability>.
 
 ```bash
 # Run just your new agent against a test fixture
-agentgg scan ./path/to/test-code -t ./base/category/my-new-check.md
+agentgg scan ./path/to/test-code -t ./agents/category/my-new-check.md
 
 # Lint the whole tree (also runs in pre-commit hook)
 agentgg agents lint .

@@ -14,31 +14,35 @@ Agents are downloaded automatically by agentgg on first scan and updated with `a
 
 ```
 agentgg-agents/
-├── demo-agents/      # A small curated set for a quick first scan via `-t demo-agents/`
-└── base/             # Full vulnerability library, organized by category — runs when no -t flag is given
-    ├── injection/    # SQL, NoSQL, command, XSS, path traversal, mass assignment
-    ├── auth/         # Authentication, authorization, JWT, OAuth, session, IDOR
-    ├── exposure/     # Secrets, env vars, error leaks, debug endpoints
-    ├── misconfiguration/ # CORS, caching, cookies, feature-flag security
-    ├── logic/        # Race conditions, async bugs, event handler mismatches
-    ├── infrastructure/ # Docker, Kubernetes, Terraform, GitHub Actions
-    ├── cloud/        # AWS Lambda, GCP, Azure, IAM
-    ├── cryptography/ # Insecure algorithms, unsafe deserialization
-    ├── mobile/       # Android, iOS
-    └── ai/           # LLM/agent security, MCP, prompt injection
+├── agents/           # The agent library, organized by category
+│   ├── injection/    # SQL, NoSQL, command, XSS, path traversal, mass assignment
+│   ├── auth/         # Authentication, authorization, JWT, OAuth, session, IDOR
+│   ├── misconfiguration/ # CORS, caching, cookies, feature-flag security
+│   ├── logic/        # Race conditions, async bugs, event handler mismatches
+│   ├── infrastructure/ # Docker, Kubernetes, Terraform, GitHub Actions
+│   ├── cloud/        # AWS Lambda, GCP, Azure, IAM
+│   ├── cryptography/ # Insecure algorithms, unsafe deserialization
+│   ├── mobile/       # Android, iOS
+│   ├── smartcontract/ # Solidity access control, reentrancy
+│   ├── ai/           # LLM/agent security, MCP, prompt injection
+│   └── deep/         # Broad-net variants — opt-in only, never run by default
+└── semgrep-rules/    # Shared semgrep rules agents reference by name
 ```
+
+Every category except `deep/` runs when no `-t` flag is given. `deep/` agents
+cast a much wider net per run, so they are opt-in via `-t`.
 
 ## Usage
 
 agentgg downloads and manages agents automatically. No manual setup needed.
 
 ```bash
-agentgg scan ./src                         # full base/ library
-agentgg scan ./src -t demo-agents/         # the quick curated set
-agentgg scan ./src -t base/injection/      # one category
-agentgg scan ./src -t base/injection/ -t base/auth/   # multiple
-agentgg scan ./src -t sql-injection        # a single agent by slug
-agentgg agents update                      # refresh the catalog
+agentgg scan ./src                              # every category except deep/
+agentgg scan ./src -t agents/injection/         # one category
+agentgg scan ./src -t agents/injection/ -t agents/auth/   # multiple
+agentgg scan ./src -t agents/deep/              # the broad-net variants
+agentgg scan ./src -t sql-injection             # a single agent by slug
+agentgg agents update                           # refresh the catalog
 ```
 
 ## Agent format

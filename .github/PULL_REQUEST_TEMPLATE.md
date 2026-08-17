@@ -25,7 +25,7 @@
 <!-- Show that you ran it. Paste the scan output, link to a test fixture, or describe what you tried. -->
 
 ```
-$ agentgg scan ./test-fixture -t ./base/your-category/your-agent.md
+$ agentgg scan ./test-fixture -t ./agents/your-category/your-agent.md
 ```
 
 ### References
