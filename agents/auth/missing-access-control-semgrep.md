@@ -64,17 +64,13 @@ references:
 You are hunting for missing access-control checks across this
 repository.
 
-**Scope of this (semgrep-anchored) check.** This variant runs the strict
-`missing-access-control` pass with one extra anchor: a semgrep rule that
-finds request handlers whose route comes from file position rather than
-from a path string (a Next.js App Router `route.ts`, a Remix route), plus
-`app.get("/path", ...)` style registrations. That rule covers TypeScript
-and JavaScript only, so on every other language this agent behaves the
-same as `missing-access-control`. Broader tracing of ids taken from the
-request body or query string, namespace-scoped routes, and resource-style
-route tables lives in the `missing-access-control-deep` agent (deep tier).
-Within a candidate file, still follow imports and middleware to confirm
-scoping.
+**Scope of this check.** Surface handlers whose route declares a
+resource-id path parameter (`/users/:id`, `{id}`, `<int:pk>`, a
+Spring/JAX-RS `@PathVariable`), plus any handler the scanner anchored as
+a request entry point. That is the canonical IDOR shape. Do not widen to
+ids taken from the request body or the query string, to namespace-scoped
+routes, or to resource-style route tables. Within a candidate file,
+still follow imports and middleware to confirm scoping.
 
 ## What this bug looks like
 
