@@ -1,0 +1,361 @@
+---
+slug: command-injection-semgrep
+name: Command Injection (Semgrep)
+description: 'Semgrep-anchored variant of command-injection. Adds a taint-mode semgrep rule that traces request input through intermediate variables into a shell or eval sink in TypeScript and JavaScript, so an anchor carries the dataflow path and not only the call site.'
+version: 0.1.0
+author: agentgg
+noiseTier: precise
+precondition:
+  regex:
+    extensions: [ts, tsx, js, jsx, mjs, cjs]
+    patterns:
+      - regex: '\bexec(Sync)?\s*\(\s*[`"''][^`"'']*\$\{|\bexec(Sync)?\s*\([^)]*\+'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Node child_process.exec/execSync with interpolation/concat
+      - regex: 'spawn(Sync)?\s*\([^)]*\bshell\s*:\s*true\b'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'Node spawn({ shell: true })'
+      - regex: 'os\.system\s*\([^)]*[+%]|os\.system\s*\(\s*f[''"]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python os.system with concat/format
+      - regex: 'subprocess\.(call|run|Popen)\s*\([^)]*shell\s*=\s*True'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python subprocess with shell=True
+      - regex: 'Kernel\.(system|exec)\s*\([^)]*#\{|%x\{[^}]*#\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'Ruby Kernel.system/exec or %x{} with #{} interpolation'
+      - regex: Runtime\.getRuntime\(\)\.exec\s*\(|new\s+ProcessBuilder\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Java Runtime.exec / ProcessBuilder
+      - regex: '\b(shell_exec|system|passthru|popen|proc_open)\s*\([^)]*\$'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: PHP shell-exec family with variable
+      - regex: 'exec\.(Command|CommandContext)\s*\(\s*["`](sh|bash|/bin/sh)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Go exec.Command shell invocation
+      - regex: '`[^`]*#\{|\bIO\.popen\s*\(\s*["''`][^"''`]*#\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Ruby backtick / IO.popen with interpolation
+      - regex: '\bos\.popen\s*\('
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python os.popen
+      - regex: 'Process\.Start\s*\(|new\s+ProcessStartInfo'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,rs,php,java,kt,cs,sh}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/*_test.go'
+          - '**/spec/**'
+          - '**/vendor/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: .NET Process.Start / ProcessStartInfo
+where:
+  extensions:
+    - ts
+    - tsx
+    - js
+    - jsx
+    - mjs
+    - cjs
+    - py
+    - rb
+    - go
+    - rs
+    - php
+    - java
+    - kt
+    - cs
+    - sh
+  excludePatterns:
+    - '**/__tests__/**'
+    - '**/*.test.{ts,tsx,js,jsx,mjs}'
+    - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/*_test.go'
+    - '**/spec/**'
+    - '**/vendor/**'
+    - '**/node_modules/**'
+    - '**/dist/**'
+    - '**/.next/**'
+  preFilter:
+    - regex: '\bexec(Sync)?\s*\(\s*[`"''][^`"'']*\$\{|\bexec(Sync)?\s*\([^)]*\+'
+      label: Node child_process.exec/execSync with interpolation/concat
+    - regex: 'spawn(Sync)?\s*\([^)]*\bshell\s*:\s*true\b'
+      label: 'Node spawn({ shell: true })'
+    - regex: 'os\.system\s*\([^)]*[+%]|os\.system\s*\(\s*f[''"]'
+      label: Python os.system with concat/format
+    - regex: 'subprocess\.(call|run|Popen)\s*\([^)]*shell\s*=\s*True'
+      label: Python subprocess with shell=True
+    - regex: 'Kernel\.(system|exec)\s*\([^)]*#\{|%x\{[^}]*#\{'
+      label: 'Ruby Kernel.system/exec or %x{} with #{} interpolation'
+    - regex: Runtime\.getRuntime\(\)\.exec\s*\(|new\s+ProcessBuilder\s*\(
+      label: Java Runtime.exec / ProcessBuilder
+    - regex: '\b(shell_exec|system|passthru|popen|proc_open)\s*\([^)]*\$'
+      label: PHP shell-exec family with variable
+    - regex: 'exec\.(Command|CommandContext)\s*\(\s*["`](sh|bash|/bin/sh)'
+      label: Go exec.Command shell invocation
+    - regex: '`[^`]*#\{|\bIO\.popen\s*\(\s*["''`][^"''`]*#\{'
+      label: Ruby backtick / IO.popen with interpolation
+    - regex: '\bos\.popen\s*\('
+      label: Python os.popen
+    - regex: 'Process\.Start\s*\(|new\s+ProcessStartInfo'
+      label: .NET Process.Start / ProcessStartInfo
+    - { semgrepRule: "command-injection-taint" }
+  maxFilesPerBatch: 5
+  maxTurnsPerBatch: 30
+references:
+  - CWE-78
+  - 'OWASP-A03:2021'
+---
+
+You are reviewing source code for OS command injection — a shell or
+process invocation that includes untrusted input in the command string,
+letting an attacker execute arbitrary commands by injecting metacharacters
+like `;`, `&&`, `|`, backticks, or `$(...)`.
+
+**Cross-file analysis:** the command string is often assembled in a
+helper a few hops from the request handler. Trace the variable back —
+a value labeled `cmd` may be `req.body.action` after some prefixing,
+or it may be a constant. Open the caller to confirm whether the
+argument crosses a trust boundary.
+
+**Anchors carrying a `taint:` path.** The scanner traced that route
+itself: the source, each variable the value passes through, then the
+sink. Confirm every step in the code before you report it. The path does
+not know your escaping helpers, so check whether a sanitizer sits between
+the last step and the sink. A path can also be incomplete where the value
+crosses a callback or a module boundary.
+
+An anchor with no `taint:` path is not cleared. It means only that this
+rule saw no route to it, and the rule covers TypeScript and JavaScript
+only. Every other language here is anchored by regex, so trace those by
+hand as described above.
+
+## What to look for
+
+
+- Node: `child_process.exec(cmd)` / `execSync(cmd)` where `cmd`
+  is a string built from request data. Also `spawn(cmd, { shell: true })`
+  with an interpolated string.
+- Python: `os.system(...)`, `subprocess.call(..., shell=True)`,
+  `subprocess.Popen(..., shell=True)`, `os.popen(...)` with a string
+  composed from user input.
+- Ruby: backticks `` `cmd` ``, `%x{cmd}`, `Kernel.system`,
+  `Kernel.exec`, `IO.popen` with interpolated strings.
+- Go: `exec.Command("sh", "-c", cmdString)` where `cmdString` is
+  built from request input. Plain `exec.Command(name, arg1, arg2)`
+  with separate args is safe.
+- Java/Kotlin: `Runtime.getRuntime().exec(stringCmd)`,
+  `ProcessBuilder(stringCmd)`.
+- PHP: `exec()`, `shell_exec()`, `system()`, `passthru()`,
+  `popen()`, backtick operator.
+- Anywhere a user-controlled value flows into a shell pipeline, a
+  `Dockerfile` `RUN` line built at runtime, or a `Makefile` rule
+  evaluated with substitutions.
+
+## True positive criteria
+
+A value reaching the call comes from outside the trust boundary
+(HTTP request, queue message, file upload, third-party API) AND
+the call uses a shell interpreter OR passes the command as a single
+string the runtime will split. The attacker can append shell
+metacharacters to escape the intended command.
+
+## What to ignore
+
+- Calls that pass argv as an array with no shell:
+  `spawn("ping", ["-c", "1", host])`,
+  `exec.Command("ping", "-c", "1", host)`,
+  `subprocess.run(["ping", "-c", "1", host])`.
+  Even with an injected metachar in `host`, the OS treats the whole
+  value as one argument. Flag only if `shell=True` / `{ shell: true }`
+  is explicitly set.
+- Hardcoded command strings with no user input.
+- Test fixtures or scripts run only by developers locally.
+- Cases where the user input has already been validated against a
+  strict allowlist (e.g. matched against `^[a-z0-9.-]+$` AND the
+  allowlist is enforced before the call). The validation has to be
+  upstream and on the actual value used.
+
+## Examples
+
+True positives:
+- `` exec(`ping -c 1 ${req.query.host}`) `` — classic, host can
+  be `127.0.0.1; cat /etc/passwd`.
+- `subprocess.call(f"convert {user_file} out.png", shell=True)` —
+  filename can contain `;` or `&&`.
+- `Runtime.getRuntime().exec("git log " + branchName)` — branch
+  name from a webhook payload.
+- `os.system("ls " + path)` in a Flask route.
+
+False positives to skip:
+- `spawn("ping", ["-c", "1", host])` (argv array, no shell).
+- `exec.Command("git", "log", branchName)` in Go.
+- A constant command string with no interpolation.
+- A call where the input was just validated against a tight regex on
+  the same path.
+
+If the call uses a shell AND the input comes from a request, it's a
+finding even if you can't immediately see exploitation — the burden
+is on the code to demonstrate safety, not on the reviewer to prove
+the exploit.

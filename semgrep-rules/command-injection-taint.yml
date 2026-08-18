@@ -1,0 +1,45 @@
+# Taint-mode companion to the command-injection regexes. A regex anchors the
+# sink and leaves the agent to trace the argument backwards by hand; this rule
+# reports the route itself, so the anchor carries source, intermediate
+# variables, and sink.
+#
+# TypeScript and JavaScript only. Sources and sinks are per-language, and a
+# half-written source list reads as "nothing found" rather than "not covered".
+#
+# No `focus-metavariable` on the sinks, deliberately. Focusing narrows the
+# reported range to the argument, and the engine then names the sink as a bare
+# variable ("cmd") instead of the call ("execSync(cmd)"). The call is what
+# makes the anchor line readable.
+rules:
+  - id: command-injection-taint
+    message: Request input reaches a shell or eval sink with no escaping.
+    languages: [typescript, javascript]
+    severity: ERROR
+    mode: taint
+    metadata:
+      cwe: "CWE-78"
+      owasp: "A03:2021 Injection"
+      confidence: MEDIUM
+      impact: HIGH
+    pattern-sources:
+      - pattern: $REQ.query
+      - pattern: $REQ.params
+      - pattern: $REQ.body
+      - pattern: $REQ.headers
+      - pattern: process.argv
+    # A value forced to a number, or quoted for the shell, is no longer the
+    # bug this rule reports. Keep this list short: a wrong sanitizer here
+    # deletes findings silently.
+    pattern-sanitizers:
+      - pattern: parseInt(...)
+      - pattern: Number(...)
+      - pattern: shellQuote(...)
+      - pattern: shellEscape(...)
+    pattern-sinks:
+      - pattern: exec($CMD, ...)
+      - pattern: execSync($CMD, ...)
+      - pattern: spawn($CMD, ...)
+      - pattern: spawnSync($CMD, ...)
+      - pattern: execFile($CMD, ...)
+      - pattern: execFileSync($CMD, ...)
+      - pattern: eval($CMD)
