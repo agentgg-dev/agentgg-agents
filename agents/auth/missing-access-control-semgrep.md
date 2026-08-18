@@ -1,12 +1,13 @@
 ---
-slug: missing-access-control
-name: Missing Access Control
-description: Authenticated endpoints that read or modify a resource without verifying the requester owns it — IDOR / horizontal privilege escalation.
+slug: missing-access-control-semgrep
+name: Missing Access Control (Semgrep)
+description: 'Semgrep-anchored variant of missing-access-control. Adds a semgrep rule that anchors TypeScript and JavaScript request handlers declared by file position (Next.js App Router, Remix) or registered on a router, on top of the IDOR path-parameter regexes.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
 precondition:
   regex:
+    extensions: [ts, tsx, js, jsx, mjs, cjs]
     patterns:
       - regex: "['\"][^'\"]*/[^'\"]*[:{<]\\s*(id|pk|[A-Za-z]+Id|[A-Za-z]+[_-](id|pk))\\b"
         in:
@@ -53,6 +54,7 @@ where:
   preFilter:
     - { regex: "['\"][^'\"]*/[^'\"]*[:{<]\\s*(id|pk|[A-Za-z]+Id|[A-Za-z]+[_-](id|pk))\\b", label: "Route path with a resource-id path parameter (IDOR-shaped)" }
     - { regex: "@(PathVariable|PathParam)\\b", label: "Spring / JAX-RS path-parameter binding" }
+    - { semgrepRule: "http-endpoints", label: "HTTP request handler (route declared by file position, not by a path string)" }
 references:
   - CWE-862
   - CWE-639
@@ -62,13 +64,17 @@ references:
 You are hunting for missing access-control checks across this
 repository.
 
-**Scope of this (light) check.** This strict pass only surfaces handlers
-whose route declares a resource-id path parameter (`/users/:id`, `{id}`,
-`<int:pk>`, or a Spring/JAX-RS `@PathVariable`) — the canonical IDOR
-shape. Broader tracing of ids taken from the request body / query string,
-namespace-scoped routes, and resource-style route tables lives in the
-`missing-access-control-deep` agent (deep tier). Within a candidate file,
-still follow imports and middleware to confirm scoping.
+**Scope of this (semgrep-anchored) check.** This variant runs the strict
+`missing-access-control` pass with one extra anchor: a semgrep rule that
+finds request handlers whose route comes from file position rather than
+from a path string (a Next.js App Router `route.ts`, a Remix route), plus
+`app.get("/path", ...)` style registrations. That rule covers TypeScript
+and JavaScript only, so on every other language this agent behaves the
+same as `missing-access-control`. Broader tracing of ids taken from the
+request body or query string, namespace-scoped routes, and resource-style
+route tables lives in the `missing-access-control-deep` agent (deep tier).
+Within a candidate file, still follow imports and middleware to confirm
+scoping.
 
 ## What this bug looks like
 
