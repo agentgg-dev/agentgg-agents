@@ -1,0 +1,36 @@
+rules:
+  - id: android-shared-prefs-write
+    message: SharedPreferences write — review whether a sensitive value is stored in plaintext.
+    languages: [java, kotlin]
+    severity: INFO
+    pattern-either:
+      - pattern: $PREFS.edit().putString($KEY, $VAL)
+      - pattern: $PREFS.edit().putInt($KEY, $VAL)
+      - pattern: |
+          $PREFS.edit()
+            .putString($KEY, $VAL)
+            .apply()
+      - pattern: getSharedPreferences($NAME, ...)
+      - pattern: PreferenceManager.getDefaultSharedPreferences(...)
+
+  - id: android-external-storage-write
+    message: External storage write — accessible to other apps and device backups.
+    languages: [java, kotlin]
+    severity: WARNING
+    pattern-either:
+      - pattern: getExternalFilesDir(...)
+      - pattern: getExternalStorageDirectory()
+      - pattern: Environment.getExternalStoragePublicDirectory(...)
+      - pattern: new FileOutputStream($FILE)
+      - pattern: $FILE.writeText($CONTENT)
+
+  - id: ios-user-defaults-write
+    message: iOS UserDefaults or file write — review whether a sensitive value is stored unencrypted.
+    languages: [swift]
+    severity: INFO
+    pattern-either:
+      - pattern: UserDefaults.standard.set($VAL, forKey: $KEY)
+      - pattern: $DEFAULTS.set($VAL, forKey: $KEY)
+      - pattern: $DATA.write(to: $URL, atomically: ...)
+      - pattern: try $CONTENT.write(to: $URL, atomically: ..., encoding: ...)
+      - pattern: kSecAttrAccessibleAlways

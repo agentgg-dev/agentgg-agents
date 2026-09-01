@@ -1,0 +1,34 @@
+rules:
+  - id: tf-open-cidr-ingress
+    message: Terraform security group allows ingress from 0.0.0.0/0 or ::/0.
+    languages: [hcl]
+    severity: WARNING
+    pattern-either:
+      - pattern: |
+          ingress {
+            ...
+            cidr_blocks = ["0.0.0.0/0"]
+            ...
+          }
+      - pattern: |
+          ingress {
+            ...
+            ipv6_cidr_blocks = ["::/0"]
+            ...
+          }
+      - pattern: |
+          cidr_blocks = ["0.0.0.0/0"]
+
+  - id: tf-unauthenticated-lambda-url
+    message: Terraform Lambda function URL or API Gateway with no authorization.
+    languages: [hcl]
+    severity: WARNING
+    pattern-either:
+      - pattern: |
+          authorization_type = "NONE"
+      - pattern: |
+          publicly_accessible = true
+      - pattern: |
+          acl = "public-read"
+      - pattern: |
+          acl = "public-read-write"

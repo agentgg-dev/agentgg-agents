@@ -1,60 +1,28 @@
 ---
-slug: missing-access-control-semgrep
-name: Missing Access Control (Semgrep)
-description: 'Semgrep-anchored variant of missing-access-control. Adds a semgrep rule that anchors TypeScript and JavaScript request handlers declared by file position (Next.js App Router, Remix) or registered on a router, on top of the IDOR path-parameter regexes.'
+slug: missing-access-control-deep
+name: Missing Access Control (Deep)
+description: 'Broad-net pass for missing access control: reads every authenticated route handler and traces ownership/scoping across middleware and services. High coverage, high file count. The fast, strict variant is `missing-access-control` in base.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
 precondition:
-  regex:
-    extensions: [ts, tsx, js, jsx, mjs, cjs]
-    patterns:
-      - regex: "['\"][^'\"]*/[^'\"]*[:{<]\\s*(id|pk|[A-Za-z]+Id|[A-Za-z]+[_-](id|pk))\\b"
-        in:
-          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,php,java,kt,cs}'
-        notIn:
-          - '**/__tests__/**'
-          - '**/test/**'
-          - '**/tests/**'
-          - '**/spec/**'
-          - '**/*.{test,spec}.*'
-          - '**/*_test.{py,go}'
-          - '**/test_*.py'
-          - '**/node_modules/**'
-          - '**/vendor/**'
-          - '**/dist/**'
-          - '**/build/**'
-          - '**/target/**'
-          - '**/*.min.js'
-        label: Route with a resource-id path parameter
-      - regex: "@(PathVariable|PathParam)\\b"
-        in:
-          - '**/*.{java,kt}'
-        notIn:
-          - '**/test/**'
-          - '**/tests/**'
-          - '**/target/**'
-        label: Spring / JAX-RS path-parameter binding
+  prompt: |
+    Run only if this project exposes authenticated HTTP endpoints (a web
+    API, backend service, or server-rendered app with sessions) that read
+    or mutate per-user or per-tenant resources. Skip pure CLIs, static
+    sites, and libraries with no request handlers.
 where:
   extensions: [ts, tsx, js, jsx, mjs, cjs, py, rb, go, php, java, kt, cs]
   excludePatterns:
     - "**/*.{test,spec}.*"
     - "**/__tests__/**"
-    - "**/test/**"
-    - "**/tests/**"
-    - "**/spec/**"
-    - "**/*_test.{py,go}"
-    - "**/test_*.py"
-    - "**/node_modules/**"
-    - "**/vendor/**"
-    - "**/dist/**"
-    - "**/build/**"
-    - "**/target/**"
-    - "**/*.min.js"
   preFilter:
-    - { regex: "['\"][^'\"]*/[^'\"]*[:{<]\\s*(id|pk|[A-Za-z]+Id|[A-Za-z]+[_-](id|pk))\\b", label: "Route path with a resource-id path parameter (IDOR-shaped)" }
-    - { regex: "@(PathVariable|PathParam)\\b", label: "Spring / JAX-RS path-parameter binding" }
-    - { semgrepRule: "shared/http-endpoints", label: "HTTP request handler (route declared by file position, not by a path string)" }
+    - semgrepRule: shared/http-endpoints
+      label: HTTP endpoint handler or route registration
+    - { regex: "\\.(get|post|put|patch|delete|all)\\s*\\(\\s*['\"]", label: "HTTP route handler (Express / Fastify / router)" }
+    - { regex: "@(Get|Post|Put|Patch|Delete|Controller|RequestMapping|GetMapping|PostMapping)\\s*\\(", label: "controller route decorator / annotation" }
+    - { regex: "Route::(get|post|put|patch|delete|resource|apiResource)\\s*\\(", label: "Laravel route definition" }
+    - { regex: "@(app|router|blueprint)\\.(route|get|post|put|patch|delete)\\s*\\(|def \\w+\\s*\\([^)]*request", label: "Python view (Flask / Django / FastAPI)" }
 references:
   - CWE-862
   - CWE-639
@@ -63,14 +31,6 @@ references:
 
 You are hunting for missing access-control checks across this
 repository.
-
-**Scope of this check.** Surface handlers whose route declares a
-resource-id path parameter (`/users/:id`, `{id}`, `<int:pk>`, a
-Spring/JAX-RS `@PathVariable`), plus any handler the scanner anchored as
-a request entry point. That is the canonical IDOR shape. Do not widen to
-ids taken from the request body or the query string, to namespace-scoped
-routes, or to resource-style route tables. Within a candidate file,
-still follow imports and middleware to confirm scoping.
 
 ## What this bug looks like
 

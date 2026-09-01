@@ -1,0 +1,44 @@
+rules:
+  - id: llm-api-call
+    message: LLM API call — review for missing rate limit or cost cap before this endpoint.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: streamText(...)
+      - pattern: generateText(...)
+      - pattern: generateObject(...)
+      - pattern: streamObject(...)
+      - pattern: $OPENAI.chat.completions.create(...)
+      - pattern: $ANTHROPIC.messages.create(...)
+      - pattern: $ANTHROPIC.messages.stream(...)
+
+  - id: email-send-call
+    message: Email send call — review for missing rate limit or per-user throttle.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: $RESEND.emails.send(...)
+      - pattern: $SENDGRID.send(...)
+      - pattern: $MAILER.send(...)
+      - pattern: $NODEMAILER.sendMail(...)
+      - pattern: $SES.sendEmail(...)
+      - pattern: transporter.sendMail(...)
+
+  - id: stripe-charge-create
+    message: Stripe charge or subscription creation — review for idempotency and rate limiting.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: $STRIPE.charges.create(...)
+      - pattern: $STRIPE.paymentIntents.create(...)
+      - pattern: $STRIPE.subscriptions.create(...)
+      - pattern: $STRIPE.invoices.create(...)
+
+  - id: sms-send-call
+    message: SMS send call — review for missing per-user rate limit.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: $TWILIO.messages.create(...)
+      - pattern: $SNS.publish(...)
+      - pattern: $VONAGE.message.sendSms(...)

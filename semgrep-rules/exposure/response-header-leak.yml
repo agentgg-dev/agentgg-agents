@@ -1,0 +1,23 @@
+rules:
+  - id: info-disclosure-response-header
+    message: Response header set to a value that discloses server technology or internal info.
+    languages: [typescript, javascript]
+    severity: WARNING
+    pattern-either:
+      - patterns:
+          - pattern: $RES.setHeader($HEADER, ...)
+          - metavariable-regex:
+              metavariable: $HEADER
+              regex: ^["'](X-Powered-By|Server|X-AspNet-Version|X-AspNetMvc-Version|X-Generator|X-Debug|X-Runtime|X-Request-Id)["']$
+      - patterns:
+          - pattern: $RES.set($HEADER, ...)
+          - metavariable-regex:
+              metavariable: $HEADER
+              regex: ^["'](X-Powered-By|Server|X-AspNet-Version|X-AspNetMvc-Version|X-Generator|X-Debug|X-Runtime)["']$
+      - patterns:
+          - pattern: headers.set($HEADER, ...)
+          - metavariable-regex:
+              metavariable: $HEADER
+              regex: ^["'](X-Powered-By|Server|X-Debug|X-Generator)["']$
+      - pattern: new Response(..., {headers: {"X-Powered-By": ...}})
+      - pattern: new Response(..., {headers: {"Server": ...}})

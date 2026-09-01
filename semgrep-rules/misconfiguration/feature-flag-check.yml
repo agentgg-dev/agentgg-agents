@@ -1,0 +1,28 @@
+rules:
+  - id: feature-flag-variation-call
+    message: Feature flag check — review whether it gates a security control.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: $LD.variation($FLAG, ...)
+      - pattern: $STATSIG.checkGate($FLAG)
+      - pattern: $STATSIG.checkGate($FLAG, ...)
+      - pattern: $OPTIMIZELY.isFeatureEnabled($FLAG)
+      - pattern: $OPTIMIZELY.activate($FLAG, ...)
+      - pattern: $UNLEASH.isEnabled($FLAG)
+      - pattern: $GROWTHBOOK.isOn($FLAG)
+      - patterns:
+          - pattern: $OBJ.$METHOD($FLAG, ...)
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(variation|checkGate|isEnabled|getFlag|getVariant|flag_enabled|flagFor)$
+      - patterns:
+          - pattern: isEnabled($FLAG)
+          - metavariable-regex:
+              metavariable: $FLAG
+              regex: .*(auth|security|rate.?limit|csrf|encrypt|mfa|verify|validate).*
+      - patterns:
+          - pattern: featureFlag($FLAG)
+          - metavariable-regex:
+              metavariable: $FLAG
+              regex: .*(auth|security|rate.?limit|csrf|encrypt|mfa|verify|validate).*

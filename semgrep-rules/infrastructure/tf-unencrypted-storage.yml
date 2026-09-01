@@ -1,0 +1,34 @@
+rules:
+  - id: tf-rds-unencrypted
+    message: Terraform RDS, S3, EBS, or SQS resource missing encryption configuration.
+    languages: [hcl]
+    severity: WARNING
+    pattern-either:
+      - pattern: |
+          resource "aws_db_instance" $NAME {
+            ...
+          }
+      - pattern: |
+          resource "aws_rds_cluster" $NAME {
+            ...
+          }
+      - pattern: |
+          resource "aws_s3_bucket" $NAME {
+            ...
+          }
+      - pattern: |
+          resource "aws_ebs_volume" $NAME {
+            ...
+          }
+      - pattern: |
+          resource "aws_efs_file_system" $NAME {
+            ...
+          }
+      - pattern: |
+          resource "aws_sqs_queue" $NAME {
+            ...
+          }
+      - pattern: |
+          resource "aws_dynamodb_table" $NAME {
+            ...
+          }

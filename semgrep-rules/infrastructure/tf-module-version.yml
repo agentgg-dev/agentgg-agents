@@ -1,0 +1,16 @@
+rules:
+  - id: tf-module-source-any
+    message: Terraform module block — review whether a version constraint is pinned.
+    languages: [hcl]
+    severity: INFO
+    pattern-either:
+      - pattern: |
+          module $NAME {
+            source = "..."
+            ...
+          }
+      - pattern: |
+          module $NAME {
+            source = $SRC
+            ...
+          }

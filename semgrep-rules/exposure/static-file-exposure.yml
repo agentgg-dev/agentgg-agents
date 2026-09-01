@@ -1,0 +1,14 @@
+rules:
+  - id: express-static-risky-path
+    message: express.static or serveIndex serving a potentially dangerous directory.
+    languages: [typescript, javascript]
+    severity: WARNING
+    pattern-either:
+      - pattern: express.static($PATH)
+      - pattern: express.static($PATH, ...)
+      - pattern: $APP.use(express.static($PATH))
+      - pattern: $APP.use($ROUTE, express.static($PATH))
+      - pattern: serveIndex($PATH)
+      - pattern: serveIndex($PATH, ...)
+      - pattern: serve($PATH)
+      - pattern: $APP.use(serve($PATH))

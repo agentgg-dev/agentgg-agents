@@ -1,0 +1,61 @@
+rules:
+  - id: node-crypto-primitive
+    message: Node.js crypto primitive call — review for weak algorithm or key size.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: crypto.createCipheriv($ALG, ...)
+      - pattern: crypto.createDecipheriv($ALG, ...)
+      - pattern: crypto.createHash($ALG)
+      - pattern: crypto.createHmac($ALG, ...)
+      - pattern: crypto.createSign($ALG)
+      - pattern: crypto.generateKeyPair($ALG, ...)
+      - pattern: crypto.createDiffieHellman(...)
+      - pattern: crypto.pbkdf2($PWD, ...)
+      - pattern: crypto.pbkdf2Sync($PWD, ...)
+
+  - id: webcrypto-subtle
+    message: Web Crypto API subtle call — review for weak algorithm or missing key derivation.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: crypto.subtle.encrypt(...)
+      - pattern: crypto.subtle.decrypt(...)
+      - pattern: crypto.subtle.sign(...)
+      - pattern: crypto.subtle.verify(...)
+      - pattern: crypto.subtle.generateKey(...)
+      - pattern: crypto.subtle.importKey(...)
+      - pattern: crypto.subtle.deriveKey(...)
+
+  - id: jvm-cipher-instance
+    message: JVM Cipher.getInstance or MessageDigest — review for weak algorithm.
+    languages: [java, kotlin]
+    severity: INFO
+    pattern-either:
+      - pattern: Cipher.getInstance($ALG)
+      - pattern: MessageDigest.getInstance($ALG)
+      - pattern: Mac.getInstance($ALG)
+      - pattern: KeyPairGenerator.getInstance($ALG)
+      - pattern: KeyGenerator.getInstance($ALG)
+
+  - id: go-crypto-import
+    message: Go crypto package used — review for weak algorithm choice.
+    languages: [go]
+    severity: INFO
+    pattern-either:
+      - pattern: md5.New()
+      - pattern: sha1.New()
+      - pattern: des.NewCipher(...)
+      - pattern: rc4.NewCipher(...)
+      - pattern: aes.NewCipher(...)
+
+  - id: python-crypto-primitive
+    message: Python cryptography or PyCrypto call — review for weak algorithm.
+    languages: [python]
+    severity: INFO
+    pattern-either:
+      - pattern: Cipher($ALG, ...)
+      - pattern: PKCS1_OAEP.new(...)
+      - pattern: hashlib.md5(...)
+      - pattern: hashlib.sha1(...)
+      - pattern: Crypto.Cipher.$ALG.new(...)

@@ -1,0 +1,33 @@
+rules:
+  - id: orm-full-record-to-response
+    message: ORM query result passed directly to HTTP response without field selection.
+    languages: [typescript, javascript]
+    severity: WARNING
+    mode: taint
+    pattern-sources:
+      - pattern: $DB.$MODEL.findUnique(...)
+      - pattern: $DB.$MODEL.findFirst(...)
+      - pattern: $DB.$MODEL.findMany(...)
+      - pattern: $MODEL.findById(...)
+      - pattern: $MODEL.findOne(...)
+      - pattern: $MODEL.find(...)
+      - pattern: $REPO.findById(...)
+    pattern-sinks:
+      - pattern: $RES.json($RESULT)
+      - pattern: $RES.send($RESULT)
+      - pattern: NextResponse.json($RESULT)
+      - pattern: Response.json($RESULT)
+      - pattern: c.json($RESULT)
+
+  - id: select-star-query
+    message: SELECT * query result — review for over-fetched sensitive fields.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: $DB.$MODEL.findMany()
+      - pattern: $DB.$MODEL.findMany({where: $W})
+      - patterns:
+          - pattern: $DB.$MODEL.$OP({...})
+          - metavariable-regex:
+              metavariable: $OP
+              regex: ^(findUnique|findFirst|findMany)$

@@ -1,0 +1,25 @@
+rules:
+  - id: k8s-privileged-container
+    message: Kubernetes pod or container spec with elevated privileges or dangerous host access.
+    languages: [yaml]
+    severity: WARNING
+    pattern-either:
+      - pattern: |
+          privileged: true
+      - pattern: |
+          hostPID: true
+      - pattern: |
+          hostIPC: true
+      - pattern: |
+          hostNetwork: true
+      - pattern: |
+          allowPrivilegeEscalation: true
+      - pattern: |
+          runAsUser: 0
+      - pattern: |
+          capabilities:
+            add:
+              - $CAP
+      - pattern: |
+          securityContext:
+            privileged: true

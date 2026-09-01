@@ -1,0 +1,31 @@
+rules:
+  - id: jvm-system-getenv
+    message: System.getenv() or System.getProperties() call — review for disclosure in responses or logs.
+    languages: [java, kotlin]
+    severity: INFO
+    pattern-either:
+      - pattern: System.getenv(...)
+      - pattern: System.getenv()
+      - pattern: System.getProperties()
+      - pattern: System.getProperty(...)
+      - pattern: System.getProperties().getProperty(...)
+
+  - id: jvm-management-mxbean
+    message: JMX MXBean accessed at runtime — may expose server internals if returned to clients.
+    languages: [java, kotlin]
+    severity: INFO
+    pattern-either:
+      - pattern: ManagementFactory.getRuntimeMXBean()
+      - pattern: ManagementFactory.getMemoryMXBean()
+      - pattern: ManagementFactory.getThreadMXBean()
+      - pattern: ManagementFactory.getOperatingSystemMXBean()
+      - pattern: ManagementFactory.$METHOD()
+
+  - id: jvm-classloader-urls
+    message: ClassLoader URL list exposed — reveals classpath structure.
+    languages: [java, kotlin]
+    severity: WARNING
+    pattern-either:
+      - pattern: $CL.getURLs()
+      - pattern: Thread.currentThread().getContextClassLoader().getURLs()
+      - pattern: $CLASS.getClassLoader().getURLs()

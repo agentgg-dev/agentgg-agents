@@ -1,0 +1,30 @@
+rules:
+  - id: iam-wildcard-action
+    message: IAM policy with wildcard Action or Resource — review for over-permissive grant.
+    languages: [yaml]
+    severity: WARNING
+    pattern-either:
+      - pattern: |
+          Action: "*"
+      - pattern: |
+          Action:
+            - "*"
+      - pattern: |
+          Resource: "*"
+      - pattern: |
+          Effect: Allow
+          Action: "*"
+      - pattern: |
+          - Effect: Allow
+            Action:
+              - "*"
+
+  - id: iam-admin-policy-attachment
+    message: IAM policy attachment to AdministratorAccess or equivalent — review for least-privilege.
+    languages: [hcl]
+    severity: WARNING
+    pattern-either:
+      - pattern: |
+          policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+      - pattern: |
+          managed_policy_arns = ["arn:aws:iam::aws:policy/AdministratorAccess"]

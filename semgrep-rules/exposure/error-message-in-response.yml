@@ -1,0 +1,20 @@
+rules:
+  - id: error-message-in-json-response
+    message: Raw error message or stack trace returned in an HTTP response body.
+    languages: [typescript, javascript]
+    severity: WARNING
+    pattern-either:
+      - pattern: $RES.json({error: $ERR.message})
+      - pattern: $RES.json({error: $ERR.stack})
+      - pattern: $RES.json({message: $ERR.message})
+      - pattern: $RES.json({message: $ERR.stack})
+      - pattern: $RES.send($ERR.message)
+      - pattern: $RES.send($ERR.stack)
+      - pattern: NextResponse.json({error: $ERR.message}, ...)
+      - pattern: NextResponse.json({error: $ERR.stack}, ...)
+      - pattern: Response.json({error: $ERR.message})
+      - pattern: Response.json({error: $ERR.stack})
+      - pattern: new Response($ERR.message, ...)
+      - pattern: new Response($ERR.stack, ...)
+      - pattern: c.json({error: $ERR.message})
+      - pattern: c.text($ERR.message)

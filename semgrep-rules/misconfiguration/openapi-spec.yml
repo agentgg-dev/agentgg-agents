@@ -1,0 +1,21 @@
+rules:
+  - id: openapi-spec-version-marker
+    message: OpenAPI/Swagger specification file — review for schema gaps, missing validation, or exposed internals.
+    languages: [yaml]
+    severity: INFO
+    pattern-either:
+      - pattern: |
+          openapi: $VERSION
+      - pattern: |
+          swagger: $VERSION
+      - pattern: |
+          info:
+            title: $TITLE
+            version: $V
+
+  - id: openapi-additional-properties-true
+    message: OpenAPI schema allows additionalProperties:true — unknown fields pass validation unchecked.
+    languages: [yaml]
+    severity: WARNING
+    pattern: |
+      additionalProperties: true

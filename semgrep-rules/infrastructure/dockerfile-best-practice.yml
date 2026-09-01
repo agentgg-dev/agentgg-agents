@@ -1,0 +1,21 @@
+rules:
+  - id: dockerfile-from-latest-tag
+    message: Dockerfile FROM uses :latest or no tag — image version is not pinned.
+    languages: [dockerfile]
+    severity: WARNING
+    pattern-either:
+      - pattern: FROM $IMAGE:latest
+      - pattern: FROM $IMAGE:latest AS $STAGE
+      - patterns:
+          - pattern: FROM $IMAGE
+          - metavariable-regex:
+              metavariable: $IMAGE
+              regex: ^[^:@\s]+$
+
+  - id: dockerfile-root-user
+    message: Dockerfile uses root user — review whether a non-root USER is set before CMD/ENTRYPOINT.
+    languages: [dockerfile]
+    severity: WARNING
+    pattern-either:
+      - pattern: USER root
+      - pattern: USER 0

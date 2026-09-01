@@ -1,0 +1,32 @@
+rules:
+  - id: event-dispatch-switch
+    message: Event dispatch switch or object lookup — review handler-to-event-type alignment.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - patterns:
+          - pattern: |
+              switch ($EVENT.$TYPE) {
+                ...
+              }
+          - metavariable-regex:
+              metavariable: $TYPE
+              regex: (type|event|name|kind|action|verb)
+      - patterns:
+          - pattern: |
+              switch ($TYPE) {
+                case "$CASE":
+                  ...
+              }
+      - pattern: |
+          const $HANDLERS = {
+            $KEY: $FN,
+            ...
+          }
+      - patterns:
+          - pattern: $HANDLERS[$EVENT.$TYPE]
+          - metavariable-regex:
+              metavariable: $TYPE
+              regex: (type|event|name|kind|action|verb)
+      - pattern: $EMITTER.emit($EVENT, ...)
+      - pattern: $EMITTER.on($EVENT, $HANDLER)

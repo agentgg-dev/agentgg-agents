@@ -1,0 +1,17 @@
+rules:
+  - id: cookie-set-call
+    message: Cookie set without reviewing all security attributes (httpOnly, secure, sameSite).
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: $RES.cookie($NAME, $VAL)
+      - pattern: $RES.cookie($NAME, $VAL, $OPTS)
+      - pattern: cookies().set($NAME, $VAL)
+      - pattern: cookies().set($NAME, $VAL, $OPTS)
+      - pattern: cookieStore.set($NAME, $VAL)
+      - pattern: cookieStore.set($NAME, $VAL, $OPTS)
+      - pattern: $RES.setHeader("Set-Cookie", ...)
+      - pattern: $RES.setHeader('Set-Cookie', ...)
+      - pattern: new Response(..., {headers: {"Set-Cookie": ...}})
+      - pattern: new Response(..., {headers: {'Set-Cookie': ...}})
+      - pattern: $REPLY.setCookie($NAME, $VAL, ...)

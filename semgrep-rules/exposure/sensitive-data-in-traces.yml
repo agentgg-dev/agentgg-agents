@@ -1,0 +1,31 @@
+rules:
+  - id: sensitive-var-in-otel-span
+    message: Sensitive-named variable passed to an observability span attribute or Sentry context.
+    languages: [typescript, javascript]
+    severity: WARNING
+    pattern-either:
+      - patterns:
+          - pattern: $SPAN.setAttribute($KEY, $VAL)
+          - metavariable-regex:
+              metavariable: $KEY
+              regex: (password|secret|token|credential|apiKey|api_key|authorization|privateKey|ssn|creditCard|cardNumber)
+      - patterns:
+          - pattern: $SPAN.setAttribute($KEY, $VAL)
+          - metavariable-regex:
+              metavariable: $VAL
+              regex: (password|secret|token|credential|apiKey|api_key|accessToken|refreshToken|privateKey|ssn)
+      - patterns:
+          - pattern: Sentry.setExtra($KEY, $VAL)
+          - metavariable-regex:
+              metavariable: $KEY
+              regex: (password|secret|token|credential|apiKey|api_key|authorization|privateKey|ssn|creditCard)
+      - patterns:
+          - pattern: Sentry.captureException($ERR, {extra: {$KEY: $VAL}})
+          - metavariable-regex:
+              metavariable: $KEY
+              regex: (password|secret|token|credential|apiKey|api_key|authorization|privateKey)
+      - patterns:
+          - pattern: $TRACER.setTag($KEY, $VAL)
+          - metavariable-regex:
+              metavariable: $KEY
+              regex: (password|secret|token|credential|apiKey|api_key|authorization|privateKey)

@@ -260,7 +260,7 @@ where:
       label: Python os.popen
     - regex: 'Process\.Start\s*\(|new\s+ProcessStartInfo'
       label: .NET Process.Start / ProcessStartInfo
-    - { semgrepRule: "command-injection-taint" }
+    - { semgrepRule: "shared/command-injection-taint" }
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

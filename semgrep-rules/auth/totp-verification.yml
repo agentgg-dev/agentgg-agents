@@ -1,0 +1,33 @@
+rules:
+  - id: totp-verify-call
+    message: TOTP/OTP/MFA verification call — review for bypass conditions or missing enforcement.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: totp.verify(...)
+      - pattern: $TOTP.verify(...)
+      - pattern: $OTP.verify(...)
+      - pattern: authenticator.verify(...)
+      - pattern: speakeasy.totp.verify(...)
+      - pattern: $AUTH.verifyOtp(...)
+      - pattern: $SUPABASE.auth.verifyOtp(...)
+      - patterns:
+          - pattern: $OBJ.$METHOD($TOKEN, ...)
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(verify|verifyToken|verifyOtp|verifyCode|validateOtp|validateToken|checkMfa|verifyMfa|validateMfa)$
+
+  - id: session-issue-after-mfa-check
+    message: Session or JWT issued — review whether MFA verification preceded this call.
+    languages: [typescript, javascript]
+    severity: INFO
+    pattern-either:
+      - pattern: jwt.sign($PAYLOAD, ...)
+      - pattern: $JWT.sign($PAYLOAD, ...)
+      - pattern: $SESSION.create(...)
+      - pattern: $SESSION.save(...)
+      - patterns:
+          - pattern: $DB.$MODEL.update({..., sessionToken: $TOK, ...})
+          - metavariable-regex:
+              metavariable: $MODEL
+              regex: (user|User|session|Session|account|Account)

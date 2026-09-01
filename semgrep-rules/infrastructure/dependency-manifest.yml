@@ -1,0 +1,12 @@
+rules:
+  - id: package-json-dependencies
+    message: package.json with dependencies block — review for vulnerable version pins
+    languages: [json]
+    severity: INFO
+    pattern-either:
+      - pattern: |
+          {"dependencies": {...}}
+      - pattern: |
+          {"devDependencies": {...}}
+      - pattern: |
+          {"peerDependencies": {...}}
