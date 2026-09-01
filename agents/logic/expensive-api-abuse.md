@@ -90,14 +90,6 @@ where:
   preFilter:
     - semgrepRule: logic/expensive-api-call
       label: LLM, email, Stripe, or image-generation API call
-    - regex: openai\.chat\.completions|anthropic\.messages|\bgenerateText\s*\(|\bstreamText\s*\(
-      label: LLM API call
-    - regex: resend\.emails\.send|sgMail\.send|twilio\.messages\.create|ses\.sendEmail
-      label: Email/SMS send
-    - regex: stripe\.(paymentIntents|charges|customers|subscriptions)\.create
-      label: Stripe billable create
-    - regex: (mapbox|googleMaps|geocoder)\.|images?\.generate\s*\(
-      label: Geocoding / image generation API
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

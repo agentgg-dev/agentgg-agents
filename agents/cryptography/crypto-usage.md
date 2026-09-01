@@ -95,16 +95,6 @@ where:
   preFilter:
     - semgrepRule: cryptography/crypto-primitive
       label: Crypto primitive call (cipher, hash, HMAC, key derivation)
-    - regex: createCipheriv|createDecipheriv|createHash|createHmac|createSign|createVerify|generateKeyPair|randomBytes|pbkdf2|hkdf|scrypt
-      label: Node crypto primitive
-    - regex: crypto\.subtle\.(encrypt|decrypt|sign|verify|digest|deriveBits|deriveKey|importKey|exportKey)
-      label: Web Crypto API call
-    - regex: 'from\s+[''\"](jose|jsonwebtoken|bcrypt|bcryptjs|argon2|tweetnacl|libsodium-wrappers|node-forge|@noble/|elliptic|sjcl|tweetsodium)'
-      label: Imports crypto library
-    - regex: '"crypto/(aes|cipher|des|hmac|md5|rand|rc4|rsa|sha1|sha256|sha512|subtle|x509|tls)"'
-      label: Go crypto stdlib import
-    - regex: from\s+(cryptography|hashlib|hmac|secrets|nacl|jwt|passlib|argon2|Crypto)\b
-      label: Python crypto import
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

@@ -33,20 +33,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/k8s-privileged
       label: Kubernetes privileged container or dangerous host access setting
-    - regex: 'kind:\s*(Pod|Deployment|DaemonSet|StatefulSet|Job|CronJob)'
-      label: workload-kind
-    - regex: 'privileged:\s*true'
-      label: privileged
-    - regex: 'host(PID|IPC|Network):\s*true'
-      label: host-namespace
-    - regex: 'allowPrivilegeEscalation:\s*true'
-      label: allow-priv-esc
-    - regex: 'runAsUser:\s*0'
-      label: run-as-root
-    - regex: 'securityContext'
-      label: security-context
-    - regex: 'capabilities'
-      label: capabilities
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

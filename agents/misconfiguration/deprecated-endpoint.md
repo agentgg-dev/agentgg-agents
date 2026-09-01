@@ -39,14 +39,6 @@ where:
   preFilter:
     - semgrepRule: shared/http-endpoints
       label: HTTP route registration or handler function
-    - regex: '(deprecated|legacy|old|DEPRECATED|LEGACY)\b'
-      label: Deprecated comment or identifier
-    - regex: '/v1/|/legacy/|/old/|/_internal/|legacyLogin|legacyHandler'
-      label: Legacy/versioned route path
-    - regex: 'app\.(get|post|put|patch|delete|use)\s*\([''"]'
-      label: Express route registration
-    - regex: '@(Get|Post|Put|Patch|Delete|RequestMapping)\s*\('
-      label: Decorator route
 references:
   - CWE-1059
   - CWE-477

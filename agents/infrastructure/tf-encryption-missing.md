@@ -17,12 +17,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/tf-unencrypted-storage
       label: Terraform storage resource block without explicit encryption
-    - regex: 'resource\s+"aws_(db_instance|s3_bucket|ebs_volume|efs_file_system|sqs_queue|dynamodb_table|rds_cluster|elasticache_replication_group|redshift_cluster|kinesis_stream)'
-      label: AWS storage resource block
-    - regex: 'resource\s+"google_(storage_bucket|sql_database_instance|bigquery_dataset|pubsub_topic)'
-      label: GCP storage resource block
-    - regex: 'resource\s+"azurerm_(storage_account|sql_server|cosmosdb_account|servicebus_namespace)'
-      label: Azure storage resource block
 references:
   - CWE-311
   - 'OWASP-A02:2021'

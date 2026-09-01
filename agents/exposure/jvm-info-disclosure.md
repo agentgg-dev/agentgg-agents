@@ -74,18 +74,6 @@ where:
   preFilter:
     - semgrepRule: exposure/jvm-runtime-info
       label: System.getenv, ManagementFactory MXBean, or ClassLoader URL call
-    - regex: 'System\.getenv\s*\('
-      label: System.getenv() call
-    - regex: 'System\.(getProperties|getProperty)\s*\('
-      label: System.getProperties / getProperty call
-    - regex: 'getClassLoader\s*\(\)\s*\.\s*(getURLs|getResource)\s*\('
-      label: ClassLoader URL enumeration (classpath disclosure)
-    - regex: 'ManagementFactory\.(getRuntimeMXBean|getOperatingSystemMXBean|getPlatformMXBeans)\s*\('
-      label: JVM management / runtime info via ManagementFactory
-    - regex: '(getPackage|getImplementationVersion|getSpecificationVersion|getImplementationTitle)\s*\(\)'
-      label: Package version or title via reflection
-    - regex: 'getResourceAsStream\s*\(\s*"[^"]*MANIFEST\.MF"'
-      label: Reading MANIFEST.MF for build/version info
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

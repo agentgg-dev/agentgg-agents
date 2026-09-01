@@ -17,14 +17,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/tf-public-access
       label: Terraform 0.0.0.0/0 CIDR or public access setting
-    - regex: 'cidr_blocks\s*=\s*\["0\.0\.0\.0/0"\]'
-      label: IPv4 wildcard CIDR
-    - regex: 'cidr_ipv6\s*=\s*\["::/0"\]'
-      label: IPv6 wildcard CIDR
-    - regex: 'source_ranges\s*=\s*\["0\.0\.0\.0/0"\]'
-      label: GCP public source range
-    - regex: 'source_address_prefix\s*=\s*"\*"'
-      label: Azure wildcard source
 references:
   - CWE-668
   - 'OWASP-A05:2021'

@@ -71,14 +71,6 @@ where:
   preFilter:
     - semgrepRule: auth/password-hash-call
       label: bcrypt/argon2/scrypt hash call or password creation pattern
-    - regex: (bcrypt|argon2|scrypt|pbkdf2)\.(hash|hashSync)\s*\(
-      label: Password hashing call
-    - regex: 'password\s*:\s*hash\s*\('
-      label: Storing hashed password
-    - regex: (set|create|register|signup|signUp)Password
-      label: Password setter / registration helper
-    - regex: User\.(create|register|signup|build)\s*\(
-      label: User creation
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

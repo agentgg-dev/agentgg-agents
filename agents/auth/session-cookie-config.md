@@ -70,14 +70,6 @@ where:
   preFilter:
     - semgrepRule: auth/cookie-set-call
       label: Cookie set call without all security attributes
-    - regex: 'cookies\s*\(\s*\)\.set\s*\(|\.cookie\s*\(\s*["''](session|auth|token|sid|jwt|access)'
-      label: Cookie set for session/auth name
-    - regex: 'setHeader\s*\(\s*["'']Set-Cookie["'']'
-      label: Raw Set-Cookie header construction
-    - regex: '(sessionCookie|cookieOptions)\s*:'
-      label: Library session/cookie config block
-    - regex: setSessionCookie\s*\(|setAuthCookie\s*\(|writeSession\s*\(
-      label: Project-defined cookie helper
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

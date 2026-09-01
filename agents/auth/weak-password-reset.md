@@ -39,8 +39,6 @@ where:
   preFilter:
     - semgrepRule: auth/password-hash-call
       label: Password hash or reset token generation call
-    - regex: '[Pp]assw|[Pp]wd|[Pp]sw|reset|forgot|recover|credential|security.{0,3}(question|answer)'
-      label: Password reset flow
 references:
   - CWE-640
   - CWE-307

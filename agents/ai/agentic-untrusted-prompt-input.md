@@ -70,17 +70,6 @@ where:
   preFilter:
     - semgrepRule: ai/llm-external-prompt
       label: LLM call with template-literal prompt or process.env secret in system
-    - regex: '\b(streamText|generateText|streamObject|generateObject)\s*\(\s*\{[\s\S]{0,500}(prompt|messages|system)\s*:\s*`[^`]*\$\{'
-      label: Vercel AI SDK call with template-literal prompt/messages/system
-      multiline: true
-    - regex: '(anthropic|client)\.messages\.create\s*\([\s\S]{0,500}(content|system)\s*:\s*`[^`]*\$\{'
-      label: Anthropic messages.create with template-literal content
-      multiline: true
-    - regex: 'openai\.chat\.completions\.create\s*\([\s\S]{0,500}(content|system)\s*:\s*`[^`]*\$\{'
-      label: OpenAI chat.completions.create with template-literal content
-      multiline: true
-    - regex: '\b(notes|description|body|content|text|summary|email|emailBody|transcript|scraped|fetched|webpage|attachment|document|kbDocs|searchResults|crawlResult|formData|ticket|feedback|salesforce[A-Z]|hubspot[A-Z]|notion[A-Z])\b'
-      label: External-origin variable name
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

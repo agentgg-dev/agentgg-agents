@@ -87,16 +87,6 @@ where:
   preFilter:
     - semgrepRule: exposure/orm-response-leak
       label: ORM query result passed directly to HTTP response without field selection
-    - regex: (res|reply|ctx)\.(json|send)\s*\(\s*(user|users|account|profile|member|customer)\b
-      label: Sending a user-shaped record verbatim
-    - regex: res\.json\s*\(\s*await\s+\w+\.(findOne|findByPk|findAll|find|findUnique|findFirst|findMany)\s*\(
-      label: ORM result returned directly
-    - regex: return\s+\w+\.toJSON\s*\(\)
-      label: toJSON of a model returned
-    - regex: JSON\.stringify\s*\(\s*user\b
-      label: Stringify of a user record
-    - regex: (SELECT|select)\s+\*\s+FROM
-      label: SELECT * in query
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

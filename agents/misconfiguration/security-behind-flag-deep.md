@@ -72,12 +72,6 @@ where:
   preFilter:
     - semgrepRule: misconfiguration/feature-flag-check
       label: Feature flag variation/checkGate/isEnabled call
-    - regex: (LaunchDarkly|statsig|Optimizely|Unleash|growthbook)\b
-      label: Feature-flag provider reference
-    - regex: \.(variation|checkGate|isEnabled|getFlag|getVariant)\s*\(
-      label: Feature-flag check call
-    - regex: \b(isEnabled|flag_enabled|flagFor|featureFlag)\s*\(
-      label: Generic feature-flag helper
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

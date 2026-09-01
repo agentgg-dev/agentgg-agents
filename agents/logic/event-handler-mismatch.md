@@ -27,12 +27,6 @@ where:
   preFilter:
     - semgrepRule: logic/event-handler
       label: Event dispatch switch or handler map lookup
-    - regex: 'switch\s*\(\s*event\.(type|name|kind)\s*\)'
-      label: Event type switch
-    - regex: 'case\s+"[^"]+"\s*:'
-      label: Case clause in switch
-    - regex: '\b(handlers?|listeners?|subscribers?)\s*[\[=]'
-      label: Handler map object
 references:
   - CWE-696
 ---

@@ -23,12 +23,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/tf-plaintext-secret
       label: Terraform variable with non-empty default or plaintext password argument
-    - regex: 'variable\s+"[^"]*?(password|secret|token|key|credential|api_key|private_key)[^"]*"'
-      label: Secret-shaped variable name
-    - regex: '(password|secret_key|auth_token|api_key|private_key)\s*=\s*"[^"]+'
-      label: Inline plaintext secret argument
-    - regex: '(password|secret|token|key|api_key)\s*=\s*"[^"]+'
-      label: tfvars secret value
 references:
   - CWE-798
   - 'OWASP-A02:2021'

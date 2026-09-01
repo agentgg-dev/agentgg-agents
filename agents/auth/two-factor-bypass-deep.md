@@ -71,14 +71,6 @@ where:
   preFilter:
     - semgrepRule: auth/totp-verification
       label: TOTP/OTP verify call or session issuance after MFA check
-    - regex: (totp|otp|mfa|twoFactor|two_factor|2fa)
-      label: 2FA reference
-    - regex: (speakeasy|otplib|@otplib|pyotp|rotp|node-2fa)
-      label: TOTP library
-    - regex: (verifyToken|verifyOtp|verify_otp|verifyMfa|verifyTwoFactor)
-      label: 2FA verification call
-    - regex: (jwt\.sign|createSession|issueToken|setSession)\s*\(
-      label: Session/token issuance
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

@@ -43,14 +43,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/dependency-manifest
       label: Package manifest with dependencies block (JSON)
-    - regex: '"(dependencies|devDependencies|peerDependencies)"\s*:'
-      label: npm/package.json dependency block
-    - regex: '^(require|gem|import)\s+[''"]'
-      label: Ruby/Python/Go dependency declaration
-    - regex: '<dependency>|<groupId>'
-      label: Maven POM dependency
-    - regex: '^module\s+\w|^require\s+\('
-      label: Go module declaration
 references:
   - CWE-1395
   - CWE-1357

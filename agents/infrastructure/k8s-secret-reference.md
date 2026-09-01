@@ -17,10 +17,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/k8s-secret-ref
       label: Kubernetes secretKeyRef or secretRef in manifest
-    - regex: 'secretKeyRef:'
-      label: secretKeyRef env var
-    - regex: 'secretRef:'
-      label: secretRef envFrom
 references:
   - CWE-526
   - 'OWASP-A02:2021'

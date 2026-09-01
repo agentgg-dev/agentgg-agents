@@ -17,10 +17,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/k8s-secret-ref
       label: Kubernetes secretKeyRef or secretRef reference in manifest
-    - regex: 'initContainers:'
-      label: init containers present
-    - regex: 'emptyDir'
-      label: emptyDir shared volume
 references:
   - CWE-526
   - 'OWASP-A02:2021'

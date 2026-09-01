@@ -60,24 +60,6 @@ where:
   preFilter:
     - semgrepRule: mobile/mobile-storage
       label: Android SharedPreferences write or iOS UserDefaults / file write
-    - regex: '\.edit\s*\(\s*\)|putString\s*\(|putInt\s*\(|getSharedPreferences\s*\('
-      label: SharedPreferences write
-    - regex: 'MODE_WORLD_(READABLE|WRITEABLE)'
-      label: World-readable/writable SharedPreferences mode
-    - regex: '(openOrCreateDatabase|SQLiteDatabase\.open|Room\.databaseBuilder)'
-      label: Local SQLite / Room database
-    - regex: '(getExternalFilesDir|getExternalStorageDirectory|Environment\.getExternalStoragePublicDirectory)'
-      label: External storage write
-    - regex: '(openFileOutput|FileOutputStream|\.writeText\s*\(|Files\.write)'
-      label: File write
-    - regex: '\b(NSUserDefaults|UserDefaults)\b.*\.set\s*\(|\.set\s*\(.*forKey:'
-      label: iOS UserDefaults write
-    - regex: '(writeToFile|\.write\s*\(\s*to:|NSKeyedArchiver\.archived)'
-      label: iOS file / plist write
-    - regex: 'kSecAttrAccessibleAlways'
-      label: Keychain item accessible even when device locked
-    - regex: '(password|passwd|token|secret|apiKey|api_key|credential|sessionId|session_token|ssn|creditCard|privateKey)'
-      label: Sensitive value name near a storage call
 references:
   - CWE-312
   - CWE-922

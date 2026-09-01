@@ -17,10 +17,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/tf-module-version
       label: Terraform module block for version pin review
-    - regex: 'module\s+"[^"]+"\s*\{'
-      label: Terraform module block
-    - regex: 'source\s*=\s*"(git::|github\.com/|registry\.terraform\.io/)'
-      label: External module source
 references:
   - CWE-1357
   - 'OWASP-A06:2021'

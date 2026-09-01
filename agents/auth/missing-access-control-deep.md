@@ -19,10 +19,6 @@ where:
   preFilter:
     - semgrepRule: shared/http-endpoints
       label: HTTP endpoint handler or route registration
-    - { regex: "\\.(get|post|put|patch|delete|all)\\s*\\(\\s*['\"]", label: "HTTP route handler (Express / Fastify / router)" }
-    - { regex: "@(Get|Post|Put|Patch|Delete|Controller|RequestMapping|GetMapping|PostMapping)\\s*\\(", label: "controller route decorator / annotation" }
-    - { regex: "Route::(get|post|put|patch|delete|resource|apiResource)\\s*\\(", label: "Laravel route definition" }
-    - { regex: "@(app|router|blueprint)\\.(route|get|post|put|patch|delete)\\s*\\(|def \\w+\\s*\\([^)]*request", label: "Python view (Flask / Django / FastAPI)" }
 references:
   - CWE-862
   - CWE-639

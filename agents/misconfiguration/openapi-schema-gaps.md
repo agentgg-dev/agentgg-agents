@@ -29,14 +29,6 @@ where:
   preFilter:
     - semgrepRule: misconfiguration/openapi-spec
       label: OpenAPI version marker or additionalProperties gap
-    - regex: '(openapi|swagger)\s*:\s*[''"]?[0-9]'
-      label: OpenAPI/Swagger version marker
-    - regex: 'additionalProperties\s*:\s*true'
-      label: additionalProperties true
-    - regex: 'requestBody|[''"]?in[''"]?\s*:\s*[''"]?(query|path|header)'
-      label: request body / parameter
-    - regex: '[''"]?type[''"]?\s*:\s*[''"]?(object|string|integer|number|array)'
-      label: schema type declaration
 references:
   - CWE-915
   - CWE-20

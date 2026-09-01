@@ -59,13 +59,6 @@ where:
   preFilter:
     - semgrepRule: ai/llm-external-prompt
       label: LLM call with process.env secret in system prompt or template-literal prompt
-    - regex: 'system\s*:\s*`[^`]*\$\{[^}]*process\.env'
-      label: system prompt interpolating process.env
-    - regex: '(role|name)\s*:\s*["'']system["''][\s\S]{0,300}content\s*:\s*`[^`]*\$\{[^}]*process\.env'
-      label: 'messages role:system with env-var interpolation'
-      multiline: true
-    - regex: 'system\s*:\s*["''][^"'']*\b(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|xoxb-[A-Za-z0-9-]{20,})'
-      label: system prompt with hardcoded secret literal
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

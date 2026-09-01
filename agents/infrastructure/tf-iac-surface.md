@@ -17,16 +17,6 @@ where:
   preFilter:
     - semgrepRule: infrastructure/tf-public-access
       label: Terraform public CIDR, no-auth, or publicly_accessible resource
-    - regex: 'authorization_type\s*=\s*"NONE"'
-      label: API Gateway / Lambda URL with no auth
-    - regex: 'publicly_accessible\s*=\s*true'
-      label: RDS publicly accessible
-    - regex: 'cidr_blocks\s*=\s*\["0\.0\.0\.0/0"\]'
-      label: Public CIDR block
-    - regex: 'internal\s*=\s*false'
-      label: Internet-facing load balancer
-    - regex: 'acl\s*=\s*"public-read'
-      label: S3 public ACL
 references:
   - CWE-285
   - 'OWASP-A05:2021'
