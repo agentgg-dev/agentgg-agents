@@ -88,8 +88,8 @@ where:
     - '**/dist/**'
     - '**/.next/**'
   preFilter:
-    - semgrepRule: logic/expensive-api-call
-      label: LLM, email, Stripe, or image-generation API call
+    - semgrepRule: shared/http-endpoints
+      label: HTTP route handler or endpoint function
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

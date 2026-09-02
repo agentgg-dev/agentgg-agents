@@ -2,13 +2,16 @@ rules:
   # Finds the entry point of an HTTP request handler. Used as a `where`
   # anchor so an agent starts at the request boundary instead of guessing
   # from a filename.
+
+  # --- TypeScript / JavaScript ---
+
+  # Next.js App Router / Remix: a function named for the verb.
   - id: http-endpoint-handler
     message: HTTP endpoint handler
     languages: [typescript, javascript]
     severity: INFO
     patterns:
       - pattern-either:
-          # Next.js App Router / Remix: a function named for the verb.
           - pattern: function $METHOD(...) { ... }
           - pattern: async function $METHOD(...) { ... }
       - metavariable-regex:
@@ -33,3 +36,241 @@ rules:
       - metavariable-regex:
           metavariable: $PATH
           regex: ^["'`]/
+
+  # --- Python ---
+
+  # FastAPI, Flask, APIRouter, Blueprint: decorator-based route registration.
+  # Matches both sync and async handler functions decorated with
+  # @router.get(...), @app.route(...), etc.
+  - id: python-http-route-decorator
+    message: Python HTTP route decorator
+    languages: [python]
+    severity: INFO
+    pattern-either:
+      - pattern: |
+          @$ROUTER.get(...)
+          def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.post(...)
+          def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.put(...)
+          def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.patch(...)
+          def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.delete(...)
+          def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.route(...)
+          def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.get(...)
+          async def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.post(...)
+          async def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.put(...)
+          async def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.patch(...)
+          async def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.delete(...)
+          async def $FUNC(...): ...
+      - pattern: |
+          @$ROUTER.route(...)
+          async def $FUNC(...): ...
+
+  # --- Go ---
+
+  # net/http + Gorilla Mux HandleFunc, and Gin/Echo/Fiber method-specific
+  # route registrations. Gin and Echo use ALL_CAPS (GET, POST), Fiber uses
+  # mixed case (Get, Post).
+  - id: go-http-route-registration
+    message: Go HTTP route registration
+    languages: [go]
+    severity: INFO
+    pattern-either:
+      - pattern: $MUX.HandleFunc($PATH, $HANDLER)
+      - pattern: $MUX.Handle($PATH, $HANDLER)
+      - pattern: $ROUTER.GET($PATH, ...)
+      - pattern: $ROUTER.POST($PATH, ...)
+      - pattern: $ROUTER.PUT($PATH, ...)
+      - pattern: $ROUTER.PATCH($PATH, ...)
+      - pattern: $ROUTER.DELETE($PATH, ...)
+      - pattern: $ROUTER.Get($PATH, ...)
+      - pattern: $ROUTER.Post($PATH, ...)
+      - pattern: $ROUTER.Put($PATH, ...)
+      - pattern: $ROUTER.Patch($PATH, ...)
+      - pattern: $ROUTER.Delete($PATH, ...)
+
+  # --- Java ---
+
+  # Spring Boot controller action methods annotated with @*Mapping.
+  - id: java-spring-request-mapping
+    message: Spring Boot HTTP endpoint method
+    languages: [java]
+    severity: INFO
+    pattern-either:
+      - pattern: |
+          @GetMapping(...)
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @PostMapping(...)
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @PutMapping(...)
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @PatchMapping(...)
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @DeleteMapping(...)
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @RequestMapping(...)
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @GetMapping
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @PostMapping
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @PutMapping
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @PatchMapping
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          @DeleteMapping
+          $RET $FUNC(...) { ... }
+
+  # --- Kotlin ---
+
+  # Spring Boot controller action methods in Kotlin.
+  - id: kotlin-spring-request-mapping
+    message: Spring Boot HTTP endpoint method (Kotlin)
+    languages: [kotlin]
+    severity: INFO
+    pattern-either:
+      - pattern: |
+          @GetMapping(...)
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @PostMapping(...)
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @PutMapping(...)
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @PatchMapping(...)
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @DeleteMapping(...)
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @RequestMapping(...)
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @GetMapping
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @PostMapping
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @PutMapping
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @PatchMapping
+          fun $FUNC(...): $RET { ... }
+      - pattern: |
+          @DeleteMapping
+          fun $FUNC(...): $RET { ... }
+
+  # --- PHP ---
+
+  # Laravel Route facade, Slim/Lumen $app->method(), and WordPress
+  # register_rest_route(). Symfony PHP8 Route attribute is covered by
+  # the route registration patterns where $ROUTER->get() is used.
+  - id: php-http-route-registration
+    message: PHP HTTP route registration
+    languages: [php]
+    severity: INFO
+    pattern-either:
+      - pattern: Route::get($PATH, ...)
+      - pattern: Route::post($PATH, ...)
+      - pattern: Route::put($PATH, ...)
+      - pattern: Route::patch($PATH, ...)
+      - pattern: Route::delete($PATH, ...)
+      - pattern: Route::any($PATH, ...)
+      - pattern: Route::match($METHODS, $PATH, ...)
+      - pattern: $ROUTER->get($PATH, ...)
+      - pattern: $ROUTER->post($PATH, ...)
+      - pattern: $ROUTER->put($PATH, ...)
+      - pattern: $ROUTER->patch($PATH, ...)
+      - pattern: $ROUTER->delete($PATH, ...)
+      - pattern: register_rest_route($NAMESPACE, $PATH, ...)
+
+  # --- Ruby ---
+
+  # Sinatra / Grape route blocks. Rails action methods are not matched
+  # here because bare `def index` is too generic without the class context.
+  - id: ruby-http-route
+    message: Ruby HTTP route block
+    languages: [ruby]
+    severity: INFO
+    pattern-either:
+      - pattern: get $PATH do ... end
+      - pattern: post $PATH do ... end
+      - pattern: put $PATH do ... end
+      - pattern: patch $PATH do ... end
+      - pattern: delete $PATH do ... end
+
+  # --- C# ---
+
+  # ASP.NET Core Minimal API MapGet/MapPost/etc and controller action
+  # attributes [HttpGet], [HttpPost], etc.
+  - id: csharp-http-endpoint
+    message: C# HTTP endpoint
+    languages: [csharp]
+    severity: INFO
+    pattern-either:
+      - pattern: $APP.MapGet($PATH, ...)
+      - pattern: $APP.MapPost($PATH, ...)
+      - pattern: $APP.MapPut($PATH, ...)
+      - pattern: $APP.MapPatch($PATH, ...)
+      - pattern: $APP.MapDelete($PATH, ...)
+      - pattern: |
+          [HttpGet(...)]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpPost(...)]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpPut(...)]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpPatch(...)]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpDelete(...)]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpGet]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpPost]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpPut]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpPatch]
+          $RET $FUNC(...) { ... }
+      - pattern: |
+          [HttpDelete]
+          $RET $FUNC(...) { ... }

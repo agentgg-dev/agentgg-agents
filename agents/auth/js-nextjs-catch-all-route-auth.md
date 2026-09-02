@@ -57,10 +57,8 @@ where:
     - '**/dist/**'
     - '**/.next/**'
   preFilter:
-    - regex: export\s+(async\s+function|const|function)\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b
-      label: App Router HTTP handler export
-    - regex: export\s+default\s+(async\s+)?function\s+handler
-      label: Pages Router default handler
+    - semgrepRule: shared/http-endpoints
+      label: HTTP route handler or endpoint function
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

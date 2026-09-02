@@ -145,18 +145,14 @@ where:
     - '**/storage/**'
     - '**/bootstrap/cache/**'
   preFilter:
-    - regex: 'Route::(get|post|put|patch|delete|any|match|resource)\s*\('
-      label: 'Laravel Route::* registration'
-    - regex: \$(app|router|slim)->(get|post|put|patch|delete|any|map)\s*\(
-      label: Slim / micro-framework route registration
+    - semgrepRule: shared/http-endpoints
+      label: HTTP route handler or endpoint function
     - regex: '#\[\s*Route\s*\('
       label: 'Symfony PHP8 #[Route] attribute'
     - regex: '@Route\s*\('
       label: Symfony annotation @Route
     - regex: class\s+\w+Controller\s+extends\s+\w*Controller\b
       label: Controller subclass
-    - regex: register_rest_route\s*\(
-      label: WordPress register_rest_route()
     - regex: 'public\s+function\s+\w+\s*\([^)]*Request\b'
       label: Public action method receiving Request
   maxFilesPerBatch: 5

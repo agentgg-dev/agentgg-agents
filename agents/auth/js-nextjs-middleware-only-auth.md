@@ -33,8 +33,8 @@ where:
     - '**/dist/**'
     - '**/.next/**'
   preFilter:
-    - regex: export\s+(async\s+function|const|function)\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b
-      label: App Router HTTP method export
+    - semgrepRule: shared/http-endpoints
+      label: HTTP route handler or endpoint function
   maxFilesPerBatch: 5
   maxTurnsPerBatch: 30
 references:

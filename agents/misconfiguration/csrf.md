@@ -85,10 +85,8 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
   preFilter:
-    - regex: (app|router|api|fastify)\.(post|put|patch|delete)\s*\(
-      label: JS state-changing route registration
-    - regex: '@(Post|Put|Patch|Delete)\s*\('
-      label: Nest/Spring state-changing decorator
+    - semgrepRule: shared/http-endpoints
+      label: HTTP route handler or endpoint function
     - regex: '@csrf_exempt'
       label: Django CSRF exempt
     - regex: 'skip_before_action\s*:?\s*:?verify_authenticity_token'
