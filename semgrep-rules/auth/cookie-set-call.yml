@@ -12,6 +12,6 @@ rules:
       - pattern: cookieStore.set($NAME, $VAL, $OPTS)
       - pattern: $RES.setHeader("Set-Cookie", ...)
       - pattern: $RES.setHeader('Set-Cookie', ...)
-      - pattern: new Response(..., {headers: {"Set-Cookie": ...}})
-      - pattern: new Response(..., {headers: {'Set-Cookie': ...}})
+      - pattern: 'new Response(..., {headers: {"Set-Cookie": ...}})'
+      - pattern: "new Response(..., {headers: {'Set-Cookie': ...}})"
       - pattern: $REPLY.setCookie($NAME, $VAL, ...)

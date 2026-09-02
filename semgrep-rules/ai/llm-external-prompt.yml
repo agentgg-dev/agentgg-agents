@@ -1,17 +1,17 @@
 rules:
-  - id: llm-prompt-template-literal
-    message: LLM call with a template-literal prompt that may interpolate untrusted input.
+  - id: llm-prompt-external-input
+    message: LLM call where the prompt or system argument may incorporate external input.
     languages: [typescript, javascript]
     severity: WARNING
     pattern-either:
-      - pattern: streamText({..., prompt: `...`, ...})
-      - pattern: generateText({..., prompt: `...`, ...})
-      - pattern: generateObject({..., prompt: `...`, ...})
-      - pattern: streamObject({..., prompt: `...`, ...})
-      - pattern: streamText({..., system: `...`, ...})
-      - pattern: generateText({..., system: `...`, ...})
-      - pattern: $CLIENT.chat.completions.create({..., messages: [...], ...})
-      - pattern: $ANTHROPIC.messages.create({..., messages: [...], ...})
+      - pattern: 'streamText({..., prompt: $PROMPT, ...})'
+      - pattern: 'generateText({..., prompt: $PROMPT, ...})'
+      - pattern: 'generateObject({..., prompt: $PROMPT, ...})'
+      - pattern: 'streamObject({..., prompt: $PROMPT, ...})'
+      - pattern: 'streamText({..., system: $SYS, ...})'
+      - pattern: 'generateText({..., system: $SYS, ...})'
+      - pattern: '$CLIENT.chat.completions.create({..., messages: $MSGS, ...})'
+      - pattern: '$ANTHROPIC.messages.create({..., messages: $MSGS, ...})'
 
   - id: llm-system-prompt-env-interpolation
     message: LLM system prompt interpolates a process.env secret — the value is sent to the model provider.
@@ -25,7 +25,7 @@ rules:
               metavariable: $VAR
               regex: (SECRET|KEY|TOKEN|PASSWORD|PRIVATE|CREDENTIAL|API_KEY)
     pattern-sinks:
-      - pattern: streamText({..., system: ..., ...})
-      - pattern: generateText({..., system: ..., ...})
+      - pattern: 'streamText({..., system: ..., ...})'
+      - pattern: 'generateText({..., system: ..., ...})'
       - pattern: $CLIENT.chat.completions.create(...)
       - pattern: $ANTHROPIC.messages.create(...)

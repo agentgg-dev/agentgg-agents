@@ -20,7 +20,7 @@ rules:
               metavariable: $KEY
               regex: (password|secret|token|credential|apiKey|api_key|authorization|privateKey|ssn|creditCard)
       - patterns:
-          - pattern: Sentry.captureException($ERR, {extra: {$KEY: $VAL}})
+          - pattern: 'Sentry.captureException($ERR, {extra: {$KEY: $VAL}})'
           - metavariable-regex:
               metavariable: $KEY
               regex: (password|secret|token|credential|apiKey|api_key|authorization|privateKey)

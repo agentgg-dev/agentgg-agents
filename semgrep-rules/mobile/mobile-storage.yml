@@ -29,8 +29,8 @@ rules:
     languages: [swift]
     severity: INFO
     pattern-either:
-      - pattern: UserDefaults.standard.set($VAL, forKey: $KEY)
-      - pattern: $DEFAULTS.set($VAL, forKey: $KEY)
-      - pattern: $DATA.write(to: $URL, atomically: ...)
-      - pattern: try $CONTENT.write(to: $URL, atomically: ..., encoding: ...)
+      - pattern: 'UserDefaults.standard.set($VAL, forKey: $KEY)'
+      - pattern: '$DEFAULTS.set($VAL, forKey: $KEY)'
+      - pattern: '$DATA.write(to: $URL, atomically: ...)'
+      - pattern: 'try $CONTENT.write(to: $URL, atomically: ..., encoding: ...)'
       - pattern: kSecAttrAccessibleAlways

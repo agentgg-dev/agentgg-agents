@@ -27,7 +27,7 @@ rules:
       - pattern: $SESSION.create(...)
       - pattern: $SESSION.save(...)
       - patterns:
-          - pattern: $DB.$MODEL.update({..., sessionToken: $TOK, ...})
+          - pattern: '$DB.$MODEL.update({..., sessionToken: $TOK, ...})'
           - metavariable-regex:
               metavariable: $MODEL
               regex: (user|User|session|Session|account|Account)

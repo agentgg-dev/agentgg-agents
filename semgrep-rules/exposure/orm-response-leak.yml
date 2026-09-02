@@ -25,7 +25,7 @@ rules:
     severity: INFO
     pattern-either:
       - pattern: $DB.$MODEL.findMany()
-      - pattern: $DB.$MODEL.findMany({where: $W})
+      - pattern: '$DB.$MODEL.findMany({where: $W})'
       - patterns:
           - pattern: $DB.$MODEL.$OP({...})
           - metavariable-regex:

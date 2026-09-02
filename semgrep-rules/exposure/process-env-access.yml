@@ -9,11 +9,6 @@ rules:
           - metavariable-regex:
               metavariable: $VAR
               regex: (SECRET|TOKEN|KEY|PASSWORD|PRIVATE|CREDENTIAL|API_KEY|JWT|AUTH|ACCESS_KEY|AWS_SECRET)
-      - patterns:
-          - pattern: process.env["$VAR"]
-          - metavariable-regex:
-              metavariable: $VAR
-              regex: (SECRET|TOKEN|KEY|PASSWORD|PRIVATE|CREDENTIAL|API_KEY|JWT|AUTH|ACCESS_KEY|AWS_SECRET)
 
   - id: process-env-fallback-literal
     message: process.env access with a hardcoded string fallback — the fallback may become the real secret in dev environments.
@@ -22,7 +17,6 @@ rules:
     pattern-either:
       - pattern: process.env.$X ?? "..."
       - pattern: process.env.$X || "..."
-      - pattern: process.env.$X !== undefined ? process.env.$X : "..."
 
   - id: next-public-secret-env
     message: NEXT_PUBLIC_ environment variable with a secret-shaped name is exposed to the browser bundle.

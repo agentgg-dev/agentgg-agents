@@ -4,13 +4,13 @@ rules:
     languages: [typescript, javascript]
     severity: WARNING
     pattern-either:
-      - pattern: helmet({contentSecurityPolicy: false})
-      - pattern: helmet({contentSecurityPolicy: false, ...})
-      - pattern: helmet({frameguard: false, ...})
-      - pattern: helmet({noSniff: false, ...})
-      - pattern: helmet({hsts: false, ...})
-      - pattern: $APP.use(helmet({contentSecurityPolicy: false}))
-      - pattern: $APP.use(helmet({contentSecurityPolicy: false, ...}))
+      - pattern: 'helmet({contentSecurityPolicy: false})'
+      - pattern: 'helmet({contentSecurityPolicy: false, ...})'
+      - pattern: 'helmet({frameguard: false, ...})'
+      - pattern: 'helmet({noSniff: false, ...})'
+      - pattern: 'helmet({hsts: false, ...})'
+      - pattern: '$APP.use(helmet({contentSecurityPolicy: false}))'
+      - pattern: '$APP.use(helmet({contentSecurityPolicy: false, ...}))'
 
   - id: middleware-setup-call
     message: Security middleware setup — review for missing CSP, HSTS, X-Frame-Options, and other headers.
