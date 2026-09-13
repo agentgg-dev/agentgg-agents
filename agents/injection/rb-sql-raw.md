@@ -72,6 +72,10 @@ where:
     - '**/*_spec.rb'
     - '**/*_test.rb'
   preFilter:
+    - regex: '\bSELECT\b[\s\S]{0,300}\bFROM\b|\bINSERT\s+INTO\b|\bUPDATE\b[\s\S]{0,160}\bSET\b|\bDELETE\s+FROM\b'
+      label: Raw SQL statement text (trace how the string is built before judging)
+    - regex: '\.(execute|exec_query|find_by_sql|select_all|select_values)\s*\('
+      label: ActiveRecord / pg execute call (trace the query argument to its source)
     - regex: '\.find_by_sql\s*\(\s*["''][^#]{0,400}#\{'
       label: 'find_by_sql with #{} interpolation'
     - regex: '\.where\s*\(\s*["''][^#]{0,400}#\{'

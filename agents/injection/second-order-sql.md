@@ -151,8 +151,8 @@ is parameterized or the column cannot be user-influenced.
 ## What to ignore
 
 - Raw queries whose interpolated value comes directly from the current
-  request without a DB round-trip — that is first-order SQLi, covered
-  by the sql-injection agent; do not double-report it here.
+  request without a DB round-trip. That is first-order SQL injection and
+  is out of scope here. The value must come back from a database read.
 - Concatenation of values that are not from a DB read: literals, enums,
   server-generated IDs, validated numeric values.
 - DB-read values that are bound as parameters in the later query
@@ -192,7 +192,8 @@ cur.execute("UPDATE x SET seen=1 WHERE id=%s", (row.id,))
 ```js
 await db.query(`SELECT * FROM t WHERE flag = ${req.query.f}`);
 ```
-(the last one is first-order SQLi — let the sql-injection agent handle it)
+(the last one is first-order SQL injection, not this bug: the value never
+went through the database)
 
 This class is noisy: many concatenations are first-order or use
 constants. Be disciplined — only flag when you have traced the value to

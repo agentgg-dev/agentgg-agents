@@ -57,6 +57,8 @@ where:
     - '**/tests/**'
     - '**/Tests/**'
   preFilter:
+    - regex: '\b(pg_query|pg_send_query|sqlite_query|mssql_query|oci_parse|mysqli_multi_query|mysql_query)\s*\('
+      label: Procedural DB query function (trace the query argument to its source)
     - regex: '->\s*(query|exec|prepare)\s*\(\s*["''][^"'']*["'']\s*\.'
       label: PDO query/exec/prepare with .  concatenation
     - regex: 'mysqli_query\s*\([^,]+,\s*["''][^"'']*["'']\s*\.'

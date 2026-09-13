@@ -100,6 +100,8 @@ where:
     - '**/target/**'
     - '**/build/**'
   preFilter:
+    - regex: '@Query\s*\(\s*"[^"]*(\$\{|"\s*\+)'
+      label: Spring Data @Query built by interpolation or concatenation
     - regex: '\.(executeQuery|executeUpdate)\s*\(\s*"[^"]*"\s*\+'
       label: JDBC Statement with concatenation
     - regex: '\.prepareStatement\s*\(\s*"[^"]*"\s*\+'

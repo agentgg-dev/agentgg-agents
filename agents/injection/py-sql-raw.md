@@ -109,6 +109,10 @@ where:
     - '**/migrations/**'
     - '**/__pycache__/**'
   preFilter:
+    - regex: '\bSELECT\b[\s\S]{0,300}\bFROM\b|\bINSERT\s+INTO\b|\bUPDATE\b[\s\S]{0,160}\bSET\b|\bDELETE\s+FROM\b'
+      label: Raw SQL statement text (trace how the string is built before judging)
+    - regex: '\.(execute|executemany|executescript)\s*\('
+      label: cursor/session execute call (trace the query argument to its source)
     - regex: '\.(execute|executemany)\s*\(\s*f["'']'
       label: cursor/session execute with f-string
     - regex: '\.(execute|executemany)\s*\(\s*["''][^"'']*["'']\s*%'
