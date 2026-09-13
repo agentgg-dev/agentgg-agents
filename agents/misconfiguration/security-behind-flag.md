@@ -8,6 +8,32 @@ noiseTier: precise
 precondition:
   regex:
     patterns:
+      - regex: (LaunchDarkly|statsig|Optimizely|Unleash|growthbook)\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Feature-flag provider reference
+      - regex: \b(variation|checkGate|isEnabled|getFlag|getVariant|flag_enabled|flagFor|featureFlag)\s*\(
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/spec/**'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Feature-flag check call
       - regex: (variation|checkGate|isEnabled|getFlag|getVariant|flag_enabled|flagFor|featureFlag)\s*\(\s*['"][^'"]*(auth|authz|mfa|2fa|otp|csrf|xsrf|encrypt|decrypt|signature|verif|firewall|waf|rate.?limit|throttl|sanitiz|escap|secur|permission|token|jwt|tls|ssl|cors|captcha|lockout|rbac|acl)
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java,kt}'
@@ -46,6 +72,8 @@ where:
   preFilter:
     - regex: (variation|checkGate|isEnabled|getFlag|getVariant|flag_enabled|flagFor|featureFlag)\s*\(\s*['"][^'"]*(auth|authz|mfa|2fa|otp|csrf|xsrf|encrypt|decrypt|signature|verif|firewall|waf|rate.?limit|throttl|sanitiz|escap|secur|permission|token|jwt|tls|ssl|cors|captcha|lockout|rbac|acl)
       label: Feature-flag check on a security-named flag
+    - semgrepRule: misconfiguration/feature-flag-check
+      label: Feature flag variation/checkGate/isEnabled call
   maxFilesPerBatch: 5
 references:
   - CWE-693
@@ -58,13 +86,12 @@ operators can flip without a deploy or PR — and remote configuration
 systems (LaunchDarkly, Statsig, Optimizely, internal flag services)
 are themselves potential attack surfaces.
 
-**Scope of this (light) check.** This strict pass only fires when the
-flag's *name string* itself names a security concept (`require-mfa`,
-`csrf-check`, `auth-required`, `validate-signature`, etc.) — the
-high-confidence cases. Flags with opaque names (`g-1234`,
-`FLAGS.NEW_PATH`) or whose security nature is only visible from the
-guarded block require reading every flag site and live in the
-`security-behind-flag-deep` agent (deep tier).
+**Scope of this check.** The highest-confidence cases are flags whose
+*name string* itself names a security concept (`require-mfa`,
+`csrf-check`, `auth-required`, `validate-signature`). Do not stop there.
+A flag with an opaque name (`g-1234`, `FLAGS.NEW_PATH`) is the same bug
+when the block it guards performs a security action, so open the guarded
+block and judge by what it does, not by what the flag is called.
 
 **Cross-file analysis:** the body of the `if` may call a helper
 like `requireAuth()` or `verifyCsrf()` — open it to confirm that's a

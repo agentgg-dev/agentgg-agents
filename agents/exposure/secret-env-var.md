@@ -89,10 +89,9 @@ When you find a secret env-var access, follow the value:
 Flag every match for review. The access itself is not a finding,
 but each access is a review point. Report as a finding when:
 
-- The secret flows into a log/response/trace (use the relevant
-  `secret-in-log`, `secrets-plaintext-exposure`, or
-  `sensitive-data-in-traces` agent for the actual leak, but this
-  agent surfaces the access).
+- The secret flows into a log, an HTTP response body, or a trace
+  attribute. Report the access site. You do not have to prove the value
+  reaches an external reader.
 - The access is in a file that ships to the client.
 - The access has a hardcoded fallback.
 

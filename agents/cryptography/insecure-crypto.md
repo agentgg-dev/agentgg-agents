@@ -1,7 +1,7 @@
 ---
 slug: insecure-crypto
 name: Insecure Cryptographic Primitives
-description: 'Weak hashes (MD5, SHA1), deprecated ciphers (createCipher, DES, RC4, Blowfish), timing-unsafe equality checks on HMACs/digests, and Math.random for security tokens. Traces helper functions to confirm the security context.'
+description: 'Weak hashes (MD5, SHA1), deprecated ciphers (createCipher, DES, RC4, Blowfish), timing-unsafe equality checks on HMACs/digests, Math.random for security tokens, undersized RSA/ECDSA keys, and weak PBKDF2/HKDF derivation parameters. Traces helper functions to confirm the security context.'
 version: 0.1.0
 author: agentgg
 noiseTier: noisy
@@ -118,6 +118,71 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: pycryptodome low-level cipher use
+      - regex: createCipheriv|createDecipheriv|createHash|createHmac|createSign|createVerify|generateKeyPair|randomBytes|pbkdf2|hkdf|scrypt
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,go,py}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Node crypto primitive
+      - regex: crypto\.subtle\.(encrypt|decrypt|sign|verify|digest|deriveBits|deriveKey|importKey|exportKey)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,go,py}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Web Crypto API call
+      - regex: 'from\s+[''\"](jose|jsonwebtoken|bcrypt|bcryptjs|argon2|tweetnacl|libsodium-wrappers|node-forge|@noble/|elliptic|sjcl|tweetsodium)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,go,py}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Imports crypto library
+      - regex: '"crypto/(aes|cipher|des|hmac|md5|rand|rc4|rsa|sha1|sha256|sha512|subtle|x509|tls)"'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,go,py}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Go crypto stdlib import
+      - regex: from\s+(cryptography|hashlib|hmac|secrets|nacl|jwt|passlib|argon2|Crypto)\b
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs,go,py}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,go}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/tests/**'
+          - '**/node_modules/**'
+          - '**/vendor/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: Python crypto import
 where:
   extensions:
     - py
@@ -127,6 +192,7 @@ where:
     - jsx
     - mjs
     - cjs
+    - go
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -161,26 +227,33 @@ where:
       label: Deprecated cipher/mode literal
     - regex: \brandom\.(random|randint|choice|randrange)\s*\(
       label: random module (verify not security-relevant)
+    - semgrepRule: cryptography/crypto-primitive
+      label: Crypto primitive call (cipher, hash, HMAC, key derivation)
   maxFilesPerBatch: 5
 references:
   - CWE-327
   - CWE-330
+  - CWE-326
   - CWE-208
   - 'OWASP-A02:2021'
 
 ---
 
-You are reviewing JavaScript / TypeScript source code for use of
-broken or deprecated cryptographic primitives — weak hashes, removed
-ciphers, non-constant-time comparisons, and PRNGs that aren't
-cryptographically secure.
+You are reviewing JavaScript / TypeScript, Python, and Go source code
+for use of broken or deprecated cryptographic primitives — weak
+hashes, removed ciphers, non-constant-time comparisons, and PRNGs that
+aren't cryptographically secure, plus key sizes and derivation
+parameters too weak to carry the security the code claims.
 
 **Cross-file analysis:** MD5/SHA1 for content addressing (e.g.,
 ETag, dedup) is acceptable; for password hashing or HMAC it's not.
 Trace the call result: where does the hash flow? If it's compared
 against a stored password or used as a session token, it's a finding.
 Also follow any `compare()` helper to see whether it actually uses
-`timingSafeEqual` internally.
+`timingSafeEqual` internally. Key material is usually generated in a
+separate key-management or config module, so when a call site takes a
+`key` argument, open the source of that key to confirm its length and
+how it was generated.
 
 ## What to look for
 
@@ -230,6 +303,38 @@ const otp = Math.floor(Math.random() * 1_000_000);
 `Math.random` is not cryptographic. Use `crypto.randomBytes` /
 `crypto.randomUUID` / `crypto.getRandomValues`.
 
+**Undersized keys and unusual curves:**
+```ts
+crypto.generateKeyPairSync("rsa", { modulusLength: 1024 });
+crypto.createSign("sha256");   // check the key this signs with
+```
+RSA below 2048 bits is too small for any signing or encryption key in
+production. For ECDSA, confirm the curve is a standard one such as
+P-256, P-384, or Ed25519. A non-standard or hand-rolled curve is a
+finding on its own, since its security is unreviewed.
+
+**Weak key derivation parameters:**
+```ts
+crypto.pbkdf2(password, salt, 1000, 32, "sha256", cb);
+crypto.hkdfSync("sha256", ikm, salt, "", 32);
+```
+PBKDF2 under 100k iterations with SHA-256 is below current guidance
+and cheap to grind offline. HKDF called with an empty or missing
+`info` parameter cannot bind the derived key to a context, so the same
+input keying material yields the same key for two different uses.
+
+**Third-party crypto libraries.** The same rules apply when the
+primitive comes from a library rather than the platform. Watch for
+`crypto-js`, `node-forge`, `libsodium-wrappers`, `tweetnacl`,
+`@noble/*`, `elliptic`, `sjcl`, `jose`, `jsonwebtoken`, `bcrypt`,
+`bcryptjs`, and `argon2` in JavaScript; `cryptography`, `hashlib`,
+`hmac`, `secrets`, `nacl`, `passlib`, and `Crypto` in Python; and
+`crypto/aes`, `crypto/cipher`, `crypto/des`, `crypto/hmac`,
+`crypto/md5`, `crypto/rand`, `crypto/rc4`, `crypto/rsa`,
+`crypto/sha1`, `crypto/subtle`, `crypto/x509`, `crypto/tls`, and
+`golang.org/x/crypto/*` in Go. In Go, `aes.NewCipher(key)` is the call
+site to inspect: check the key length and where the key came from.
+
 ## True positive criteria
 
 Flag when ANY of the following hold:
@@ -243,6 +348,12 @@ Flag when ANY of the following hold:
    `signature`, `token`, or `expected` (against another such value).
 5. `Math.random()` is used to generate a token, ID, OTP, or any
    value reaching a security check.
+6. An RSA key is generated or loaded with a modulus under 2048 bits.
+7. An ECDSA key uses a non-standard curve, or the curve is selected
+   from data rather than pinned in code.
+8. PBKDF2 runs with fewer than 100k iterations for SHA-256.
+9. HKDF is called without an `info` parameter where the derived key
+   is bound to a specific context or use.
 
 ## What to ignore
 
@@ -268,6 +379,20 @@ if (computed === providedSignature) return ok();
 
 // Math.random for OTP
 const otp = Math.floor(Math.random() * 1000000);
+
+// Undersized RSA key
+crypto.generateKeyPairSync("rsa", { modulusLength: 1024 });
+
+// PBKDF2 with too few iterations
+crypto.pbkdf2Sync(password, salt, 1000, 32, "sha256");
+```
+
+```go
+// 1024-bit RSA signing key
+key, _ := rsa.GenerateKey(rand.Reader, 1024)
+
+// MD5 over a secret
+h := md5.Sum(secret)
 ```
 
 False positives to skip:

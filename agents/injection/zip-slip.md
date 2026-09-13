@@ -80,6 +80,24 @@ where:
       label: archive keyword (zip/tar/gzip)
     - regex: '\b(unzipper|adm-zip|AdmZip|jszip|JSZip|yauzl|node-stream-zip|zipfile|tarfile|ZipInputStream|ZipFile|ZipEntry|TarInputStream|GZIPInputStream|extractall|extractAll|extractAllTo|getNextEntry|OpenReader|ZipArchive)\b'
       label: archive library or extraction API
+    - regex: 'require\s*\(\s*[''"]adm-zip[''"]\s*\)|new\s+AdmZip\s*\('
+      label: adm-zip usage
+    - regex: 'require\s*\(\s*[''"]unzipper[''"]\s*\)|unzipper\.(Open|Parse)'
+      label: unzipper usage
+    - regex: 'require\s*\(\s*[''"]unzip[''"]\s*\)|\.pipe\s*\(\s*unzip'
+      label: unzip usage
+    - regex: '\.extractAllTo\s*\(|\.extractEntryTo\s*\(|\.getEntry\s*\('
+      label: adm-zip extraction call
+    - regex: '\.pipe\s*\([^)]*\.createWriteStream|\.pipe\s*\([^)]*Extract'
+      label: stream pipe to file write during extraction
+    - regex: 'require\s*\(\s*[''"]tar[''"]\s*\)|tar\.(extract|x)\s*\('
+      label: tar extract call
+    - regex: 'require\s*\(\s*[''"]tar-stream[''"]\s*\)|tar\.extract\s*\('
+      label: tar-stream extract
+    - regex: 'require\s*\(\s*[''"]tar-fs[''"]\s*\)|tarFs\.extract\s*\('
+      label: tar-fs extract
+    - regex: 'entry\.path|header\.name|entry\.header'
+      label: TAR entry path accessed
   maxFilesPerBatch: 5
 references:
   - CWE-22
@@ -136,6 +154,38 @@ for (const name of Object.keys(z.files)) {
 ```ts
 await tar.x({ file: archive, C: dest });               // tar handles `..` since v6, but older versions / option mistakes are unsafe
 ```
+
+**Node.js — tar-stream:**
+```ts
+const extract = tarStream.extract();
+extract.on("entry", (header, stream, next) => {
+  const out = path.join(dest, header.name);            // header.name attacker-controlled
+  stream.pipe(fs.createWriteStream(out));
+  stream.on("end", next);
+});
+fs.createReadStream(uploaded).pipe(extract);
+```
+
+**Node.js — tar-fs:**
+```ts
+fs.createReadStream(uploaded).pipe(tarFs.extract(dest));
+```
+
+**Library behaviour to assume:**
+- `tar-stream` performs no path sanitization at all. Every path
+  decision belongs to the calling code, so any `path.join(dest,
+  header.name)` write is unprotected.
+- `tar-fs` strips a leading `/` from entry names but does not strip
+  `..`, so relative traversal still escapes the destination.
+- `unzipper.Extract` sanitizes paths internally in recent versions.
+  `unzipper.Parse` with manual path handling does not, so the entry
+  name is raw attacker input there.
+
+**Extraction call shapes to recognise:** `tar.extract`, `tar.x`,
+`tarStream.extract`, `tarFs.extract`, `zip.extractAllTo`,
+`zip.extractEntryTo`, `unzipper.Parse`, `unzipper.Open`. Entry names
+arrive as `header.name`, `entry.path`, `entry.entryName`, or
+`f.Name`.
 
 **Python:**
 ```python

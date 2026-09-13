@@ -48,7 +48,6 @@ where:
     - '**/[...path]/**/*.{ts,tsx}'
     - '**/(payload)/**/*.{ts,tsx}'
     - '**/graphql/route.{ts,tsx}'
-    - '**/app/api/**/*.{ts,tsx}'
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs}'

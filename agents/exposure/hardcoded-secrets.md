@@ -22,6 +22,7 @@ precondition:
       - java
       - kt
       - cs
+      - sh
       - json
       - yaml
       - yml
@@ -46,6 +47,7 @@ where:
     - java
     - kt
     - cs
+    - sh
     - json
     - yaml
     - yml
@@ -86,12 +88,60 @@ configuration instead of committed to the repository.
   literals — that's a classic attempt to hide a secret from naive
   scanners and almost always indicates the author knew it was sensitive.
 
+**Issuer formats.** A literal in one of these shapes is a credential
+on its own, whatever the variable is called:
+
+- Stripe: `sk_live_...`, `sk_test_...`
+- Google API: `AIza...` (39 chars total)
+- GitHub: `ghp_...`, `gho_...`, `ghs_...`, `github_pat_...`
+- AWS access key: `AKIA...` (20 chars)
+- Bearer token: `Bearer <40+ char base64>`
+- 32+ char hex strings used as keys
+- PEM blocks: `-----BEGIN ... PRIVATE KEY-----`
+
+**Split-literal evasion.** Reassemble concatenations before judging
+them. An issuer prefix joined to a body of 16+ characters is a real
+credential:
+
+```ts
+const stripe = "sk_live_" + "REDACTEDxxxxxxxxxxxxxxxx";
+const key = "AI" + "za<REDACTED_EXAMPLE>";
+const tok = "ghp_" + "REDACTEDxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+```
+
+Neither half trips push protection or a naive scanner, but the value
+the program builds at runtime authenticates. Treat the split itself as
+evidence the author knew the value was sensitive.
+
+**Config and env files committed to the repo** carry the same weight as
+source:
+
+```yaml
+db_password: "P@ssw0rd!"
+```
+
+```env
+JWT_SECRET=supersecret-real-prod-value
+```
+
 ## True positive criteria
 
 The value is **real** (not an obvious placeholder) AND used in a
 security-relevant context (auth, signing, encryption, third-party API
 access, database connection). A hardcoded value that's clearly
 test-only or unused doesn't warrant a finding.
+
+Each of these qualifies on its own, without further context:
+
+1. A contiguous literal in a known issuer format (`sk_live_`, `AIza`,
+   `AKIA`, `ghp_`, `github_pat_`).
+2. A `Bearer <token>` literal with a token body of 20+ characters.
+3. A 64-char hex string assigned to a `*Secret*` / `*Key*` / `*Token*`
+   variable.
+4. A split literal joining an issuer prefix to a body of 16+
+   characters.
+5. A `.env`-format file that is not gitignored declaring
+   `*_SECRET=` with a non-placeholder value.
 
 ## What to ignore
 
@@ -105,6 +155,13 @@ test-only or unused doesn't warrant a finding.
 - Values clearly read from `process.env` / config / a vault and only
   shadowed locally for typing or default-value purposes.
 - Documentation files that show example values in prose.
+- Synthetic issuer-shaped values used as test data:
+  `"sk_test_4242424242424242"`, `"REDACTED"`, `"test-secret"`.
+- Example and template config: `.env.example`, `.env.template`,
+  `config.example.yml`.
+- Files under `__mocks__/` and `__fixtures__/`.
+- Content digests rather than credentials, such as `sha256:abc...` in a
+  Dockerfile `FROM` line.
 
 ## Examples
 
@@ -118,6 +175,8 @@ False positives to skip:
 - `const apiKey = process.env.API_KEY;`
 - `const fakeKey = "test-key-do-not-use";` in a test file
 - `const placeholder = "REPLACE_BEFORE_DEPLOY";` in a config template
+- `const apiKey = process.env.API_KEY ?? "your-key-here";`
+- `const TEST_STRIPE_KEY = "sk_test_4242424242424242";` in a fixture
 
 Report only findings you are confident about. When a string looks
 secret-ish but the surrounding context suggests it's a placeholder or

@@ -8,34 +8,6 @@ noiseTier: normal
 precondition:
   regex:
     patterns:
-      - regex: (SKIP_AUTH|DISABLE_AUTH|BYPASS_AUTH|NO_AUTH|AUTH_DISABLED|DEV_MODE)\b
-        in:
-          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
-          - '**/*.{py,rb,go,java,kt,cs,php}'
-        notIn:
-          - '**/__tests__/**'
-          - '**/*.test.{ts,tsx,js,jsx,mjs}'
-          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
-          - '**/tests/**'
-          - '**/spec/**'
-          - '**/node_modules/**'
-          - '**/dist/**'
-          - '**/.next/**'
-        label: Dev/bypass auth env-var name
-      - regex: 'NODE_ENV\s*(!==|===)\s*["'']production["'']'
-        in:
-          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
-          - '**/*.{py,rb,go,java,kt,cs,php}'
-        notIn:
-          - '**/__tests__/**'
-          - '**/*.test.{ts,tsx,js,jsx,mjs}'
-          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
-          - '**/tests/**'
-          - '**/spec/**'
-          - '**/node_modules/**'
-          - '**/dist/**'
-          - '**/.next/**'
-        label: NODE_ENV branch gating auth
       - regex: if\s*\(\s*!?\s*(req\.|request\.|ctx\.)?session\s*\)
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
@@ -103,10 +75,6 @@ where:
     - '**/dist/**'
     - '**/.next/**'
   preFilter:
-    - regex: (SKIP_AUTH|DISABLE_AUTH|BYPASS_AUTH|NO_AUTH|AUTH_DISABLED|DEV_MODE)\b
-      label: Dev/bypass auth env-var name
-    - regex: 'NODE_ENV\s*(!==|===)\s*["'']production["'']'
-      label: NODE_ENV branch gating auth
     - regex: if\s*\(\s*!?\s*(req\.|request\.|ctx\.)?session\s*\)
       label: Truthy session check (no contents validated)
     - regex: '(req|request|ctx)\.(headers|body|query)[^=]*===?\s*["''](admin|true|1)["'']'

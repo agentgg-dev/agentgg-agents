@@ -1,7 +1,7 @@
 ---
 slug: command-injection
 name: Command Injection
-description: 'Shell or process invocations that include untrusted input in the command string, allowing arbitrary commands to be executed by an attacker. Follows exec wrappers to trace argument origin.'
+description: 'Shell or process invocations that include untrusted input in the command string, allowing an attacker to run arbitrary commands. A taint-mode semgrep rule traces request input through intermediate variables into a shell or eval sink in TypeScript and JavaScript, so an anchor carries the dataflow path and not only the call site. Follows exec wrappers across files.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -214,15 +214,12 @@ where:
     - jsx
     - mjs
     - cjs
-    - py
     - rb
-    - go
     - rs
     - php
     - java
     - kt
     - cs
-    - sh
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -259,6 +256,7 @@ where:
       label: Python os.popen
     - regex: 'Process\.Start\s*\(|new\s+ProcessStartInfo'
       label: .NET Process.Start / ProcessStartInfo
+    - { semgrepRule: "shared/command-injection-taint" }
   maxFilesPerBatch: 5
 references:
   - CWE-78
@@ -275,6 +273,18 @@ helper a few hops from the request handler. Trace the variable back —
 a value labeled `cmd` may be `req.body.action` after some prefixing,
 or it may be a constant. Open the caller to confirm whether the
 argument crosses a trust boundary.
+
+**Anchors carrying a `taint:` path.** The scanner traced that route
+itself: the source, each variable the value passes through, then the
+sink. Confirm every step in the code before you report it. The path does
+not know your escaping helpers, so check whether a sanitizer sits between
+the last step and the sink. A path can also be incomplete where the value
+crosses a callback or a module boundary.
+
+An anchor with no `taint:` path is not cleared. It means only that this
+rule saw no route to it, and the rule covers TypeScript and JavaScript
+only. Every other language here is anchored by regex, so trace those by
+hand as described above.
 
 ## What to look for
 

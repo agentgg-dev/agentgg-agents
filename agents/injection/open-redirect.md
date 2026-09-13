@@ -1,7 +1,7 @@
 ---
 slug: open-redirect
 name: Open Redirect
-description: 'Redirect responses (res.redirect, Next.js redirect(), router.push, Location header) where the destination URL comes from user input without validation — allows phishing via trusted domain. Follows redirect-allowlist helpers.'
+description: 'Redirect responses (res.redirect, Next.js redirect(), router.push, Location header) where the destination URL comes from user input with no validation, or with a validator that can be bypassed (substring match, unanchored regex, startsWith("/") that allows "//") — allows phishing via trusted domain. Follows redirect-allowlist helpers.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -96,6 +96,39 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: redirect destination parameter name present
+      - regex: '\.startsWith\s*\(\s*["'']/["'']\s*\)'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: startsWith('/') check — verify it also rejects '//'
+      - regex: 'new\s+URL\s*\([^,)]+,\s*["'']https?://'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: 'new URL(input, base) — verify base is enforced'
+      - regex: '\.includes\s*\(\s*["''][^"'']*\.[a-z]{2,}["'']'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: .includes() domain match — substring bypassable
       - regex: redirect\s*\(\s*request\.(args|GET|POST|form|values|query_params)
         in:
           - '**/*.py'
@@ -140,6 +173,39 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: redirect destination parameter name
+      - regex: \.startswith\s*\(\s*[\"']/[\"']\s*\)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: startswith('/') check - verify it also rejects '//'
+      - regex: urljoin\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: urljoin - verify the base is enforced
+      - regex: urlparse\s*\([^)]*\)\.(netloc|hostname)\s*(==|in)\s*
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: host allowlist check on parsed URL
 where:
   extensions:
     - py
@@ -187,6 +253,18 @@ where:
       label: FastAPI RedirectResponse
     - regex: \b(next_url|return_url|redirect_url|return_to|redirect_uri)\b
       label: redirect destination parameter
+    - regex: 'redirect_uri|redirect_url|returnUrl|return_url|returnTo|redirectUrl|[Rr]edirectTo|[Nn]extUrl|[Cc]allbackUrl'
+      label: redirect destination identifier — validation logic likely nearby
+    - regex: '\.redirect\s*\(|sendRedirect\s*\(|res\.redirect|response\.redirect|window\.location\s*[.=]|location\.href\s*=|[`"'']Location[`"'']'
+      label: redirect sink — verify the destination is validated
+    - regex: 'new\s+URL\s*\([^,)]+,\s*["'']https?://'
+      label: 'new URL(input, base) — verify base is enforced'
+    - regex: \.startswith\s*\(\s*[\"']/[\"']\s*\)
+      label: startswith('/') - '//' bypassable
+    - regex: urljoin\s*\(
+      label: urljoin - verify base enforced
+    - regex: urlparse\s*\([^)]*\)\.(netloc|hostname)
+      label: parsed-URL host check
   maxFilesPerBatch: 5
 references:
   - CWE-601
@@ -200,12 +278,19 @@ URL is taken from user-supplied input without validating that it
 points to an allowed origin, enabling an attacker to redirect victims
 from your trusted domain to a phishing or malware site.
 
+Report two variants of the same bug: a destination with no validation
+at all, and a destination whose validation exists but can be defeated
+by attacker-chosen input. The impact is identical, so treat both as
+findings.
+
 **Cross-file analysis:** redirect destinations are often funneled
 through a shared `safeRedirect()` or `validateReturnUrl()` helper.
 Read those before flagging — verify they enforce a strict prefix
 check (`/` start, no `//`, no `https?://`), an origin allowlist, or
 both. The protocol-relative `//` bypass is a frequent failure mode
-worth confirming the helper handles.
+worth confirming the helper handles. If the helper runs but its check
+is bypassable, the call site is still a finding and the helper is the
+root cause.
 
 ## What to look for
 
@@ -242,6 +327,66 @@ window.location = params.next;
 `redirect_uri`, `destination`, `continue`, `target`, `url`, `goto`.
 These frequently appear in login flows and OAuth callbacks.
 
+## Bypassable validation
+
+A validator that exists but can be defeated counts as no validation.
+Report these the same way you report a raw unvalidated redirect, and
+name the bypass in the finding.
+
+**`startsWith("/")` alone, which allows `//evil.com`:**
+```ts
+if (!dest.startsWith("/")) return res.redirect("/");
+res.redirect(dest);   // "//evil.com/phish" passes; browsers read it as protocol-relative
+```
+Safe guard: also reject any value whose second character is `/`.
+
+**`new URL(dest, base)` with an absolute destination:**
+```ts
+const safeUrl = new URL(dest, "https://myapp.com");
+redirect(safeUrl.toString());   // dest "https://evil.com" wins; the base is ignored
+```
+`new URL(absoluteUrl, base)` drops `base` entirely once the input is
+already absolute. Safe guard: compare `new URL(dest).origin` against
+the allowed origin.
+
+**Unanchored prefix check (suffix attack):**
+```ts
+if (!dest.startsWith("https://myapp.com")) throw new Error();
+res.redirect(dest);   // "https://myapp.com.evil.com/path" passes
+```
+Safe guard: append a trailing `/` to the allowed prefix, or compare
+the parsed origin.
+
+**Unanchored regex test on the domain:**
+```ts
+if (!/^https:\/\/myapp\.com/.test(redirectUri)) throw new Error();
+// "https://myapp.com.evil.com/callback" passes
+```
+Common in OAuth `redirect_uri` validation. Safe guard: anchor the
+whole origin, or match against the client's pre-registered URIs.
+
+**`includes(domain)` substring match:**
+```ts
+if (!dest.includes("myapp.com")) throw new Error();
+// "https://evil.com?ref=myapp.com" passes
+```
+`includes` matches anywhere in the string, including the query and
+the fragment. The same flaw applies to a bare `indexOf(domain) !== -1`.
+
+**Check applied before decoding:**
+```ts
+if (!isRelative(dest)) throw new Error();
+// "%2F%2Fevil.com" passes, then decodes to "//evil.com" downstream
+```
+Also treat unicode lookalikes in the host and backslash variants
+(`\/\/evil.com`, `/\evil.com`) as bypasses, because some parsers
+normalise them to `//`.
+
+**Python equivalents:** `dest.startswith("/")` alone, `urljoin(base,
+dest)` where an absolute `dest` replaces the base, and
+`urlparse(dest).netloc in ALLOWED` where `ALLOWED` is a substring
+container rather than an exact host set.
+
 ## True positive criteria
 
 Flag when ALL of the following hold:
@@ -251,11 +396,23 @@ Flag when ALL of the following hold:
    or `window.location` assignment.
 2. The destination value comes from user input: request query string,
    request body, path parameter, HTTP header, or cookie.
-3. No validation ensures the destination is a relative path or belongs
-   to an allowed origin. Safe patterns:
-   - Only relative paths accepted: `/profile`, `/dashboard` (no `://`)
+3. The destination is not confined to a relative path or an allowed
+   origin. This holds in two cases, and BOTH are findings:
+   - **No validation at all.** The value reaches the redirect sink
+     untouched.
+   - **Validation is present but bypassable.** It matches one of the
+     shapes under "Bypassable validation" above. Do not clear a
+     finding just because a check exists; establish what input gets
+     past it.
+
+   Only these clear the finding:
+   - Only relative paths accepted: `/profile`, `/dashboard` (no `://`),
+     with `//` and `/\` also rejected
    - Strict allowlist of permitted full URLs or origins
    - Origin checked against a whitelist before redirect
+
+   Say which of the two cases applies in the finding, and for a weak
+   validator give the input that defeats it.
 
 ## What to ignore
 
@@ -269,6 +426,10 @@ Flag when ALL of the following hold:
   against the pre-registered list of allowed URIs for that client.
 - `router.push` in client-side React components with a hardcoded or
   internally-derived path.
+- `new URL(dest).origin === ALLOWED_ORIGIN`, a correct origin
+  comparison.
+- A strict allowlist of exact full URLs with no wildcards and no
+  substring matching.
 - Test files.
 
 ## Examples
@@ -288,6 +449,23 @@ return new Response(null, { status: 302, headers: { Location: req.body.url } });
 // Client-side — searchParam used for redirect
 window.location.href = new URLSearchParams(location.search).get("goto");
 ```
+```ts
+// Weak validator: startsWith("/") lets //evil.com through
+if (!next.startsWith("/")) return res.redirect("/");
+res.redirect(next);
+
+// Weak validator: new URL ignores the base for an absolute input
+const url = new URL(returnTo, "https://myapp.com");
+redirect(url.href);        // returnTo = "https://evil.com"
+
+// Weak validator: unanchored prefix allows myapp.com.evil.com
+if (!dest.startsWith("https://myapp.com")) throw new Error();
+res.redirect(dest);
+
+// Weak validator: substring match anywhere in the URL
+if (!dest.includes("myapp.com")) throw new Error();
+res.redirect(dest);        // "https://evil.com?ref=myapp.com"
+```
 
 False positives to skip:
 ```ts
@@ -305,5 +483,10 @@ res.redirect(next);
 const ALLOWED_ORIGINS = ["https://app.example.com", "https://admin.example.com"];
 const dest = req.query.redirect;
 if (!ALLOWED_ORIGINS.some(o => dest.startsWith(o))) return res.redirect("/");
+res.redirect(dest);
+
+// Correct origin check
+const u = new URL(dest);
+if (u.origin !== "https://myapp.com") throw new Error("disallowed");
 res.redirect(dest);
 ```

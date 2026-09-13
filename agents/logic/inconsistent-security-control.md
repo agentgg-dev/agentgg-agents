@@ -42,8 +42,9 @@ Concretely:
 
 The finding is the outlier, not the control.
 
-Ownership checks belong to `missing-access-control-deep`, but report an
-ownership gap if it is the only inconsistency you find.
+A missing ownership check is a finding here only when it is the
+inconsistency: comparable paths scope the query by the session user and
+this one does not. Report it then.
 
 ## What is NOT this bug
 

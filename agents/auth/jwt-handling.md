@@ -107,6 +107,35 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: python-jose import
+      - regex: jwt_obj\s*:\s*verify\s*\(
+        in:
+          - '**/*.lua'
+        notIn:
+          - '**/spec/**'
+          - '**/*_spec.lua'
+        label: OpenResty resty.jwt verify call
+      - regex: algorithms\s*=\s*\[[^\]]*[\"']none[\"']
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: alg 'none' accepted in allowlist
+      - regex: jwt\.get_unverified_(header|claims)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Unverified JWT header/claims read
 where:
   extensions:
     - py
@@ -116,6 +145,7 @@ where:
     - jsx
     - mjs
     - cjs
+    - lua
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -146,10 +176,17 @@ where:
       label: Manual base64 JWT payload decode
     - regex: \.split\s*\(\s*[\"']\.[\"']\s*\)
       label: Manual JWT split on '.'
+    - regex: jwt_obj\s*:\s*verify\s*\(
+      label: Lua resty.jwt verify
+    - regex: algorithms\s*=\s*\[
+      label: JWT algorithms allowlist
+    - regex: jwt\.get_unverified_(header|claims)\s*\(
+      label: Unverified JWT header/claims read
   maxFilesPerBatch: 5
 references:
   - CWE-345
   - CWE-347
+  - CVE-2015-9235
   - 'OWASP-A02:2021'
 
 ---
@@ -165,8 +202,10 @@ fallback)? Are the verifier defaults pinning algorithms, audience,
 and issuer? If the candidate file just calls `verifySession(token)`,
 the actual config lives in the helper — read it.
 
-This agent is the broad JWT review pass. The `algorithm-confusion`
-agent is the more specific check for missing algorithm pinning.
+This is the broad JWT review pass, and it also covers algorithm
+confusion: a verifier that trusts whichever `alg` the incoming token
+header declares. Check pinning all the way down the wrapper chain
+before reporting it.
 
 ## What to look for
 
@@ -176,6 +215,34 @@ jwt.verify(token, secret);                       // accepts any algorithm
 await jwtVerify(token, key);                     // jose without algorithms option
 ```
 Safe form: `jwt.verify(token, secret, { algorithms: ["RS256"] })`.
+Without a pin the verifier uses the algorithm named in the token
+header, so the caller chooses it. Two ways that is abused: strip the
+signature with `alg: none`, or downgrade RS256 to HS256. Pin one
+expected algorithm, or a short allowlist of the ones actually in use,
+and never include `none`. jose's defaults are safer than
+jsonwebtoken's, but pin explicitly there too.
+
+**OpenResty / `resty.jwt` without `alg_whitelist`:**
+```lua
+local ok, err = jwt_obj:verify(secret, token)
+-- accepts any algorithm; alg_whitelist is not set
+```
+Safe form passes an `alg_whitelist` table naming the expected
+algorithm.
+
+**Unverified header or claims read as if trusted:**
+```py
+header = jwt.get_unverified_header(token)
+claims = jwt.get_unverified_claims(token)
+```
+Reading the header to select a JWKS key is fine. Making an
+authorization decision on unverified claims is not.
+
+**`none` inside the allowlist:**
+```py
+jwt.decode(token, key, algorithms=["RS256", "none"])
+```
+An allowlist containing `none` is the same as no verification.
 
 **`alg: none` accepted:**
 ```ts
@@ -191,6 +258,13 @@ declare `alg: none` accepts unsigned tokens.
 // signing the same key, allowing forgery.
 jwt.verify(token, pubKey);   // no algorithms pin
 ```
+This is the RS256 to HS256 confusion. The code intends asymmetric
+verification, so it hands the library the RSA public key. With no
+algorithm pin the attacker re-signs the token as HS256, and the
+library then treats that same key as an HMAC secret. The public key
+is published, so the attacker already has everything needed to mint
+valid tokens. Treat a verify call whose key material is a public key
+or a JWKS entry, with no `algorithms` option, as a finding.
 
 **Weak HMAC secret:**
 ```ts
@@ -230,6 +304,10 @@ Flag for review when:
    `audience` option, or an `issuer` option where the JWT
    represents a session for this specific service.
 4. A custom JWT verifier is implemented from scratch.
+5. `jwt_obj:verify` is called without an `alg_whitelist`.
+6. An `algorithms` allowlist contains `none`.
+7. `get_unverified_header` / `get_unverified_claims` output drives an
+   authorization decision.
 
 ## What to ignore
 
@@ -238,6 +316,10 @@ Flag for review when:
 - Tests / fixtures / mock files.
 - JWT helper utilities that delegate to a library and pass through
   the caller's options.
+- `jwt_obj:verify` calls that pass an `alg_whitelist` naming a
+  concrete algorithm.
+- Unverified header reads used only to pick a JWKS key, where the
+  token is verified afterwards.
 
 ## Examples
 
@@ -259,6 +341,14 @@ localStorage.setItem("jwt", response.token);
 const claims = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
 // No audience check — token from another service of ours is accepted
 ```
+```lua
+-- No alg_whitelist
+local ok, err = jwt_obj:verify(secret, token)
+```
+```py
+# 'none' in the allowlist
+jwt.decode(token, key, algorithms=["RS256", "none"])
+```
 
 False positives to skip:
 ```ts
@@ -274,4 +364,14 @@ it("verifies signed token", () => {
   const token = jwt.sign({}, "test-secret");
   expect(jwt.verify(token, "test-secret")).toBeTruthy();
 });
+
+// Wrapper that requires the caller to specify the algorithm
+function verify(token, opts: { algorithms: string[] }) {
+  return jwt.verify(token, getKey(), opts);
+}
+```
+```lua
+-- Algorithm pinned
+jwt_obj:set_alg_whitelist({ RS256 = 1 })
+local ok, err = jwt_obj:verify(public_key, token)
 ```

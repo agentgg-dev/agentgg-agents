@@ -100,7 +100,6 @@ where:
     - jsx
     - mjs
     - cjs
-    - py
     - java
     - kt
     - rb

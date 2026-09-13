@@ -1,7 +1,7 @@
 ---
 slug: secret-in-log
 name: Secrets in Logs or Error Messages
-description: 'Credentials, tokens, passwords, or API keys passed to console.log, logger calls, JSON.stringify, or error message bodies — secrets persist in log aggregation systems and crash reports.'
+description: 'Credentials, tokens, passwords, API keys, or freshly decrypted plaintext passed to console.log, logger calls, JSON.stringify, HTTP response bodies, or error message bodies — secrets persist in log aggregation systems and crash reports.'
 version: 0.1.0
 author: agentgg
 noiseTier: precise
@@ -41,6 +41,7 @@ where:
       label: Secret-named variable passed to a logging or response sink
 references:
   - CWE-532
+  - CWE-201
   - 'OWASP-A09:2021'
 ---
 
@@ -80,21 +81,50 @@ res.send({ secret });
 return { error: `missing token: ${token}` };
 ```
 
+**Go logging and error sinks:**
+```go
+log.Info("token=", token)
+log.Printf("got %s", apiKey)
+fmt.Errorf("auth failed: %s", secret)
+```
+
+**Decrypted plaintext reaching a sink:**
+```ts
+console.log(plaintext);
+logger.info({ decryptedSecret, userId });
+res.json({ value: decryptResponse.plaintext });
+throw new Error(`decrypt failed: ${decryptedValue}`);
+```
+A value that was just decrypted is as sensitive as the ciphertext it
+came from. Once it is written to a log, returned in an HTTP response
+body, or interpolated into a thrown `Error`, the decryption is undone
+for anyone reading the log or the error. Treat the decrypt call as the
+start of a scope the plaintext must not leave.
+
 **Variable names that signal "secret":**
 `token`, `accessToken`, `refreshToken`, `idToken`, `secret`,
 `apiKey`, `api_key`, `password`, `passwd`, `credential`,
 `privateKey`, `bearerToken`, `sessionId` (sometimes — depends on
 domain).
 
+**Post-decrypt value names:**
+`plaintext`, `decryptedValue`, `decryptedSecret`, `decryptedEnv`,
+`decryptResponse.plaintext`, `result.plaintext`, and anything named
+`decrypted*` or named after a known secret once a decrypt call has
+produced it.
+
 ## True positive criteria
 
 Flag when BOTH of the following hold:
 
 1. The line is a logger, console, error-throw, or HTTP response
-   call.
-2. An argument or interpolated value uses a secret-shaped variable
-   name from the list above (or a property access ending in such a
-   name, e.g., `req.headers.authorization`, `user.passwordHash`).
+   call. In Go this covers `log.Info`, `log.Printf`, and
+   `fmt.Errorf`.
+2. An argument or interpolated value uses a secret-shaped or
+   post-decrypt variable name from the lists above (or a property
+   access ending in such a name, e.g.,
+   `req.headers.authorization`, `user.passwordHash`,
+   `decryptResponse.plaintext`).
 
 ## What to ignore
 
@@ -106,6 +136,11 @@ Flag when BOTH of the following hold:
 - Test fixtures / mock servers.
 - Type definitions / interfaces that mention secrets without using
   them.
+- The decrypt call itself, before the plaintext is used anywhere.
+- Plaintext passed into another internal function that scopes its
+  lifetime, such as a `useSecret(plaintext, () => {...})` wrapper, or
+  used only as input to crypto: `const ct = await encrypt(plaintext);`.
+- Length or emptiness checks on a plaintext that is never written out.
 
 ## Examples
 
@@ -115,6 +150,13 @@ console.log("Bearer token:", req.headers.authorization);
 logger.error("api call failed", { apiKey, error });
 throw new Error(`Stripe key invalid: ${stripeKey}`);
 res.json({ debug: { token, user } });
+return Response.json({ secret: decryptResponse.plaintext });
+if (!ok) throw new Error(`decrypt failed: ${plaintext}`);
+```
+
+```go
+log.Printf("decrypted=%s", plaintext)
+fmt.Errorf("failed with plaintext %s", plaintext)
 ```
 
 False positives to skip:

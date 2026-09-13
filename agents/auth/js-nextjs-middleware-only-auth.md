@@ -87,11 +87,14 @@ Flag when ALL of the following hold:
 
 1. The file is named `route.ts` / `route.tsx` under an `app/`
    directory.
-2. The directory path includes a route group `(protected)`,
-   `(dashboard)`, `(auth)`, `(admin)`, or the file is under
-   `app/api/`.
+2. A `middleware.ts` or `middleware.js` exists at the project root and
+   its matcher covers this route, so the route is protected by
+   middleware alone. Read the matcher before deciding.
 3. The handler body and surrounding file do not call an auth
    verifier and are not wrapped in an auth HOF.
+
+A route with no covering middleware at all is plain missing
+authentication, not the middleware-only bug. Do not report it here.
 
 ## What to ignore
 

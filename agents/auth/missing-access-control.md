@@ -1,7 +1,7 @@
 ---
 slug: missing-access-control
 name: Missing Access Control
-description: Authenticated endpoints that read or modify a resource without verifying the requester owns it — IDOR / horizontal privilege escalation.
+description: 'Authenticated endpoints that read or modify a resource without verifying the requester owns it (IDOR, horizontal privilege escalation). Anchors on resource-id path parameters and on request handlers declared by file position (Next.js App Router, Remix) or registered on a router.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -34,6 +34,16 @@ precondition:
           - '**/tests/**'
           - '**/target/**'
         label: Spring / JAX-RS path-parameter binding
+      - regex: "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|PATCH|DELETE)\\b"
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.{test,spec}.*'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+        label: Handler declared by file position (Next.js App Router, Remix), where the id is in the directory name
 where:
   extensions: [ts, tsx, js, jsx, mjs, cjs, py, rb, go, php, java, kt, cs]
   excludePatterns:
@@ -53,6 +63,7 @@ where:
   preFilter:
     - { regex: "['\"][^'\"]*/[^'\"]*[:{<]\\s*(id|pk|[A-Za-z]+Id|[A-Za-z]+[_-](id|pk))\\b", label: "Route path with a resource-id path parameter (IDOR-shaped)" }
     - { regex: "@(PathVariable|PathParam)\\b", label: "Spring / JAX-RS path-parameter binding" }
+    - { semgrepRule: "shared/http-endpoints", label: "HTTP request handler (route declared by file position, not by a path string)" }
 references:
   - CWE-862
   - CWE-639
@@ -62,13 +73,14 @@ references:
 You are hunting for missing access-control checks across this
 repository.
 
-**Scope of this (light) check.** This strict pass only surfaces handlers
-whose route declares a resource-id path parameter (`/users/:id`, `{id}`,
-`<int:pk>`, or a Spring/JAX-RS `@PathVariable`) — the canonical IDOR
-shape. Broader tracing of ids taken from the request body / query string,
-namespace-scoped routes, and resource-style route tables lives in the
-`missing-access-control-deep` agent (deep tier). Within a candidate file,
-still follow imports and middleware to confirm scoping.
+**Scope of this check.** Anchor on handlers whose route declares a
+resource-id path parameter (`/users/:id`, `{id}`, `<int:pk>`, a
+Spring/JAX-RS `@PathVariable`), and on any handler the scanner anchored
+as a request entry point, including one whose id sits in the directory
+name rather than in a path string. The id also arrives in the request
+body, in the query string, through a namespace-scoped route and through
+a resource-style route table. Treat all of those the same way. Within a
+candidate file, follow imports and middleware to confirm scoping.
 
 ## What this bug looks like
 

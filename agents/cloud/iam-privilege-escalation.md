@@ -112,10 +112,10 @@ privilege-escalation paths created by dangerous permission
 who already holds these (seemingly limited) permissions and uses
 them to grant themselves administrator-equivalent access.
 
-This agent deliberately does NOT re-flag plain `Action: "*"` /
-`Resource: "*"` admin policies — those belong to `tf-iam-wildcard`
-and `iam-permissions`. Focus on escalation enabled by *specific*
-actions.
+Do NOT report a plain `Action: "*"` / `Resource: "*"` admin policy, or a
+bare `AdministratorAccess` attachment. Those are out of scope here.
+Report escalation enabled by *specific* actions: the combination is the
+finding.
 
 **Cross-file analysis:** the granted actions, the `Resource`/
 `Condition` that scopes them, and the role's *trust policy* (who

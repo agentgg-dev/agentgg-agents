@@ -8,7 +8,7 @@ noiseTier: normal
 precondition:
   regex:
     patterns:
-      - regex: 'fs(\.promises)?\.(readFile|readFileSync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\s*\([^)]*\b(req|request|params|body|userPath|filename|originalname)\b'
+      - regex: 'fs(\.promises)?\.(readFile|readFileSync|readFileAsync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\s*\([^)]*\b(req|request|params|body|userPath|filename|originalname)\b'
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
         notIn:
@@ -19,7 +19,7 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: fs operation with request-derived path
-      - regex: 'fs(\.promises)?\.(readFile|writeFile|unlink|stat|open|createReadStream|createWriteStream)\s*\(\s*`[^`]*\$\{'
+      - regex: 'fs(\.promises)?\.(readFile|readFileAsync|writeFile|unlink|stat|open|createReadStream|createWriteStream)\s*\(\s*`[^`]*\$\{'
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
         notIn:
@@ -119,10 +119,12 @@ where:
     - '**/venv/**'
     - '**/site-packages/**'
   preFilter:
-    - regex: 'fs(\.promises)?\.(readFile|readFileSync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\s*\([^)]*\b(req|request|params|body|userPath|filename|originalname)\b'
+    - regex: 'fs(\.promises)?\.(readFile|readFileSync|readFileAsync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\s*\([^)]*\b(req|request|params|body|userPath|filename|originalname)\b'
       label: fs operation with request-derived path
-    - regex: 'fs(\.promises)?\.(readFile|writeFile|unlink|stat|open|createReadStream|createWriteStream)\s*\(\s*`[^`]*\$\{'
+    - regex: 'fs(\.promises)?\.(readFile|readFileAsync|writeFile|unlink|stat|open|createReadStream|createWriteStream)\s*\(\s*`[^`]*\$\{'
       label: fs operation with template-literal path
+    - regex: '\.readFileAsync\s*\('
+      label: promisified readFileAsync call
     - regex: 'path\.(join|resolve)\s*\([^)]*\b(req|request|params|body|userInput|filename|originalname)\b'
       label: path.join/resolve combining with request data
     - regex: \bopen\s*\(\s*os\.path\.join\s*\(
@@ -161,6 +163,8 @@ sibling `BASE-evil/` to pass.
 - `fs.stat(userPath, ...)` / `fs.statSync(userPath)`
 - `fs.createReadStream(userPath)` / `fs.createWriteStream(userPath)`
 - `fs.open(userPath, ...)` / `fs.promises.readFile(userPath)`
+- `fs.readFileAsync(userPath, ...)` (promisify wrapper around
+  `fs.readFile`; same sink under a different name)
 
 **Path construction with user input:**
 - `path.join(baseDir, userInput)` — `path.join` normalizes `..`
@@ -197,6 +201,12 @@ Flag when ALL of the following hold:
 
    Flag if this check is absent, applied to the wrong variable, or
    applied after the file operation.
+
+   `path.basename()` alone is NOT sufficient confinement. It strips
+   directory components but does not bind the result to a base
+   directory, and it can still be bypassed where the value is decoded
+   again after the call. If `basename()` is the only check before the
+   file operation, flag it.
 
 ## What to ignore
 

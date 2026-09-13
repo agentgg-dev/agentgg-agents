@@ -8,6 +8,16 @@ noiseTier: precise
 precondition:
   regex:
     patterns:
+      - regex: (totp|otp|mfa|twoFactor|two_factor|2fa)
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{py,rb,go,php,java,kt,cs}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs,py,rb,go,java}'
+          - '**/node_modules/**'
+        label: 2FA reference
       - regex: (speakeasy|otplib|@otplib|pyotp|rotp|node-2fa|google-authenticator|twofactor|two-factor-auth)
         in:
           - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
@@ -65,6 +75,8 @@ where:
       label: 2FA verification call
     - regex: (totpSecret|mfaSecret|otp_secret|two_factor_secret|twoFactorEnabled|is_two_factor_enabled|mfaEnabled)
       label: 2FA secret / enrollment field
+    - semgrepRule: auth/totp-verification
+      label: TOTP/OTP verify call or session issuance after MFA check
   maxFilesPerBatch: 5
 references:
   - CWE-287
@@ -76,13 +88,13 @@ You are reviewing the multi-step authentication flow for 2FA / MFA
 bypass — patterns where the second factor can be skipped, bypassed,
 or made trivial to brute-force.
 
-**Scope of this (light) check.** This strict pass only activates on files
-carrying a concrete 2FA signal — a TOTP/MFA library, a 2FA verification
-call, or a stored 2FA secret / enrollment field. The broad sweep that
-also reads generic session/JWT-issuance sites (`jwt.sign`,
-`createSession`, etc.) to catch "full session issued before 2FA" lives in
-the `two-factor-bypass-deep` agent (deep tier). Still follow the flow
-into the login/session handlers those signal files reference.
+**Scope of this check.** Files carrying a concrete 2FA signal are the
+starting point: a TOTP/MFA library, a 2FA verification call, or a stored
+2FA secret / enrollment field. Also read generic session and JWT
+issuance sites (`jwt.sign`, `createSession`, and equivalents) in those
+flows, because the common bug is a full session issued before the second
+factor is validated. Follow the flow into the login and session handlers
+the signal files reference.
 
 **Cross-file analysis:** 2FA flows span at least three files —
 `POST /login` (validates password), `POST /verify-2fa` (validates
