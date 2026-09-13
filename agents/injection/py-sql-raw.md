@@ -128,7 +128,6 @@ where:
     - regex: '\.objects\.(raw|extra)\s*\(\s*["''][^"'']*["'']\s*(?:[%+]|\.format\s*\()'
       label: Django raw/extra with %/+/.format
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

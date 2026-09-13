@@ -74,7 +74,6 @@ where:
     - regex: 'JndiTemplate\s*\(\)|jndiTemplate\.(lookup|getObject)\s*\('
       label: Spring JndiTemplate lookup
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-74
   - CWE-502

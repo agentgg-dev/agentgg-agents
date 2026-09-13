@@ -72,7 +72,6 @@ where:
     - semgrepRule: auth/totp-verification
       label: TOTP/OTP verify call or session issuance after MFA check
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-287
   - CWE-308

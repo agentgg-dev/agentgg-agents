@@ -53,7 +53,6 @@ where:
     - regex: 'exec\.(Command|CommandContext)\s*\(\s*[a-zA-Z_][a-zA-Z0-9_]*\s*,'
       label: exec.Command with variable command name
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-78
   - 'OWASP-A03:2021'

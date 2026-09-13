@@ -91,7 +91,6 @@ where:
     - semgrepRule: shared/http-endpoints
       label: HTTP route handler or endpoint function
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-770
   - CWE-307

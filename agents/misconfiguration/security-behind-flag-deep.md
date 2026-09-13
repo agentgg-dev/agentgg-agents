@@ -73,7 +73,6 @@ where:
     - semgrepRule: misconfiguration/feature-flag-check
       label: Feature flag variation/checkGate/isEnabled call
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-693
   - 'OWASP-A05:2021'

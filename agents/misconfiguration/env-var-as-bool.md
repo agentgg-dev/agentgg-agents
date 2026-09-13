@@ -34,7 +34,6 @@ where:
     - regex: 'process\.env\.[A-Z_]*(AUTH|VERIFY|CHECK|VALIDATE|SECURE|SSL|TLS)[A-Z_]*'
       label: auth/verify env var access
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-1287
   - 'OWASP-A05:2021'

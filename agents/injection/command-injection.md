@@ -260,7 +260,6 @@ where:
     - regex: 'Process\.Start\s*\(|new\s+ProcessStartInfo'
       label: .NET Process.Start / ProcessStartInfo
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-78
   - 'OWASP-A03:2021'

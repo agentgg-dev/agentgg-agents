@@ -72,7 +72,6 @@ where:
     - semgrepRule: auth/password-hash-call
       label: bcrypt/argon2/scrypt hash call or password creation pattern
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-521
   - 'OWASP-A07:2021'

@@ -62,7 +62,6 @@ where:
     - regex: '\.send\s*\('
       label: send returning bool
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 ---
 
 You are reviewing Solidity contracts for unchecked low-level call

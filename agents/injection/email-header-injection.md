@@ -72,7 +72,6 @@ where:
     - regex: '\b(to|cc|bcc|from|replyTo|subject)\s*:\s*(req\.|request\.|params\.|query\.|body\.)'
       label: Node nodemailer field from request input
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-93
   - CWE-94

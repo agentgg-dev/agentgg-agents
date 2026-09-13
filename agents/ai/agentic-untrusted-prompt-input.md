@@ -71,7 +71,6 @@ where:
     - semgrepRule: ai/llm-external-prompt
       label: LLM call with template-literal prompt or process.env secret in system
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-94
   - OWASP-LLM01

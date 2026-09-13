@@ -156,7 +156,6 @@ where:
     - regex: 'public\s+function\s+\w+\s*\([^)]*Request\b'
       label: Public action method receiving Request
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-306
   - 'OWASP-A01:2021'

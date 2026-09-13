@@ -90,7 +90,6 @@ where:
     - regex: \.setHTML\s*\(
       label: element.setHTML call
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - 'OWASP-A03:2021'

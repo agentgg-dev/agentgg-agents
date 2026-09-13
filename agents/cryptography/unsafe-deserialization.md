@@ -128,7 +128,6 @@ where:
     - regex: Marshal\.load\s*\(
       label: Ruby Marshal.load
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-502
   - 'OWASP-A08:2021'

@@ -41,7 +41,6 @@ where:
     - regex: '\.render\s*\(\s*[a-zA-Z_$][a-zA-Z0-9_$]*\s*,\s*\{'
       label: template engine render with variable name
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - CWE-98

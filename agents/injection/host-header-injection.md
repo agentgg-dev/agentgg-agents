@@ -64,7 +64,6 @@ where:
     - regex: '\$_SERVER\s*\[\s*[''"](HTTP_HOST|SERVER_NAME|HTTP_X_FORWARDED_HOST)[''"]\s*\]'
       label: PHP reading HTTP_HOST / SERVER_NAME
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-644
   - CWE-20

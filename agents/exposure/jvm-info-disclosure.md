@@ -75,7 +75,6 @@ where:
     - semgrepRule: exposure/jvm-runtime-info
       label: System.getenv, ManagementFactory MXBean, or ClassLoader URL call
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-200
   - CWE-497

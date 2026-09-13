@@ -75,7 +75,6 @@ where:
     - regex: '(?:require|import).*[xX][mM][lL]'
       label: XML library import
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-611
   - CWE-776

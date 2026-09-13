@@ -78,7 +78,6 @@ where:
     - regex: '\bfunction\b[^;{]*\b(public|external)\b'
       label: public/external function
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 ---
 
 You are reviewing Solidity contracts for missing or broken access

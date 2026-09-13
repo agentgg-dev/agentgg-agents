@@ -78,7 +78,6 @@ where:
     - regex: 'ng-bind-html\s*='
       label: ng-bind-html binding
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-1336
   - CWE-79

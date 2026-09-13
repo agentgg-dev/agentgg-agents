@@ -82,7 +82,6 @@ where:
     - regex: '=\s*\{\{|\}\}\s*;'
       label: Jinja expression interpolated into a JS/attribute context
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - 'OWASP-A03:2021'

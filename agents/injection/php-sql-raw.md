@@ -68,7 +68,6 @@ where:
     - regex: '["''](?:SELECT|INSERT|UPDATE|DELETE)[^"'']{0,400}["'']\s*\.|\$\w+\s*\.\s*["''](?:SELECT|INSERT|UPDATE|DELETE)'
       label: SQL string literal concatenated with a variable (PHP)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

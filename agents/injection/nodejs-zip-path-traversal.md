@@ -59,7 +59,6 @@ where:
     - regex: '\.pipe\s*\([^)]*\.createWriteStream|\.pipe\s*\([^)]*Extract'
       label: stream pipe to file write during extraction
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - CVE-2018-1002204

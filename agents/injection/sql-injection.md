@@ -188,7 +188,6 @@ where:
       label: Raw SQL statement keywords (any execution mechanism)
       multiline: true
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

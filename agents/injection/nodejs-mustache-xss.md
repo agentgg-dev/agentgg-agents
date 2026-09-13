@@ -43,7 +43,6 @@ where:
     - regex: '\.compile\s*\([^)]+,\s*\{[^}]*noEscape'
       label: Handlebars compile with noEscape
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - 'OWASP-A03:2021'

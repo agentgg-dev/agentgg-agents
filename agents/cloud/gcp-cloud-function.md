@@ -89,7 +89,6 @@ where:
     - regex: functions_framework\.http|functions_framework\.cloud_event
       label: Python functions-framework decorator
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-285
   - 'OWASP-A05:2021'

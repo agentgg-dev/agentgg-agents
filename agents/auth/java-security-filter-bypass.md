@@ -71,7 +71,6 @@ where:
     - regex: '<url-pattern>\s*/[^*]'
       label: Java EE exact-path url-pattern in security constraint
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-863
   - CWE-284

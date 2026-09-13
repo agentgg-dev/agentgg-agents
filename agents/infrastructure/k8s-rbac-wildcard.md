@@ -41,7 +41,6 @@ where:
     - regex: 'system:(authenticated|unauthenticated|serviceaccounts)'
       label: broad-subject
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-269
   - CWE-732

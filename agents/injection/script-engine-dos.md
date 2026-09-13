@@ -85,7 +85,6 @@ where:
     - regex: 'ScriptRunner\s*\(\s*\)|engine\s*\.\s*eval\s*\(\s*[^")][^)]*\)'
       label: Generic script engine eval with variable
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-400
   - CWE-835

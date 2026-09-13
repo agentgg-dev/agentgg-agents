@@ -53,7 +53,6 @@ where:
     - regex: 'url\.Parse\s*\([^)]*\+'
       label: url.Parse on concatenated string
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-918
   - 'OWASP-A10:2021'

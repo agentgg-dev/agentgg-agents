@@ -74,7 +74,6 @@ where:
     - regex: '(JexlEngine|JexlBuilder)\s*\(\)|\.createExpression\s*\(|\.createScript\s*\('
       label: Apache JEXL expression or script creation
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-94
   - CWE-917

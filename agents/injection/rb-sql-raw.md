@@ -85,7 +85,6 @@ where:
     - regex: '\.fetch\s*\(\s*["''][^#]{0,400}#\{'
       label: Sequel DB.fetch with interpolation
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

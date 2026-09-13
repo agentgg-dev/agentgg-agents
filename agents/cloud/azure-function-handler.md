@@ -93,7 +93,6 @@ where:
     - regex: app\.http\s*\(|app\.timer\s*\(|app\.queue\s*\(|app\.serviceBusQueue\s*\(
       label: JS Azure Functions v4 binding
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-285
   - 'OWASP-A05:2021'

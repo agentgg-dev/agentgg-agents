@@ -52,7 +52,6 @@ where:
       multiline: true
       label: Inline 'use server' directive in function body
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-862
   - 'OWASP-A01:2021'

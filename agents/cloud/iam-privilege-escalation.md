@@ -97,7 +97,6 @@ where:
     - regex: 'sts:AssumeRole|"AssumeRole"'
       label: sts:AssumeRole grant
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-269
   - CWE-266

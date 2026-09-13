@@ -79,7 +79,6 @@ where:
     - regex: '(redis|kv|cache)\.(set|setex|hset|mset)\s*\(\s*[`"''][^`"'']*\$\{'
       label: Cache write with template-literal key
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-444
   - 'OWASP-A03:2021'

@@ -114,7 +114,6 @@ where:
     - regex: if\s*\(\s*(verifyToken|verifyJwt|isAuthenticated|requireUser|assertAuth)\s*\(
       label: Async verifier potentially called without await
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-287
   - CWE-305

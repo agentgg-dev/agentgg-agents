@@ -37,7 +37,6 @@ where:
     - regex: \.passthrough\s*\(\s*\)
       label: Zod .passthrough() (disables strip of unknown keys)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-915
   - 'OWASP-A08:2021'

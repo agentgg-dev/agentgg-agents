@@ -57,7 +57,6 @@ where:
     - regex: 'messages\.create\s*\(|chat\.completions\.create\s*\(|generate_content\s*\('
       label: Provider SDK completion call
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 validationPrompt: |
   Treat the model completion as attacker-controlled. Do not ask for proof
   that a named attacker can steer it, and do not answer 'uncertain' only

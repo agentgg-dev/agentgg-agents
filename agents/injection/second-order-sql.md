@@ -76,7 +76,6 @@ where:
     - regex: '[`"''][^`"'']*(SELECT|INSERT|UPDATE|DELETE|WHERE|VALUES)[^`"'']*[`"'']\s*(\+|\.|%)\s*\w'
       label: SQL keyword string joined to a variable
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
 ---

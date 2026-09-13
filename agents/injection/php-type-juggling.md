@@ -58,7 +58,6 @@ where:
     - regex: '[!=]=\s*(md5|sha1|hash|crypt|password_hash|bin2hex)\s*\(|(md5|sha1|hash|crypt)\s*\([^)]*\)\s*[!=]=[^=]'
       label: Digest function result loose-compared
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-697
   - CWE-1025

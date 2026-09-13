@@ -72,7 +72,6 @@ where:
     - regex: def\s+(handler|lambda_handler)\s*\(
       label: Python Lambda handler
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-285
   - 'OWASP-A05:2021'

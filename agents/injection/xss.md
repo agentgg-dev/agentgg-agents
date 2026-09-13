@@ -128,7 +128,6 @@ where:
     - regex: '<%-\s|\{\{\{|!=\s+|\|\s*safe\b'
       label: Unescaped server template directive (EJS/Handlebars/Pug/Nunjucks)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - 'OWASP-A03:2021'

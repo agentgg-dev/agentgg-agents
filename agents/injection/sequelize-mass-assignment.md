@@ -52,7 +52,6 @@ where:
     - regex: '\.(create|build|bulkCreate|upsert|findOrCreate|update|set)\s*\(\s*\{\s*\.\.\.\s*(req\.body|request\.body|body|payload|input|data)'
       label: Sequelize write call with spread of request body
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-915
   - 'OWASP-A08:2021'

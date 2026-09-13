@@ -60,7 +60,6 @@ where:
     - semgrepRule: ai/llm-external-prompt
       label: LLM call with process.env secret in system prompt or template-literal prompt
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-200
   - CWE-532

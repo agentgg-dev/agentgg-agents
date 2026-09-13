@@ -85,7 +85,6 @@ where:
     - regex: 'HttpRequest\.newBuilder\s*\(\)|URI\.create\s*\([^")][^)]*\)'
       label: Java 11 HttpClient / URI.create with variable
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-918
   - 'OWASP-A10:2021'

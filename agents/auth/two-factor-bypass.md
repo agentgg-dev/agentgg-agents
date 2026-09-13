@@ -66,7 +66,6 @@ where:
     - regex: (totpSecret|mfaSecret|otp_secret|two_factor_secret|twoFactorEnabled|is_two_factor_enabled|mfaEnabled)
       label: 2FA secret / enrollment field
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-287
   - CWE-308

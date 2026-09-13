@@ -42,7 +42,6 @@ where:
     - regex: 'Landroid/webkit/WebSettings;->setJavaScriptEnabled|Landroid/webkit/WebView;->addJavascriptInterface|Landroid/webkit/SslErrorHandler;->proceed'
       label: WebView security call in smali
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-749
   - CWE-295

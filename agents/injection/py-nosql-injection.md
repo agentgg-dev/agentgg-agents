@@ -92,7 +92,6 @@ where:
     - regex: '__raw__\s*=\s*\{[^}]*["'']\$where["'']'
       label: MongoEngine __raw__ with $where
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-943
   - 'OWASP-A03:2021'

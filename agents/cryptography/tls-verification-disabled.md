@@ -97,7 +97,6 @@ where:
     - regex: 'ServerCertificateValidationCallback\s*(\+?=)|ServerCertificateCustomValidationCallback\s*='
       label: .NET certificate validation override
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-295
   - 'OWASP-A02:2021'

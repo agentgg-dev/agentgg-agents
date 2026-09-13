@@ -64,7 +64,6 @@ where:
     - regex: 'from\s+[''"]drizzle-orm[''"]'
       label: imports drizzle-orm (confirms ORM context)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

@@ -88,7 +88,6 @@ where:
     - semgrepRule: exposure/orm-response-leak
       label: ORM query result passed directly to HTTP response without field selection
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-213
   - CWE-200

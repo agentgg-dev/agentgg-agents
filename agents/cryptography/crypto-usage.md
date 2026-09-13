@@ -96,7 +96,6 @@ where:
     - semgrepRule: cryptography/crypto-primitive
       label: Crypto primitive call (cipher, hash, HMAC, key derivation)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-327
   - CWE-326

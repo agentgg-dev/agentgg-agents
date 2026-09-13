@@ -77,7 +77,6 @@ where:
     - regex: '\.set\s*\(\s*\{\s*\.\.\.\s*(req\.body|request\.body|body|payload)'
       label: Drizzle .set() with spread of request body
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-915
   - 'OWASP-A08:2021'

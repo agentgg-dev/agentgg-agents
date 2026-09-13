@@ -262,7 +262,6 @@ where:
       label: .NET Process.Start / ProcessStartInfo
     - { semgrepRule: "shared/command-injection-taint" }
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-78
   - 'OWASP-A03:2021'

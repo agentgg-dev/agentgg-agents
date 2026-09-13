@@ -56,7 +56,6 @@ where:
     - regex: 'application/javascript|text/javascript'
       label: JavaScript content-type response
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - CWE-116

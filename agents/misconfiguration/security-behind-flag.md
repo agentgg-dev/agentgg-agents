@@ -47,7 +47,6 @@ where:
     - regex: (variation|checkGate|isEnabled|getFlag|getVariant|flag_enabled|flagFor|featureFlag)\s*\(\s*['"][^'"]*(auth|authz|mfa|2fa|otp|csrf|xsrf|encrypt|decrypt|signature|verif|firewall|waf|rate.?limit|throttl|sanitiz|escap|secur|permission|token|jwt|tls|ssl|cors|captcha|lockout|rbac|acl)
       label: Feature-flag check on a security-named flag
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-693
   - 'OWASP-A05:2021'

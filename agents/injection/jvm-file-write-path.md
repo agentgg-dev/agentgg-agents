@@ -85,7 +85,6 @@ where:
     - regex: 'Files\.move\s*\(|file\.renameTo\s*\(|\.renameTo\s*\(\s*new\s+File\s*\('
       label: File rename or move with potentially user-controlled target path
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - CWE-73

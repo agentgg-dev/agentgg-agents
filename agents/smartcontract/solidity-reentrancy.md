@@ -64,7 +64,6 @@ where:
     - regex: '\bnonReentrant\b'
       label: Reentrancy guard modifier
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 ---
 
 You are reviewing Solidity contracts for reentrancy — an external call

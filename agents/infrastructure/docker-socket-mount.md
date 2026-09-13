@@ -50,7 +50,6 @@ where:
     - regex: 'DOCKER_HOST'
       label: docker-host
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-250
   - CWE-668

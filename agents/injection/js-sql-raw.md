@@ -143,7 +143,6 @@ where:
     - regex: '\.prepare\s*\([^)]*\+'
       label: better-sqlite3 prepare with concatenation
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

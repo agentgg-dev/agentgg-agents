@@ -68,7 +68,6 @@ where:
     - regex: 'format!\s*\(\s*"\s*(?:SELECT|INSERT|UPDATE|DELETE)'
       label: format! building a SQL string (any wrapper)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

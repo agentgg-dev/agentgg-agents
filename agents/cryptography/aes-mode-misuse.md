@@ -119,7 +119,6 @@ where:
     - regex: 'createCipheriv\s*\([^)]*,\s*(password|passphrase|pwd|secret)\b'
       label: Raw password used as key (no KDF)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-327
   - CWE-329

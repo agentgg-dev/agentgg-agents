@@ -78,7 +78,6 @@ where:
     - regex: '\.(find|findOne|findOneAndUpdate|findOneAndDelete|updateOne|updateMany|deleteOne|deleteMany)\s*\(\s*\{[^}]*:\s*(req|request)\.(body|query|params)\.'
       label: Mongo query field set directly from request without coercion
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-943
   - 'OWASP-A03:2021'

@@ -29,7 +29,6 @@ where:
     - regex: 'CFBundleURLSchemes|CFBundleURLTypes'
       label: Info.plist custom URL scheme declaration
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-20
   - OWASP-Mobile-M1

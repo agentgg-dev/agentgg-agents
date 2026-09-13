@@ -81,7 +81,6 @@ where:
     - regex: '\brenderString\b|\bfrom_string\b|\brender_template_string\b|\bERB\.new\b|\bnew\s+Template\b|\bcompileString\b'
       label: template compiled/rendered from a string source
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-1336
   - CWE-94

@@ -71,7 +71,6 @@ where:
     - regex: 'fmt\.Sprintf\s*\(\s*"[^"]*(?:SELECT|INSERT|UPDATE|DELETE)'
       label: fmt.Sprintf building a SQL string (any call site)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

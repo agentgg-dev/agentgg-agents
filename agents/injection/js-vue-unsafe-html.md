@@ -48,7 +48,6 @@ where:
     - regex: 'useHead\s*\([^)]*innerHTML'
       label: Nuxt useHead innerHTML
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - 'OWASP-A03:2021'

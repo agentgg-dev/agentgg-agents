@@ -74,7 +74,6 @@ where:
     - regex: '["'']/?_search\b'
       label: Elasticsearch/OpenSearch _search endpoint string
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-862
   - CWE-863

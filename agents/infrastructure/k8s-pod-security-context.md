@@ -34,7 +34,6 @@ where:
     - semgrepRule: infrastructure/k8s-privileged
       label: Kubernetes privileged container or dangerous host access setting
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-250
   - CWE-269

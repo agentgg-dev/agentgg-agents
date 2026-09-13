@@ -94,7 +94,6 @@ where:
     - regex: 'sameSite\s*:\s*[''"](none|lax)[''"]'
       label: Permissive SameSite cookie
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-352
   - 'OWASP-A01:2021'

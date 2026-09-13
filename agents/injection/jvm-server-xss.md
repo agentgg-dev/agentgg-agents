@@ -92,7 +92,6 @@ where:
     - regex: 'out\.print\s*\(|out\.println\s*\('
       label: JSP scriptlet out.print (no encoding)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - 'OWASP-A03:2021'

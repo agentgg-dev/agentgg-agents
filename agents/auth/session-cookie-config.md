@@ -71,7 +71,6 @@ where:
     - semgrepRule: auth/cookie-set-call
       label: Cookie set call without all security attributes
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-1004
   - CWE-614

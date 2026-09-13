@@ -217,7 +217,6 @@ where:
     - regex: '`[^`]*#\{|%x\{[^}]*#\{|\bKernel\.(system|exec)\s*\('
       label: Ruby backtick / %x / Kernel.system|exec
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-94
   - CWE-78

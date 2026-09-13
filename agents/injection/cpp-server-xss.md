@@ -70,7 +70,6 @@ where:
     - regex: 'getenv\s*\(\s*"(QUERY_STRING|HTTP_|REQUEST_|CONTENT)|->ParamValues|->ParamNames|getParameter\s*\(|url_params|req(uest)?\.(query|params|body)\b'
       label: web/CGI request input accessed
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - 'OWASP-A03:2021'

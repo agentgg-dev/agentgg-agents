@@ -61,7 +61,6 @@ where:
     - regex: '->query\s*\(\s*(["''][^"'']*["'']\s*\.|[^)]*\$)'
       label: PHP DOMXPath->query with variable/concat
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-643
 ---

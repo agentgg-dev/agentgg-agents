@@ -81,7 +81,6 @@ where:
     - regex: '\b(unzipper|adm-zip|AdmZip|jszip|JSZip|yauzl|node-stream-zip|zipfile|tarfile|ZipInputStream|ZipFile|ZipEntry|TarInputStream|GZIPInputStream|extractall|extractAll|extractAllTo|getNextEntry|OpenReader|ZipArchive)\b'
       label: archive library or extraction API
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - CWE-23

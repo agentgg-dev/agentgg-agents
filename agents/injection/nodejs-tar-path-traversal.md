@@ -59,7 +59,6 @@ where:
     - regex: 'entry\.path|header\.name|entry\.header'
       label: TAR entry path accessed
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - 'OWASP-A01:2021'

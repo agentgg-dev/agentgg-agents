@@ -119,7 +119,6 @@ where:
     - regex: '"\s*(?:SELECT|INSERT|UPDATE|DELETE)[^"]{0,400}"\s*\+'
       label: SQL string literal followed by concatenation (any method)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'

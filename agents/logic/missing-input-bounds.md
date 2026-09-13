@@ -67,7 +67,6 @@ where:
     - regex: 'make\s*\(\[\]\w+,\s*[a-z][a-zA-Z0-9_]*\)'
       label: Go slice allocation with size variable
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-400
   - CWE-770

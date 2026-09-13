@@ -63,7 +63,6 @@ where:
     - regex: 'res\.send\s*\(\s*`[^`]*<script[^`]*\$\{\s*JSON\.stringify'
       label: res.send template embedding JSON.stringify in <script>
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-79
   - 'OWASP-A03:2021'

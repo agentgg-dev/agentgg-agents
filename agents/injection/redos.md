@@ -101,7 +101,6 @@ where:
     - regex: 'new\s+Regex\s*\('
       label: C# new Regex() call
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-1333
   - CWE-400
