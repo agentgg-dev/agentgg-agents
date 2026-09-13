@@ -96,8 +96,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: redirect destination parameter name present
+      - regex: redirect\s*\(\s*request\.(args|GET|POST|form|values|query_params)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: redirect() with request-derived destination
+      - regex: HttpResponseRedirect\s*\(\s*request\.
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Django HttpResponseRedirect from request data
+      - regex: RedirectResponse\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: FastAPI RedirectResponse
+      - regex: \b(next_url|return_url|redirect_url|return_to|redirect_uri)\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: redirect destination parameter name
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -111,6 +156,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: res\.redirect\s*\(\s*(req|request)\.(query|body|params|headers)\.
       label: res.redirect() with request-derived destination
@@ -128,11 +179,19 @@ where:
       label: redirect call with a variable/template destination (trace origin)
     - regex: returnUrl|redirectUrl|returnTo|redirect_uri
       label: redirect destination parameter name present
+    - regex: redirect\s*\(\s*request\.
+      label: redirect() with request data
+    - regex: HttpResponseRedirect\s*\(
+      label: Django HttpResponseRedirect
+    - regex: RedirectResponse\s*\(
+      label: FastAPI RedirectResponse
+    - regex: \b(next_url|return_url|redirect_url|return_to|redirect_uri)\b
+      label: redirect destination parameter
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-601
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing Node.js / TypeScript / React source code for open

@@ -14,6 +14,7 @@ precondition:
           - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
           - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
           - '**/services/**/endpoints/**/*.ts'
+          - '**/*.py'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -21,6 +22,9 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
         label: Sensitive endpoint name pattern
       - regex: x-forwarded-for|X-Forwarded-For|x-real-ip|cf-connecting-ip
         in:
@@ -28,6 +32,7 @@ precondition:
           - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
           - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
           - '**/services/**/endpoints/**/*.ts'
+          - '**/*.py'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -35,6 +40,9 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
         label: Reference to spoofable client-IP header
       - regex: '(rateLimit|rateLimiter|ratelimit|throttle|consume)\s*[\.(]'
         in:
@@ -42,6 +50,7 @@ precondition:
           - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
           - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
           - '**/services/**/endpoints/**/*.ts'
+          - '**/*.py'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -49,6 +58,9 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
         label: Rate-limit call
 where:
   filePatterns:
@@ -56,6 +68,10 @@ where:
     - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
     - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
     - '**/services/**/endpoints/**/*.ts'
+    - '**/routes/**/*.py'
+    - '**/api/**/*.py'
+    - '**/views/**/*.py'
+    - '**/endpoints/**/*.py'
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -71,11 +87,11 @@ where:
     - regex: '(rateLimit|rateLimiter|ratelimit|throttle|consume)\s*[\.(]'
       label: Rate-limit call
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-307
   - CWE-799
   - 'OWASP-A07:2021'
+
 ---
 
 You are reviewing HTTP endpoints for missing or bypassable rate

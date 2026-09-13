@@ -52,8 +52,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Dynamic property assignment with request-controlled key
+      - regex: \.update\s*\(\s*(request\.(json|POST|GET|form|data)|payload|body|data)\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: dict.update() with request input
+      - regex: setattr\s*\(\s*\w+\s*,\s*\w+
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: dynamic setattr with a variable attribute name
+      - regex: __dict__\.update\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: __dict__.update() bulk attribute write
+      - regex: copy\.deepcopy\s*\(|\bmerge_dicts?\s*\(|\bdeep_merge\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: deep merge/copy helper
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -67,6 +112,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: (_|lodash)\.(merge|defaultsDeep|mergeWith)\s*\(
       label: lodash deep merge call
@@ -76,11 +127,19 @@ where:
       label: Object.assign with request input as source
     - regex: '\[\s*(req|request)\.(query|body|params)\.[a-zA-Z_]+\s*\]\s*='
       label: Dynamic property assignment with request-controlled key
+    - regex: \.update\s*\(\s*(request\.(json|POST|GET|form|data)|payload|body|data)\b
+      label: dict.update() with request input
+    - regex: setattr\s*\(\s*\w+\s*,\s*\w+
+      label: dynamic setattr
+    - regex: __dict__\.update\s*\(
+      label: __dict__.update()
+    - regex: \bdeep_merge\s*\(|\bmerge_dicts?\s*\(
+      label: deep merge helper
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-1321
   - 'OWASP-A08:2021'
+
 ---
 
 You are reviewing JavaScript / TypeScript source code for prototype

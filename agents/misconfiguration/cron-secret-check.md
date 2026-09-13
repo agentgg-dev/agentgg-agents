@@ -50,6 +50,28 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Scheduler library serve() wrapper
+      - regex: "@(app|router|bp)\\.(route|get|post)\\s*\\(\\s*[\\\"'][^\\\"']*(cron|scheduled|task)"
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: cron-shaped route
+      - regex: (celery|APScheduler|apscheduler|schedule\.every)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: scheduler library
 where:
   filePatterns:
     - '**/cron/**/*.{ts,tsx,js,jsx,mjs}'
@@ -63,6 +85,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: export\s+(async\s+function|const)\s+(GET|POST)\b
       label: HTTP handler in cron-shaped path
@@ -70,11 +98,17 @@ where:
       label: CRON secret reference
     - regex: 'inngest\.serve\s*\(|trigger\.dev|serve\s*\(\s*\{\s*client'
       label: Scheduler library serve() wrapper
+    - regex: "@(app|router|bp)\\.(route|get|post)\\s*\\(\\s*[\\\"'][^\\\"']*(cron|scheduled|task)"
+      label: cron-shaped route
+    - regex: (celery|APScheduler|apscheduler|schedule\.every)
+      label: scheduler library
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
+  extensions:
+    - py
 references:
   - CWE-306
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing cron / scheduled-job endpoints (Vercel Cron, custom

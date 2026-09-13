@@ -52,8 +52,64 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: 'Manual JWT decoding (split on ''.'', base64) — possible hand-rolled verifier'
+      - regex: jwt\.(decode|encode)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: PyJWT decode/encode call
+      - regex: verify_signature[\"']?\s*:\s*False|verify\s*=\s*False
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: JWT signature verification disabled
+      - regex: base64\.(urlsafe_)?b64decode\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Manual base64 JWT payload decode
+      - regex: \.split\s*\(\s*[\"']\.[\"']\s*\)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Manual JWT split on '.' (hand-rolled decoder)
+      - regex: from\s+jose\s+import|import\s+jose\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: python-jose import
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -67,6 +123,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: jwt\.(verify|sign|decode)\s*\(
       label: jsonwebtoken jwt.verify/sign/decode call
@@ -76,12 +138,20 @@ where:
       label: Custom JWT helper
     - regex: 'split\s*\(\s*["'']\.["'']\s*\)|base64url|atob\s*\([^)]*\.'
       label: 'Manual JWT decoding (split on ''.'', base64) — possible hand-rolled verifier'
+    - regex: jwt\.(decode|encode)\s*\(
+      label: PyJWT decode/encode call
+    - regex: verify_signature[\"']?\s*:\s*False
+      label: JWT signature verification disabled
+    - regex: base64\.(urlsafe_)?b64decode\s*\(
+      label: Manual base64 JWT payload decode
+    - regex: \.split\s*\(\s*[\"']\.[\"']\s*\)
+      label: Manual JWT split on '.'
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-345
   - CWE-347
   - 'OWASP-A02:2021'
+
 ---
 
 You are reviewing source code that signs, verifies, encrypts, or

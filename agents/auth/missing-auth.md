@@ -53,6 +53,39 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Express/Fastify route registration
+      - regex: '@(app|router|bp|blueprint|api)\.(route|get|post|put|patch|delete)\s*\('
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Flask/FastAPI route decorator
+      - regex: '@api_view\s*\(|class\s+\w+\(\s*(APIView|ViewSet|ModelViewSet|GenericAPIView)'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Django REST Framework view
+      - regex: ^\s*path\s*\(\s*[\"']|^\s*re_path\s*\(\s*[\"']
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Django urls.py route
 where:
   filePatterns:
     - '**/api/**/*.{ts,tsx,js,jsx}'
@@ -67,14 +100,30 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - semgrepRule: shared/http-endpoints
       label: HTTP route handler or endpoint function
+    - regex: '@(app|router|bp|blueprint|api)\.(route|get|post|put|patch|delete)\s*\('
+      label: Flask/FastAPI route decorator
+    - regex: '@api_view\s*\('
+      label: DRF @api_view
+    - regex: class\s+\w+\(\s*(APIView|ViewSet|ModelViewSet|GenericAPIView)
+      label: DRF class-based view
+    - regex: '@(login_required|permission_required|requires_auth|authenticated)'
+      label: auth decorator present
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
+  extensions:
+    - py
 references:
   - CWE-306
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing HTTP route handlers for missing authentication —

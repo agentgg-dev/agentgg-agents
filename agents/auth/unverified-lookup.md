@@ -40,6 +40,39 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: 'ORM findUnique/findFirst with where: { id }'
+      - regex: \.objects\.(get|filter)\s*\(\s*(pk|id)\s*=
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Django by-id lookup
+      - regex: \.filter_by\s*\(\s*id\s*=
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: SQLAlchemy filter_by(id=)
+      - regex: def\s+(get|find|fetch|load)_\w+_by_(id|uid|slug)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: get_x_by_id / find_x_by_slug helper
 where:
   filePatterns:
     - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
@@ -55,17 +88,31 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: '(get|find|fetch)[A-Z][a-zA-Z]+By(Id|Uid|Slug)\s*\('
       label: getXById / findXBySlug helper call
     - regex: '\.(findUnique|findFirst|findOne)\s*\(\s*\{\s*where\s*:\s*\{\s*id\s*:'
       label: 'ORM findUnique/findFirst with where: { id }'
+    - regex: \.objects\.(get|filter)\s*\(\s*(pk|id)\s*=
+      label: Django by-id lookup
+    - regex: \.filter_by\s*\(\s*id\s*=
+      label: SQLAlchemy filter_by(id=)
+    - regex: def\s+(get|find|fetch|load)_\w+_by_(id|uid|slug)\s*\(
+      label: by-id lookup helper
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
+  extensions:
+    - py
 references:
   - CWE-639
   - CWE-862
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing source code for Insecure Direct Object Reference

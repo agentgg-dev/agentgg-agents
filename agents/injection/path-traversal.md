@@ -41,8 +41,64 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: path.join/resolve combining with request data
+      - regex: \bopen\s*\(\s*os\.path\.join\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: open() over os.path.join
+      - regex: os\.path\.join\s*\([^)]*\b(request|params|filename|user_path|body|args|name)\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: os.path.join combining request data
+      - regex: send_file\s*\(|send_from_directory\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Flask send_file / send_from_directory
+      - regex: \bopen\s*\(\s*f[\"']
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: open() with an f-string path
+      - regex: FileResponse\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: FastAPI/Django FileResponse
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -56,6 +112,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: 'fs(\.promises)?\.(readFile|readFileSync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\s*\([^)]*\b(req|request|params|body|userPath|filename|originalname)\b'
       label: fs operation with request-derived path
@@ -63,11 +125,19 @@ where:
       label: fs operation with template-literal path
     - regex: 'path\.(join|resolve)\s*\([^)]*\b(req|request|params|body|userInput|filename|originalname)\b'
       label: path.join/resolve combining with request data
+    - regex: \bopen\s*\(\s*os\.path\.join\s*\(
+      label: open() over os.path.join
+    - regex: os\.path\.join\s*\([^)]*\b(request|params|filename|user_path|body|args)\b
+      label: os.path.join with request data
+    - regex: send_file\s*\(|send_from_directory\s*\(
+      label: Flask send_file
+    - regex: \bopen\s*\(\s*f[\"']
+      label: open() with f-string path
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing Node.js / TypeScript source code for path traversal

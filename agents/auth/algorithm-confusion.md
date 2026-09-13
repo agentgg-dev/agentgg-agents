@@ -12,8 +12,52 @@ precondition:
         in: ["**/*.{ts,tsx,js,jsx,mjs,cjs,lua}"]
         notIn: ["**/*.{test,spec}.*", "**/__tests__/**"]
         label: JWT verify call present
+      - regex: jwt\.decode\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: PyJWT decode (verify algorithms= allowlist is pinned)
+      - regex: algorithms\s*=\s*\[[^\]]*[\"']none[\"']
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: alg 'none' accepted in allowlist
+      - regex: verify_signature[\"']?\s*:\s*False
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: JWT signature verification disabled
+      - regex: jwt\.get_unverified_(header|claims)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Unverified JWT header/claims read
 where:
-  extensions: [ts, tsx, js, jsx, mjs, cjs, lua]
+  extensions: [py, ts, tsx, js, jsx, mjs, cjs, lua]
   excludePatterns:
     - "**/__tests__/**"
     - "**/*.test.{ts,tsx,js,jsx,mjs}"
@@ -21,16 +65,30 @@ where:
     - "**/node_modules/**"
     - "**/dist/**"
     - "**/.next/**"
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
-    - { regex: "jwt\\.verify\\s*\\(", label: "jsonwebtoken jwt.verify call" }
-    - { regex: "\\bjwtVerify\\s*\\(", label: "jose jwtVerify call" }
-    - { regex: "verifyJwt\\s*\\(|verifyJWT\\s*\\(", label: "custom verifyJwt helper" }
-    - { regex: "jwt_obj\\s*:\\s*verify\\s*\\(", label: "Lua resty.jwt verify" }
+    - {regex: "jwt\\.verify\\s*\\(", label: "jsonwebtoken jwt.verify call"}
+    - {regex: "\\bjwtVerify\\s*\\(", label: "jose jwtVerify call"}
+    - {regex: "verifyJwt\\s*\\(|verifyJWT\\s*\\(", label: "custom verifyJwt helper"}
+    - {regex: "jwt_obj\\s*:\\s*verify\\s*\\(", label: "Lua resty.jwt verify"}
+    - regex: jwt\.decode\s*\(
+      label: PyJWT decode (check algorithms= pinning)
+    - regex: algorithms\s*=\s*\[
+      label: JWT algorithms allowlist
+    - regex: verify_signature[\"']?\s*:\s*False
+      label: JWT signature verification disabled
+    - regex: jwt\.get_unverified_(header|claims)\s*\(
+      label: Unverified JWT header/claims read
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-347
   - CVE-2015-9235
+
 ---
 
 You are reviewing JWT verification code for algorithm confusion — a

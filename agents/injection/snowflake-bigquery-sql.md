@@ -63,8 +63,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: imports analytics warehouse SDK (confirms context)
+      - regex: import\s+snowflake\.connector|from\s+snowflake
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: imports snowflake-connector-python
+      - regex: from\s+google\.cloud\s+import\s+bigquery|bigquery\.Client\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: imports google-cloud-bigquery
+      - regex: (clickhouse_driver|clickhouse_connect|databricks|duckdb)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: imports another analytics warehouse driver
+      - regex: \.(query|execute|execute_string)\s*\(\s*f[\"']
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: warehouse query built with an f-string
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -77,6 +122,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: 'execute\s*\(\s*\{\s*sqlText\s*:\s*`[^`]*\$\{'
       label: Snowflake execute sqlText with template-literal interpolation
@@ -88,11 +139,19 @@ where:
       label: DuckDB execute with template-literal interpolation
     - regex: 'from\s+[''"](snowflake-sdk|@google-cloud/bigquery|@clickhouse/client|@databricks/sql|duckdb|@duckdb/)'
       label: imports analytics warehouse SDK (confirms context)
+    - regex: import\s+snowflake\.connector|from\s+snowflake
+      label: snowflake-connector import
+    - regex: from\s+google\.cloud\s+import\s+bigquery|bigquery\.Client\s*\(
+      label: bigquery client
+    - regex: \.(query|execute|execute_string)\s*\(\s*f[\"']
+      label: warehouse query with f-string
+    - regex: (clickhouse_driver|clickhouse_connect|databricks|duckdb)
+      label: other warehouse driver
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'
+
 ---
 
 You are reviewing TypeScript / JavaScript source code for SQL

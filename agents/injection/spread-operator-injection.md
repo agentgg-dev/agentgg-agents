@@ -52,8 +52,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: 'Object.assign({}, req.body) pattern'
+      - regex: \*\*\s*request\.(json|POST|GET|form|data|args)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: '** unpacking of request input'
+      - regex: \*\*\s*(payload|body|input|data|json|args|params)\s*[,)\}]
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: '** unpacking of a request-shaped variable'
+      - regex: \.objects\.(create|update|filter|get_or_create)\s*\(\s*\*\*
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Django ORM write with ** unpacking
+      - regex: \w+\s*\(\s*\*\*\s*(request|payload|body|data)\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: model/constructor call with ** unpacking
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -67,6 +112,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: '\{\s*\.\.\.\s*(req|request)\.(body|query|params)'
       label: 'Spread of req/request.{body,query,params}'
@@ -76,11 +127,17 @@ where:
       label: Spread of searchParams
     - regex: 'Object\.assign\s*\(\s*\{\}\s*,\s*(req|request)\.(body|query|params)'
       label: 'Object.assign({}, req.body) pattern'
+    - regex: \*\*\s*request\.(json|POST|GET|form|data|args)
+      label: '** unpacking of request input'
+    - regex: \*\*\s*(payload|body|input|data|json|args|params)\s*[,)\}]
+      label: '** unpacking of request-shaped variable'
+    - regex: \.objects\.(create|update|get_or_create)\s*\(\s*\*\*
+      label: Django ORM write with **
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-915
   - 'OWASP-A08:2021'
+
 ---
 
 You are reviewing JavaScript / TypeScript source code for mass

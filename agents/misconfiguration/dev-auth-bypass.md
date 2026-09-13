@@ -52,8 +52,64 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Route registered under /dev /test /debug /internal
+      - regex: (settings\.)?DEBUG\s*(=|==|is)\s*True
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: DEBUG flag enabled/compared
+      - regex: os\.(getenv|environ\.get)\s*\(\s*[\"'](ENV|ENVIRONMENT|APP_ENV|STAGE)[\"'][^)]*\)\s*==\s*[\"'](dev|development|test|local)[\"']
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: environment-name equality guard
+      - regex: (mock_session|fake_user|dev_login|test_login|create_mock_session)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: mock-session / dev-login helper
+      - regex: "[\\\"'](test_api_key|test-token|dev-token|bypass-secret)[\\\"']"
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: hardcoded test token literal
+      - regex: LOGIN_DISABLED|AUTH_DISABLED|SKIP_AUTH
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: auth kill-switch flag
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -67,6 +123,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: '(NODE_ENV|isDev|IS_TEST|isTest)\s*(===|==|!==|!=)\s*["''](development|test|dev)["'']'
       label: NODE_ENV / isDev / IS_TEST guard
@@ -76,12 +138,20 @@ where:
       label: Hardcoded test token literal
     - regex: '(app|router)\.(get|post|use)\s*\(\s*["'']/(dev|test|debug|internal)/'
       label: Route registered under /dev /test /debug /internal
+    - regex: (settings\.)?DEBUG\s*(=|==|is)\s*True
+      label: DEBUG flag
+    - regex: os\.(getenv|environ\.get)\s*\(\s*[\"'](ENV|ENVIRONMENT|APP_ENV|STAGE)[\"']
+      label: environment-name guard
+    - regex: (mock_session|fake_user|dev_login|test_login)\s*\(
+      label: dev-login helper
+    - regex: LOGIN_DISABLED|AUTH_DISABLED|SKIP_AUTH
+      label: auth kill-switch flag
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-489
   - CWE-1188
   - 'OWASP-A05:2021'
+
 ---
 
 You are reviewing source code for "dev only" or "test only" auth

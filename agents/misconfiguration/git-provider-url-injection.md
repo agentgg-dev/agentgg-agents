@@ -41,8 +41,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Bitbucket URL with template-literal interpolation
+      - regex: f[\"']https?://(api\.)?github\.com[^\"']*\{
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: GitHub URL built with an f-string
+      - regex: f[\"']https?://[^\"']*gitlab[^\"']*\{
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: GitLab URL built with an f-string
+      - regex: f[\"']https?://(api\.)?bitbucket\.org[^\"']*\{
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Bitbucket URL built with an f-string
+      - regex: "[\\\"']https?://(api\\.)?(github\\.com|gitlab\\.com|bitbucket\\.org)[^\\\"']*[\\\"']\\s*\\+"
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: git provider URL built by concatenation
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -56,6 +101,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: '`https?://(api\.)?github\.com[^`]*\$\{'
       label: GitHub URL with template-literal interpolation
@@ -63,12 +114,20 @@ where:
       label: GitLab URL with template-literal interpolation
     - regex: '`https?://(api\.)?bitbucket\.org[^`]*\$\{'
       label: Bitbucket URL with template-literal interpolation
+    - regex: f[\"']https?://(api\.)?github\.com[^\"']*\{
+      label: GitHub URL f-string
+    - regex: f[\"']https?://[^\"']*gitlab[^\"']*\{
+      label: GitLab URL f-string
+    - regex: f[\"']https?://(api\.)?bitbucket\.org[^\"']*\{
+      label: Bitbucket URL f-string
+    - regex: "[\\\"']https?://(api\\.)?(github\\.com|gitlab\\.com|bitbucket\\.org)[^\\\"']*[\\\"']\\s*\\+"
+      label: git provider URL concatenation
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-918
   - CWE-20
   - 'OWASP-A10:2021'
+
 ---
 
 You are reviewing source code that builds URLs for Git providers

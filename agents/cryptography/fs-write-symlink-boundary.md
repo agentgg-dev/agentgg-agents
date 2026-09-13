@@ -30,8 +30,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: fs write with path.join/resolve combining request data
+      - regex: open\s*\(\s*[^,)]+,\s*[\"'][wax]
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: open() in write/append mode
+      - regex: os\.(symlink|link|rename|replace|makedirs|mkdir|chmod|chown|remove|unlink)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: os filesystem mutation
+      - regex: shutil\.(copy|copyfile|copytree|move|rmtree)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: shutil filesystem mutation
+      - regex: Path\s*\([^)]*\)\.(write_text|write_bytes|mkdir|symlink_to|unlink|rename)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: pathlib write/mutate
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -45,17 +90,31 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: 'fs(\.promises)?\.(writeFile|writeFileSync|createWriteStream|copyFile|copyFileSync|symlink|link|rename|appendFile|chmod|chown|truncate|mkdir|mkdirSync)\s*\([^)]*`[^`]*\$\{'
       label: fs write call with template-literal path
     - regex: 'fs(\.promises)?\.(writeFile|copyFile|appendFile|mkdir|createWriteStream)\s*\([^)]*\bpath\.(join|resolve)\s*\([^)]*\b(req|request|params|body)\b'
       label: fs write with path.join/resolve combining request data
+    - regex: open\s*\(\s*[^,)]+,\s*[\"'][wax]
+      label: open() in write mode
+    - regex: os\.(symlink|link|rename|replace|makedirs|chmod|chown)\s*\(
+      label: os filesystem mutation
+    - regex: shutil\.(copy|copyfile|copytree|move|rmtree)\s*\(
+      label: shutil mutation
+    - regex: Path\s*\([^)]*\)\.(write_text|write_bytes|symlink_to)\s*\(
+      label: pathlib write
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-22
   - CWE-59
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing Node.js source code for filesystem writes that

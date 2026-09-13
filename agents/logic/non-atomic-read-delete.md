@@ -41,8 +41,42 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: One-time-token shape (high-risk)
+      - regex: redis\.(get|hget|hgetall)\s*\([\s\S]{0,200}redis\.(delete|hdel)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: redis get + delete pair (verify atomicity)
+      - regex: \.objects\.(get|filter|first)\s*\([\s\S]{0,300}\.delete\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: ORM read + delete pair (verify transaction)
+      - regex: (magic|otp|invite|reset|verify|consume)\w*_token|one_time_use
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: one-time-token shape
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -56,6 +90,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: 'redis\.(get|hget|hgetall)\s*\([\s\S]{0,200}redis\.(del|hdel)\s*\('
       label: redis get + del pair (verify atomicity)
@@ -65,11 +105,17 @@ where:
       multiline: true
     - regex: (magic|otp|invite|reset|verify|consume).*Token|oneTimeUse
       label: One-time-token shape (high-risk)
+    - regex: redis\.(delete|hdel)\s*\(
+      label: redis delete (verify atomic with the read)
+    - regex: \.delete\s*\(\s*\)
+      label: ORM .delete() (verify atomic with the read)
+    - regex: (magic|otp|invite|reset|verify|consume)\w*_token|one_time_use
+      label: one-time-token shape
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-367
   - CWE-362
+
 ---
 
 You are reviewing source code for non-atomic read-then-delete

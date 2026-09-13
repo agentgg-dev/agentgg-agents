@@ -63,8 +63,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: new Function() runtime code construction
+      - regex: \beval\s*\(|\bexec\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: eval/exec runtime code execution
+      - regex: \bcompile\s*\(\s*
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: compile() of runtime-built source
+      - regex: RestrictedPython
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: RestrictedPython sandbox
+      - regex: __import__\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: dynamic __import__
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -78,6 +123,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: vm\.(runInNewContext|runInThisContext|runInContext|Script)\s*\(|new\s+vm\.Script\s*\(
       label: Node vm module call
@@ -89,12 +140,20 @@ where:
       label: SES Compartment
     - regex: new\s+Function\s*\(
       label: new Function() runtime code construction
+    - regex: \beval\s*\(|\bexec\s*\(
+      label: eval/exec
+    - regex: \bcompile\s*\(\s*
+      label: compile()
+    - regex: RestrictedPython
+      label: RestrictedPython sandbox
+    - regex: __import__\s*\(
+      label: dynamic __import__
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-94
   - CWE-913
   - 'OWASP-A04:2021'
+
 ---
 
 You are reviewing source code for code-evaluation runtimes that

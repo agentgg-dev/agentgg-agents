@@ -63,8 +63,64 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Math.random used near security-shaped name
+      - regex: hashlib\.(md5|sha1)\s*\(|hashlib\.new\s*\(\s*[\"'](md5|sha1)[\"']
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: hashlib MD5/SHA1
+      - regex: \brandom\.(random|randint|choice|randrange)\s*\([^)]*\)[\s\S]{0,100}(token|secret|otp|key|password)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: random module used near a security-shaped name
+      - regex: (hmac|digest|signature|expected|computed|mac)\s*==\s*
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Timing-unsafe comparison on HMAC/digest/signature
+      - regex: "[\\\"'](DES|3DES|RC4|Blowfish|ECB)[\\\"']"
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Deprecated cipher/mode literal
+      - regex: Crypto\.Cipher|from\s+Crypto\s+import
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: pycryptodome low-level cipher use
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -78,6 +134,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: 'createHash\s*\(\s*[''"](md5|sha1)[''"]'
       label: createHash with MD5/SHA1
@@ -89,13 +151,23 @@ where:
       label: Timing-unsafe comparison on HMAC/digest/signature
     - regex: 'Math\.random\s*\(\s*\)[\s\S]{0,100}(token|secret|otp|id|password|key)'
       label: Math.random used near security-shaped name
+    - regex: hashlib\.(md5|sha1)\s*\(
+      label: hashlib MD5/SHA1
+    - regex: hashlib\.new\s*\(\s*[\"'](md5|sha1)[\"']
+      label: hashlib.new with MD5/SHA1
+    - regex: (hmac|digest|signature|expected|computed|mac)\s*==\s*
+      label: Timing-unsafe comparison
+    - regex: "[\\\"'](DES|3DES|RC4|Blowfish|ECB)[\\\"']"
+      label: Deprecated cipher/mode literal
+    - regex: \brandom\.(random|randint|choice|randrange)\s*\(
+      label: random module (verify not security-relevant)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-327
   - CWE-330
   - CWE-208
   - 'OWASP-A02:2021'
+
 ---
 
 You are reviewing JavaScript / TypeScript source code for use of

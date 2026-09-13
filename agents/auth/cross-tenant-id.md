@@ -53,6 +53,39 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: 'ORM where: { id } lookup'
+      - regex: \b(team_id|owner_id|org_id|tenant_id|installation_id|customer_id|workspace_id|account_id)\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: snake_case tenant-shaped identifier
+      - regex: \.objects\.(get|filter|first)\s*\(\s*(pk|id)\s*=
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Django by-id lookup
+      - regex: \.filter_by\s*\(\s*id\s*=|\.query\s*\([^)]*\)\.get\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: SQLAlchemy by-id lookup
 where:
   filePatterns:
     - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
@@ -67,6 +100,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: \b(teamId|ownerId|orgId|tenantId|installationId|configurationId|integrationConfigurationId|customerId|workspaceId|accountId)\b
       label: Tenant-shaped identifier
@@ -74,12 +113,20 @@ where:
       label: Repository getByX/findByX/updateByX call
     - regex: '\.(findUnique|findFirst|findOne|update|delete)\s*\(\s*\{\s*where\s*:\s*\{\s*id\s*:'
       label: 'ORM where: { id } lookup'
+    - regex: \b(team_id|owner_id|org_id|tenant_id|customer_id|workspace_id|account_id)\b
+      label: snake_case tenant identifier
+    - regex: \.objects\.(get|filter|first)\s*\(\s*(pk|id)\s*=
+      label: Django by-id lookup
+    - regex: \.filter_by\s*\(\s*id\s*=
+      label: SQLAlchemy filter_by(id=)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
+  extensions:
+    - py
 references:
   - CWE-639
   - CWE-862
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing source code for cross-tenant ID access — patterns

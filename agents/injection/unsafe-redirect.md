@@ -52,8 +52,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: redirect_uri / returnUrl identifier — validation logic likely nearby
+      - regex: \.startswith\s*\(\s*[\"']/[\"']\s*\)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: startswith('/') check - verify it also rejects '//'
+      - regex: urljoin\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: urljoin - verify the base is enforced
+      - regex: \b(redirect_uri|return_url|return_to|redirect_url|next_url)\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: redirect parameter - validation likely nearby
+      - regex: urlparse\s*\([^)]*\)\.(netloc|hostname)\s*(==|in)\s*
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: host allowlist check on parsed URL
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -67,6 +112,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: 'redirect_uri|redirect_url|returnUrl|return_url|returnTo|redirectUrl|[Rr]edirectTo|[Nn]extUrl|[Cc]allbackUrl'
       label: redirect destination identifier — validation logic likely nearby
@@ -74,11 +125,19 @@ where:
       label: redirect sink — verify the destination is validated
     - regex: 'new\s+URL\s*\([^,)]+,\s*["'']https?://'
       label: 'new URL(input, base) — verify base is enforced'
+    - regex: \.startswith\s*\(\s*[\"']/[\"']\s*\)
+      label: startswith('/') - '//' bypassable
+    - regex: urljoin\s*\(
+      label: urljoin - verify base enforced
+    - regex: urlparse\s*\([^)]*\)\.(netloc|hostname)
+      label: parsed-URL host check
+    - regex: \b(redirect_uri|return_url|return_to|redirect_url|next_url)\b
+      label: redirect parameter
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-601
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing source code for redirect validation that appears to

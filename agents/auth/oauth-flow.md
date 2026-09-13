@@ -15,6 +15,7 @@ precondition:
           - '**/callback/**/*.{ts,tsx,js,jsx}'
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
+          - '**/*.py'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -22,6 +23,9 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
         label: OAuth authorize URL construction
       - regex: \b(code_verifier|code_challenge|code_challenge_method)\b
         in:
@@ -30,6 +34,7 @@ precondition:
           - '**/callback/**/*.{ts,tsx,js,jsx}'
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
+          - '**/*.py'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -37,6 +42,9 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
         label: PKCE parameter
       - regex: \bredirect_uri\b
         in:
@@ -45,6 +53,7 @@ precondition:
           - '**/callback/**/*.{ts,tsx,js,jsx}'
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
+          - '**/*.py'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -52,6 +61,9 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
         label: redirect_uri reference (validate matching)
       - regex: '[?&#]access_token='
         in:
@@ -60,6 +72,7 @@ precondition:
           - '**/callback/**/*.{ts,tsx,js,jsx}'
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
+          - '**/*.py'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -67,6 +80,9 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
         label: access_token in URL (likely implicit grant or leak)
       - regex: '[?&]state\s*='
         in:
@@ -75,6 +91,7 @@ precondition:
           - '**/callback/**/*.{ts,tsx,js,jsx}'
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
+          - '**/*.py'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -82,6 +99,9 @@ precondition:
           - '**/node_modules/**'
           - '**/dist/**'
           - '**/.next/**'
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
         label: state parameter (validate binding to session)
 where:
   filePatterns:
@@ -90,6 +110,10 @@ where:
     - '**/callback/**/*.{ts,tsx,js,jsx}'
     - '**/app/api/**/*.{ts,tsx,js,jsx}'
     - '**/api/**/*.{ts,tsx,js,jsx}'
+    - '**/oauth/**/*.py'
+    - '**/auth/**/*.py'
+    - '**/callback/**/*.py'
+    - '**/api/**/*.py'
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -109,10 +133,10 @@ where:
     - regex: '[?&]state\s*='
       label: state parameter (validate binding to session)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-1275
   - 'OWASP-A02:2021'
+
 ---
 
 You are reviewing OAuth 2.0 / OIDC flow code for the standard set of

@@ -47,6 +47,50 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: SSE Content-Type response
+      - regex: stream\s*=\s*True
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: LLM call with stream=True
+      - regex: StreamingResponse\s*\(|text/event-stream
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: SSE / streaming response
+      - regex: client\.(messages|chat\.completions)\.(create|stream)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: LLM streaming call
+      - regex: "yield\\s+f?[\\\"']data:"
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: manual SSE data frame
 where:
   filePatterns:
     - '**/route.{ts,tsx,js,jsx,mjs}'
@@ -59,6 +103,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: \b(streamText|streamObject|generateText|generateObject)\s*\(
       label: Vercel AI SDK streaming/generate call
@@ -66,12 +116,22 @@ where:
       label: 'OpenAI chat.completions with stream: true'
     - regex: text/event-stream
       label: SSE Content-Type response
+    - regex: stream\s*=\s*True
+      label: stream=True
+    - regex: StreamingResponse\s*\(|text/event-stream
+      label: SSE / streaming response
+    - regex: client\.(messages|chat\.completions)\.(create|stream)\s*\(
+      label: LLM streaming call
+    - regex: "yield\\s+f?[\\\"']data:"
+      label: manual SSE data frame
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
+  extensions:
+    - py
 references:
   - CWE-307
   - CWE-770
   - 'OWASP-A04:2021'
+
 ---
 
 You are reviewing AI streaming endpoints — handlers that call

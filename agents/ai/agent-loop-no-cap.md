@@ -41,8 +41,53 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Unbounded polling/streaming loop
+      - regex: 'while\s+True\s*:'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: unbounded while True loop
+      - regex: client\.(messages|chat\.completions)\.create\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: LLM completion call
+      - regex: (AgentExecutor|initialize_agent|create_react_agent|StateGraph)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: agent framework construction
+      - regex: max_iterations|max_turns|recursion_limit
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: iteration cap setting present
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -56,6 +101,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: \b(streamText|generateText|streamObject|generateObject)\s*\(
       label: Vercel AI SDK invocation
@@ -63,11 +114,19 @@ where:
       label: Claude Agent SDK query
     - regex: while\s*\(\s*true\s*\)|for\s+await\s*\(.*\bagent\b
       label: Unbounded polling/streaming loop
+    - regex: 'while\s+True\s*:'
+      label: unbounded while True loop
+    - regex: client\.(messages|chat\.completions)\.create\s*\(
+      label: LLM completion call
+    - regex: (AgentExecutor|initialize_agent|create_react_agent|StateGraph)\s*\(
+      label: agent framework construction
+    - regex: max_iterations|max_turns|recursion_limit
+      label: iteration cap setting
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-770
   - OWASP-LLM10
+
 ---
 
 You are reviewing LLM / agent invocations for missing termination

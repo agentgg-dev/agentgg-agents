@@ -41,8 +41,42 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: DB/cache call as a statement (verify await)
+      - regex: if\s+(verify_token|verify_jwt|is_authenticated|require_user|assert_auth|check_permission|has_access)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: likely-async verifier used in if() without await
+      - regex: asyncio\.(create_task|ensure_future)\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: fire-and-forget task (verify it is awaited)
+      - regex: ^\s*(redis|cache|db|client|session)\.[a-z_]+\s*\([^)]*\)\s*$
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: bare async-looking call as a statement
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -56,6 +90,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: if\s*\(\s*(verifyToken|verifyJwt|isAuthenticated|requireUser|assertAuth|checkPermission|hasAccess)\s*\(
       label: Likely-async verifier used in if() without await
@@ -64,11 +104,17 @@ where:
     - regex: '^\s*(redis|cache|prisma|db|client)\.[a-z][a-zA-Z]+\s*\([^)]*\)\s*;?\s*$'
       label: DB/cache call as a statement (verify await)
       multiline: true
+    - regex: if\s+(verify_token|verify_jwt|is_authenticated|require_user|assert_auth|check_permission|has_access)\s*\(
+      label: async verifier in if() without await
+    - regex: asyncio\.(create_task|ensure_future)\s*\(
+      label: fire-and-forget task
+    - regex: ^\s*(redis|cache|db|client|session)\.[a-z_]+\s*\([^)]*\)\s*$
+      label: bare call statement (verify await)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-393
   - CWE-754
+
 ---
 
 You are reviewing TypeScript / JavaScript code for async functions

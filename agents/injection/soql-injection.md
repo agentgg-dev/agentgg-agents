@@ -52,8 +52,42 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: imports jsforce / @salesforce/* (confirms context)
+      - regex: simple_salesforce|from\s+simple_salesforce
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: imports simple-salesforce
+      - regex: \.query(_all|_more)?\s*\(\s*f[\"'][^\"']*SELECT
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: SOQL query built with an f-string
+      - regex: \.query(_all|_more)?\s*\(\s*[\"'][^\"']*SELECT[^\"']*[\"']\s*\+
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: SOQL query built by concatenation
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -66,6 +100,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: '\.(query|queryAll|queryMore)\s*\(\s*`[^`]*SELECT[^`]*\$\{'
       label: Salesforce-style query() with template-literal SOQL interpolation
@@ -75,11 +115,17 @@ where:
       label: Tooling API query() with template-literal interpolation
     - regex: 'from\s+[''"](jsforce|@jsforce/jsforce-node|@salesforce/)'
       label: imports jsforce / @salesforce/* (confirms context)
+    - regex: simple_salesforce
+      label: simple-salesforce import
+    - regex: \.query(_all|_more)?\s*\(\s*f[\"'][^\"']*SELECT
+      label: SOQL f-string query
+    - regex: \.query(_all|_more)?\s*\(\s*[\"'][^\"']*SELECT[^\"']*[\"']\s*\+
+      label: SOQL concatenated query
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-89
   - 'OWASP-A03:2021'
+
 ---
 
 You are reviewing TypeScript / JavaScript source code for Salesforce

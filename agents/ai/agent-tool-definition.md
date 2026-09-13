@@ -53,6 +53,50 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: 'tools: { ... } object in LLM call'
+      - regex: tools\s*=\s*\[
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: tools=[...] argument on an LLM call
+      - regex: '@tool\b|StructuredTool|\bTool\s*\(\s*name\s*='
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: LangChain tool definition
+      - regex: "input_schema\\s*=|[\\\"']input_schema[\\\"']\\s*:"
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: tool input schema declaration
+      - regex: "[\\\"']function[\\\"']\\s*:\\s*\\{"
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: OpenAI function-tool definition
 where:
   filePatterns:
     - '**/tools/**/*.{ts,tsx,js,jsx,mjs}'
@@ -67,6 +111,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: '\btool\s*\(\s*\{|\bcreateTool\s*\(|\bdefineTool\s*\('
       label: Tool definition (tool/createTool/defineTool)
@@ -74,12 +124,22 @@ where:
       label: Tool execute body
     - regex: '\btools\s*:\s*\{'
       label: 'tools: { ... } object in LLM call'
+    - regex: tools\s*=\s*\[
+      label: tools=[...] argument
+    - regex: '@tool\b|StructuredTool|\bTool\s*\(\s*name\s*='
+      label: LangChain tool definition
+    - regex: "input_schema\\s*=|[\\\"']input_schema[\\\"']\\s*:"
+      label: tool input schema
+    - regex: "[\\\"']function[\\\"']\\s*:\\s*\\{"
+      label: OpenAI function-tool definition
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
+  extensions:
+    - py
 references:
   - CWE-94
   - OWASP-LLM06
   - OWASP-LLM07
+
 ---
 
 You are reviewing AI agent tool definitions — function-calling

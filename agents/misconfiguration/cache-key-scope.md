@@ -30,8 +30,42 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: In-memory Map/WeakMap used as a cache (verify per-user scope)
+      - regex: (redis|cache|kv)\.(get|set|setex|hget|hset|mget)\s*\(\s*f?[\"'](feature|config|token|flag|user|profile)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: cache call with per-user-shaped key prefix
+      - regex: '@(lru_cache|cache|cached)\b'
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: functools/global cache decorator (verify per-user scope)
+      - regex: ^[A-Z_]*(CACHE|STORE|MEMO)\w*\s*[:=]\s*(dict\s*\(\s*\)|\{\s*\})
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: module-level dict used as a cache
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -45,17 +79,29 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: '(redis|cache|kv)\.(get|set|setex|hget|hset|mget)\s*\(\s*[`"''](feature|config|token|flag|user|profile)'
       label: Cache call with per-user-shaped key prefix
     - regex: '(?:[Cc]ache|[Ss]tore|[Mm]emo)\w*\s*=\s*new\s+(?:Map|WeakMap)\s*\('
       label: In-memory Map/WeakMap used as a cache (verify per-user scope)
+    - regex: (redis|cache|kv)\.(get|set|setex|hget|hset|mget)\s*\(
+      label: cache read/write (verify key is per-user)
+    - regex: '@(lru_cache|cache|cached)\b'
+      label: cache decorator (verify per-user scope)
+    - regex: ^[A-Z_]*(CACHE|STORE|MEMO)\w*\s*[:=]\s*(dict\s*\(\s*\)|\{\s*\})
+      label: module-level dict cache
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-639
   - CWE-200
   - 'OWASP-A01:2021'
+
 ---
 
 You are reviewing source code for cache keys that should be scoped to

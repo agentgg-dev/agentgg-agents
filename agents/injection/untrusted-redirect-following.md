@@ -52,8 +52,42 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: got call with caller-influenced URL variable
+      - regex: requests\.(get|post|put|patch|delete)\s*\([^)]*allow_redirects\s*=\s*True
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: requests with allow_redirects=True
+      - regex: requests\.(get|post|put|patch|delete)\s*\(\s*(target_url|callback_url|webhook_url|user_url|image_url|proxy_url|destination_url)\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: requests call with caller-influenced URL variable
+      - regex: follow_redirects\s*=\s*True
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: httpx follow_redirects=True
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -67,6 +101,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: fetch\s*\(\s*(targetUrl|callbackUrl|webhookUrl|redirectUrl|destinationUrl|proxyUrl|imageUrl|userUrl|companyUrl)\b
       label: fetch with caller-influenced URL variable
@@ -76,11 +116,17 @@ where:
       label: axios call with caller-influenced URL variable
     - regex: got\s*\(\s*(targetUrl|callbackUrl|webhookUrl|domainUrl)
       label: got call with caller-influenced URL variable
+    - regex: allow_redirects\s*=\s*True
+      label: requests allow_redirects=True
+    - regex: follow_redirects\s*=\s*True
+      label: httpx follow_redirects=True
+    - regex: requests\.(get|post|put|patch|delete)\s*\(\s*(target_url|callback_url|webhook_url|user_url|image_url|proxy_url)
+      label: caller-influenced URL variable
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-918
   - 'OWASP-A10:2021'
+
 ---
 
 You are reviewing server-side code for an SSRF bypass via redirect

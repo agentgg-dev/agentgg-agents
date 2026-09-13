@@ -50,6 +50,50 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Webhook verification helper call
+      - regex: (stripe-signature|x-hub-signature|x-slack-signature|x-linear-signature|x-svix-signature|x-shopify-hmac)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: provider signature header reference
+      - regex: stripe\.Webhook\.construct_event\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Stripe webhook signature verification
+      - regex: hmac\.compare_digest\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: constant-time signature comparison
+      - regex: "@(app|router|bp)\\.(route|post)\\s*\\(\\s*[\\\"'][^\\\"']*(webhook|hook|callback)"
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: webhook-shaped route
 where:
   filePatterns:
     - '**/*webhook*/**/*.{ts,tsx,js,jsx,mjs}'
@@ -63,6 +107,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: export\s+(async\s+function|const)\s+POST\b
       label: POST handler in webhook-shaped path
@@ -70,12 +120,22 @@ where:
       label: Provider signature header reference
     - regex: (constructEvent|verifyAndReceive|verifyWebhook|verifySignature)\s*\(
       label: Webhook verification helper call
+    - regex: (stripe-signature|x-hub-signature|x-slack-signature|x-svix-signature|x-shopify-hmac)
+      label: provider signature header
+    - regex: stripe\.Webhook\.construct_event\s*\(
+      label: Stripe signature verification
+    - regex: hmac\.compare_digest\s*\(
+      label: constant-time comparison
+    - regex: "@(app|router|bp)\\.(route|post)\\s*\\(\\s*[\\\"'][^\\\"']*(webhook|hook|callback)"
+      label: webhook-shaped route
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
+  extensions:
+    - py
 references:
   - CWE-345
   - CWE-306
   - 'OWASP-A08:2021'
+
 ---
 
 You are reviewing inbound webhook handlers for missing signature

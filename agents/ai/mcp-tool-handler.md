@@ -41,9 +41,54 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: MCP transport instantiation (verify auth on HTTP/SSE)
+      - regex: from\s+mcp[\. ]|import\s+mcp\b
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: imports the MCP Python SDK
+      - regex: '@(server|app|mcp)\.(call_tool|list_tools|tool)\s*\('
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: MCP tool registration
+      - regex: FastMCP\s*\(|Server\s*\(\s*[\"']
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: MCP server instantiation
+      - regex: stdio_server\s*\(|sse_app\s*\(|streamable_http
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: MCP transport (verify auth on HTTP/SSE)
   prompt: Run only if this project uses mcp — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -56,6 +101,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: 'from\s+[''"]@modelcontextprotocol/sdk'
       label: Imports MCP SDK
@@ -63,11 +114,19 @@ where:
       label: MCP tool registration
     - regex: new\s+(StdioServerTransport|SSEServerTransport|HttpServerTransport)\s*\(
       label: MCP transport instantiation (verify auth on HTTP/SSE)
+    - regex: from\s+mcp[\. ]|import\s+mcp\b
+      label: MCP SDK import
+    - regex: '@(server|app|mcp)\.(call_tool|list_tools|tool)\s*\('
+      label: MCP tool registration
+    - regex: FastMCP\s*\(|Server\s*\(\s*[\"']
+      label: MCP server instantiation
+    - regex: stdio_server\s*\(|sse_app\s*\(|streamable_http
+      label: MCP transport
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-285
   - OWASP-LLM06
+
 ---
 
 You are reviewing MCP (Model Context Protocol) server tool handlers

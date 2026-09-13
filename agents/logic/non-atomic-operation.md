@@ -47,8 +47,31 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Balance/quota/credits mutation (high-risk)
+      - regex: \.objects\.(get|filter|first)\s*\([\s\S]{0,300}\.save\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: read + save pair (verify transaction)
+      - regex: \b(balance|quota|credits)\b[\s\S]{0,200}\.save\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: balance/quota/credits mutation
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -64,6 +87,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: '\.(findUnique|findFirst|findById|findOne)\s*\([\s\S]{0,300}\.update\s*\('
       label: find + update pair (verify transaction)
@@ -74,12 +103,20 @@ where:
     - regex: '\bbalance\b[\s\S]{0,200}\.update\s*\(|quota|credits'
       label: Balance/quota/credits mutation (high-risk)
       multiline: true
+    - regex: \.save\s*\(\s*\)
+      label: ORM .save() (verify transaction)
+    - regex: redis\.(set|setex|incr|decr)\s*\(
+      label: redis write (verify atomicity)
+    - regex: \b(balance|quota|credits)\b
+      label: balance/quota/credits reference
+    - regex: select_for_update\s*\(|transaction\.atomic
+      label: explicit locking/transaction present
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-367
   - CWE-362
   - 'OWASP-A04:2021'
+
 ---
 
 You are reviewing source code for non-atomic read-then-write

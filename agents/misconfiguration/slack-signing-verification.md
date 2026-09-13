@@ -41,8 +41,31 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Slack-specific verifier call
+      - regex: from\s+slack_(sdk|bolt)|import\s+slack_(sdk|bolt)
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: imports slack_sdk / slack_bolt
+      - regex: SignatureVerifier\s*\(|verify_slack_signature\s*\(
+        in:
+          - '**/*.py'
+        notIn:
+          - '**/tests/**'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - '**/.venv/**'
+          - '**/venv/**'
+          - '**/site-packages/**'
+        label: Slack signature verifier call
 where:
   extensions:
+    - py
     - ts
     - tsx
     - js
@@ -56,6 +79,12 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/tests/**'
+    - '**/test_*.py'
+    - '**/*_test.py'
+    - '**/.venv/**'
+    - '**/venv/**'
+    - '**/site-packages/**'
   preFilter:
     - regex: 'from\s+[''"]@slack/(bolt|web-api|events-api)[''"]'
       label: Imports @slack/* SDK
@@ -63,11 +92,15 @@ where:
       label: Slack signature/timestamp header reference
     - regex: verifySlackSignature|verifyRequestSignature|createEventAdapter
       label: Slack-specific verifier call
+    - regex: from\s+slack_(sdk|bolt)|import\s+slack_(sdk|bolt)
+      label: slack_sdk / slack_bolt import
+    - regex: SignatureVerifier\s*\(|verify_slack_signature\s*\(
+      label: Slack signature verifier
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-345
   - 'OWASP-A08:2021'
+
 ---
 
 You are reviewing Slack integration endpoints for missing signing
