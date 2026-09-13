@@ -84,6 +84,10 @@ where:
       label: session call with variable URL
     - regex: '(requests|httpx)\.(get|post)\s*\(\s*f["'']'
       label: outbound call with an f-string URL
+    - regex: 'allow_redirects\s*=\s*True'
+      label: requests allow_redirects=True
+    - regex: 'follow_redirects\s*=\s*True'
+      label: httpx follow_redirects=True
   maxFilesPerBatch: 5
 references:
   - CWE-918
@@ -166,7 +170,11 @@ Flag when ALL of the following hold:
 Note that `requests` follows redirects by default, so a permitted host
 that returns a 302 to `169.254.169.254` defeats a host check applied only
 to the original URL. An allowlist enforced once, before the call, is not
-sufficient on its own.
+sufficient on its own. The safe form is `allow_redirects=False` (or
+`follow_redirects=False` for `httpx`) followed by an explicit re-check of
+the `Location` host before any further request. Treat an explicit
+`allow_redirects=True` or `follow_redirects=True` on a caller-influenced
+URL as the same finding: the author opted in to the bypass.
 
 ## What to ignore
 

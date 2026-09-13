@@ -116,7 +116,6 @@ where:
     - regex: '\b(fetch|axios\.(get|post|put|delete|patch|request))\s*\(\s*[A-Za-z_$][\w$.\[\]]*\s*[,)]'
       label: HTTP client call with a variable URL (trace origin)
   maxFilesPerBatch: 5
-  maxTurnsPerBatch: 30
 references:
   - CWE-918
   - 'OWASP-A10:2021'
@@ -161,11 +160,18 @@ await fetch(u);
 ```
 
 **HTTP clients that follow redirects by default:**
-The Fetch API defaults to `redirect: "follow"`. If the validation
-checks only the initial URL, a 30x to `169.254.169.254` (AWS
-metadata) or `localhost` bypasses the check. Flag fetches of
-caller-influenced URLs that don't set `redirect: "manual"` or
-re-validate after redirects.
+`fetch`, `axios`, `got` and `node-fetch` all follow redirects unless
+told not to. If the validation checks only the initial URL, a 30x to
+`169.254.169.254` (AWS metadata) or `localhost` bypasses the check.
+Flag caller-influenced URLs where the call opts out of none of these:
+`redirect: "manual"` or `redirect: "error"` (fetch), `maxRedirects: 0`
+(axios), `followRedirect: false` (got, node-fetch) — and where the
+allowlist is not reapplied to the `Location` of each hop.
+
+The option is often set once inside a project helper (`fetchExternal`,
+`safeFetch`). Open the helper before deciding: a caller that looks
+unguarded may be safe, and a helper that follows redirects makes every
+caller unsafe.
 
 **SDK wrappers:**
 ```ts
@@ -227,6 +233,10 @@ Flag when ALL of the following hold:
 - Calls that route through a vetted helper (e.g., `safeFetch`)
   whose body you've confirmed validates host + blocks private
   ranges + handles redirects.
+- Redirect following that is already disabled: `redirect: "manual"`
+  (the caller must then re-validate `Location` before the next
+  request), `redirect: "error"`, `maxRedirects: 0`, or
+  `followRedirect: false`.
 
 ## Examples
 
