@@ -14,8 +14,38 @@ precondition:
       - jsx
       - mjs
       - cjs
+    patterns:
+      - regex: Boolean\.parseBoolean\s*\(\s*System\.getenv
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Boolean.parseBoolean over getenv
+      - regex: Boolean\.valueOf\s*\(\s*System\.getenv
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Boolean.valueOf over getenv
+      - regex: System\.getenv\s*\([^)]*\)\s*!=\s*null
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: env var presence used as a boolean
 where:
   extensions:
+    - java
+    - kt
     - ts
     - tsx
     - js
@@ -28,15 +58,24 @@ where:
     - '**/*.spec.{ts,tsx,js,jsx,mjs}'
     - '**/node_modules/**'
     - '**/dist/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: 'process\.env\.(DISABLE_|SKIP_|BYPASS_|NO_|ENABLE_|REQUIRE_)'
       label: security-control env var access
     - regex: 'process\.env\.[A-Z_]*(AUTH|VERIFY|CHECK|VALIDATE|SECURE|SSL|TLS)[A-Z_]*'
       label: auth/verify env var access
+    - regex: Boolean\.(parseBoolean|valueOf)\s*\(\s*System\.getenv
+      label: boolean parse over getenv
+    - regex: System\.getenv\s*\([^)]*\)\s*!=\s*null
+      label: presence used as a boolean
   maxFilesPerBatch: 5
 references:
   - CWE-1287
   - 'OWASP-A05:2021'
+
 ---
 
 You are reviewing JavaScript / TypeScript source code for env vars

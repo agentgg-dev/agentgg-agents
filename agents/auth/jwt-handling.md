@@ -136,8 +136,55 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: Unverified JWT header/claims read
+      - regex: Jwts\.(parser|parserBuilder|builder)\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: jjwt parser/builder
+      - regex: JWT\.(decode|require|create)\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: java-jwt decode/require/create
+      - regex: SignedJWT\.parse\s*\(|JWSVerifier|MACVerifier|RSASSAVerifier
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: nimbus-jose-jwt verification
+      - regex: setSigningKey\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: jjwt setSigningKey (verify the algorithm is pinned)
+      - regex: parseClaimsJws|parseClaimsJwt|getUnverifiedClaims
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: JWT claims parsed
 where:
   extensions:
+    - java
+    - kt
     - py
     - ts
     - tsx
@@ -159,6 +206,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: jwt\.(verify|sign|decode)\s*\(
       label: jsonwebtoken jwt.verify/sign/decode call
@@ -182,6 +233,14 @@ where:
       label: JWT algorithms allowlist
     - regex: jwt\.get_unverified_(header|claims)\s*\(
       label: Unverified JWT header/claims read
+    - regex: Jwts\.(parser|parserBuilder|builder)\s*\(
+      label: jjwt parser/builder
+    - regex: JWT\.(decode|require|create)\s*\(
+      label: java-jwt call (decode does NOT verify)
+    - regex: SignedJWT\.parse\s*\(|JWSVerifier|MACVerifier
+      label: nimbus verification
+    - regex: setSigningKey\s*\(
+      label: setSigningKey (verify algorithm pinning)
   maxFilesPerBatch: 5
 references:
   - CWE-345

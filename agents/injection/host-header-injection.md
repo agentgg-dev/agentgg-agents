@@ -34,8 +34,37 @@ precondition:
           - '**/vendor/**'
           - '**/tests/**'
         label: PHP reading HTTP_HOST / SERVER_NAME
+      - regex: getHeader\s*\(\s*[\"'](Host|X-Forwarded-Host|X-Forwarded-Proto)[\"']
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Host / forwarded-host header read
+      - regex: getServerName\s*\(\s*\)|getRequestURL\s*\(\s*\)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: server name / request URL from the request
+      - regex: ServletUriComponentsBuilder\.fromCurrentRequest
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: URL built from the current request
 where:
   extensions:
+    - java
+    - kt
     - ts
     - tsx
     - js
@@ -56,6 +85,10 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: 'req\.(headers\s*\[\s*[''"]x-forwarded-host[''"]\s*\]|headers\.host|hostname)|request\.headers\.host'
       label: Node reading req host / X-Forwarded-Host
@@ -63,10 +96,17 @@ where:
       label: Python/Django/Flask reading the request host
     - regex: '\$_SERVER\s*\[\s*[''"](HTTP_HOST|SERVER_NAME|HTTP_X_FORWARDED_HOST)[''"]\s*\]'
       label: PHP reading HTTP_HOST / SERVER_NAME
+    - regex: getHeader\s*\(\s*[\"'](Host|X-Forwarded-Host|X-Forwarded-Proto)[\"']
+      label: Host header read
+    - regex: getServerName\s*\(\s*\)|getRequestURL\s*\(\s*\)
+      label: server name / request URL
+    - regex: ServletUriComponentsBuilder\.fromCurrentRequest
+      label: URL from current request
   maxFilesPerBatch: 5
 references:
   - CWE-644
   - CWE-20
+
 ---
 
 You are reviewing source for Host header injection — code that trusts

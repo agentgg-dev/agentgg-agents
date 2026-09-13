@@ -19,8 +19,46 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: CORS origin configuration
+      - regex: '@CrossOrigin\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring @CrossOrigin
+      - regex: addAllowedOrigin(Pattern)?\s*\(\s*[\"']\*[\"']
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: allowed origin wildcard
+      - regex: allowedOrigins\s*\(\s*[\"']\*[\"']
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: allowedOrigins wildcard
+      - regex: setAllowCredentials\s*\(\s*true
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: credentials allowed (check against the origin list)
 where:
   extensions:
+    - java
+    - kt
     - ts
     - tsx
     - js
@@ -34,10 +72,22 @@ where:
   preFilter:
     - regex: 'Access-Control|[Cc]ors\s*[\(\{]|crossorigin|cross[_-]origin|[Aa]llow(ed)?[_-]?[Oo]rigins?|\$http_origin|[Hh]eaders?\s*[.\[]\s*[`"'']?[Oo]rigin'
       label: CORS origin configuration
+    - regex: '@CrossOrigin\s*\('
+      label: '@CrossOrigin'
+    - regex: addAllowedOrigin(Pattern)?\s*\(|allowedOrigins\s*\(
+      label: CORS origin configuration
+    - regex: setAllowCredentials\s*\(\s*true
+      label: allowCredentials(true)
+  excludePatterns:
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
 references:
   - CWE-942
   - CWE-346
   - 'OWASP-A05:2021'
+
 ---
 
 You are reviewing source code for CORS (Cross-Origin Resource Sharing)

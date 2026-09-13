@@ -52,8 +52,57 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Project-defined cookie helper
+      - regex: server\.servlet\.session\.cookie\.(http-only|secure|same-site)\s*[=:]
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring session cookie setting
+      - regex: setHttpOnly\s*\(\s*false|setSecure\s*\(\s*false
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: cookie flag disabled
+      - regex: new\s+Cookie\s*\(
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: raw servlet Cookie construction
+      - regex: SameSite|sameSite
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: SameSite reference
 where:
   extensions:
+    - java
+    - kt
+    - properties
+    - yml
+    - yaml
     - ts
     - tsx
     - js
@@ -67,15 +116,26 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - semgrepRule: auth/cookie-set-call
       label: Cookie set call without all security attributes
+    - regex: server\.servlet\.session\.cookie\.(http-only|secure|same-site)\s*[=:]
+      label: session cookie setting
+    - regex: setHttpOnly\s*\(|setSecure\s*\(
+      label: cookie flag call
+    - regex: new\s+Cookie\s*\(
+      label: raw Cookie construction
   maxFilesPerBatch: 5
 references:
   - CWE-1004
   - CWE-614
   - CWE-1275
   - 'OWASP-A05:2021'
+
 ---
 
 You are reviewing source code for session / authentication cookies

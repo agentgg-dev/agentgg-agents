@@ -13,6 +13,62 @@ precondition:
       - '**/api/dev/**/*.{ts,tsx,js,jsx,mjs}'
       - '**/api/**/*.{ts,tsx,js,jsx,mjs}'
       - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+    patterns:
+      - regex: management\.endpoints\.web\.exposure\.include\s*[=:]
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring Actuator exposure list
+      - regex: management\.endpoint\.\w+\.enabled\s*[=:]\s*true
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring Actuator endpoint enabled
+      - regex: management\.endpoint\.health\.show-details\s*[=:]\s*always
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Actuator health details always shown
+      - regex: "@RequestMapping\\s*\\(\\s*[\\\"'][^\\\"']*/(debug|test|dev|internal|admin)"
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: debug/internal-shaped controller route
+      - regex: spring-boot-starter-actuator
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: actuator dependency present
 where:
   filePatterns:
     - '**/api/debug/**/*.{ts,tsx,js,jsx,mjs}'
@@ -20,13 +76,29 @@ where:
     - '**/api/dev/**/*.{ts,tsx,js,jsx,mjs}'
     - '**/api/**/*.{ts,tsx,js,jsx,mjs}'
     - '**/app/api/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/actuator/**/*.{java,kt}'
+    - '**/*Controller.{java,kt}'
+    - '**/application*.{properties,yml,yaml}'
+    - '**/bootstrap*.{properties,yml,yaml}'
   preFilter:
     - semgrepRule: shared/http-endpoints
       label: HTTP endpoint handler or route registration
+    - regex: management\.endpoints\.web\.exposure\.include\s*[=:]
+      label: Actuator exposure list
+    - regex: management\.endpoint\.\w+\.(enabled|show-details)\s*[=:]
+      label: Actuator endpoint setting
+    - regex: "@RequestMapping\\s*\\(\\s*[\\\"'][^\\\"']*/(debug|test|dev|internal|admin)"
+      label: debug-shaped route
+  excludePatterns:
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
 references:
   - CWE-489
   - CWE-215
   - 'OWASP-A05:2021'
+
 ---
 
 You are reviewing HTTP handlers that look like debug, test, or

@@ -62,6 +62,33 @@ precondition:
           - '**/test_*.py'
           - '**/*_test.py'
         label: Rate-limit call
+      - regex: getHeader\s*\(\s*[\"']X-(Forwarded-For|Real-IP)[\"']
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: spoofable client-IP header
+      - regex: RateLimiter|Bucket4j|@RateLimit|Resilience4j
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: rate-limit library
+      - regex: getRemoteAddr\s*\(\s*\)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: client address read
 where:
   filePatterns:
     - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
@@ -72,6 +99,9 @@ where:
     - '**/api/**/*.py'
     - '**/views/**/*.py'
     - '**/endpoints/**/*.py'
+    - '**/*Controller.{java,kt}'
+    - '**/ratelimit/**/*.{java,kt}'
+    - '**/filter/**/*.{java,kt}'
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -79,6 +109,10 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: (login|signin|sign-in|signup|sign-up|password-reset|forgot|reset-password|charge|payment|refund|account.*(delete|remove)|token|invite|magic-link|otp|verify)
       label: Sensitive endpoint name pattern
@@ -86,6 +120,12 @@ where:
       label: Reference to spoofable client-IP header
     - regex: '(rateLimit|rateLimiter|ratelimit|throttle|consume)\s*[\.(]'
       label: Rate-limit call
+    - regex: getHeader\s*\(\s*[\"']X-(Forwarded-For|Real-IP)[\"']
+      label: spoofable client-IP header
+    - regex: RateLimiter|Bucket4j|@RateLimit|Resilience4j
+      label: rate-limit library
+    - regex: getRemoteAddr\s*\(\s*\)
+      label: client address read
   maxFilesPerBatch: 5
 references:
   - CWE-307

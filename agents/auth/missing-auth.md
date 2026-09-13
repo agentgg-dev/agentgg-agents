@@ -86,6 +86,42 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: Django urls.py route
+      - regex: '@(Get|Post|Put|Patch|Delete|Request)Mapping\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring MVC route
+      - regex: '@(RestController|Controller)\b'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring controller
+      - regex: permitAll\s*\(\s*\)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: permitAll in the security chain
+      - regex: '@(PreAuthorize|Secured|RolesAllowed)\b'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: authorization annotation present
 where:
   filePatterns:
     - '**/api/**/*.{ts,tsx,js,jsx}'
@@ -106,6 +142,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - semgrepRule: shared/http-endpoints
       label: HTTP route handler or endpoint function
@@ -117,8 +157,16 @@ where:
       label: DRF class-based view
     - regex: '@(login_required|permission_required|requires_auth|authenticated)'
       label: auth decorator present
+    - regex: '@(Get|Post|Put|Patch|Delete|Request)Mapping\s*\('
+      label: Spring MVC route
+    - regex: '@(PreAuthorize|Secured|RolesAllowed)\b'
+      label: authorization annotation
+    - regex: permitAll\s*\(\s*\)
+      label: permitAll
   maxFilesPerBatch: 5
   extensions:
+    - java
+    - kt
     - py
 references:
   - CWE-306

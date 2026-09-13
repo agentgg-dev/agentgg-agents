@@ -183,8 +183,55 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Python crypto import
+      - regex: MessageDigest\.getInstance\s*\(\s*[\"'](MD5|SHA-?1)[\"']
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: MessageDigest MD5/SHA-1
+      - regex: Cipher\.getInstance\s*\(\s*[\"'][^\"']*(DES|RC4|ECB)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: weak cipher or ECB mode
+      - regex: new\s+Random\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: java.util.Random (not SecureRandom)
+      - regex: DigestUtils\.(md5|sha1)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: commons-codec MD5/SHA-1
+      - regex: \w*(signature|hmac|digest|mac)\w*\s*\.equals\s*\(|\.equals\s*\(\s*\w*(signature|hmac|digest|mac)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: timing-unsafe equals on a signature
 where:
   extensions:
+    - java
+    - kt
     - py
     - ts
     - tsx
@@ -206,6 +253,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: 'createHash\s*\(\s*[''"](md5|sha1)[''"]'
       label: createHash with MD5/SHA1
@@ -229,6 +280,16 @@ where:
       label: random module (verify not security-relevant)
     - semgrepRule: cryptography/crypto-primitive
       label: Crypto primitive call (cipher, hash, HMAC, key derivation)
+    - regex: MessageDigest\.getInstance\s*\(\s*[\"'](MD5|SHA-?1)[\"']
+      label: MD5/SHA-1 digest
+    - regex: Cipher\.getInstance\s*\(\s*[\"'][^\"']*(DES|RC4|ECB)
+      label: weak cipher/ECB
+    - regex: new\s+Random\s*\(
+      label: java.util.Random
+    - regex: DigestUtils\.(md5|sha1)
+      label: commons-codec weak digest
+    - regex: \.equals\s*\(\s*\w*(signature|hmac|digest|mac)
+      label: timing-unsafe equals
   maxFilesPerBatch: 5
 references:
   - CWE-327

@@ -86,6 +86,33 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: SQLAlchemy by-id lookup
+      - regex: \b(tenantId|orgId|ownerId|accountId|workspaceId|customerId|installationId)\b
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: tenant-shaped identifier
+      - regex: \.findById\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: by-id lookup
+      - regex: '@(PathVariable|RequestParam)\s*(\([^)]*\))?\s*\w*\s+\w*[Ii]d\b'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: id bound from the request
 where:
   filePatterns:
     - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
@@ -106,6 +133,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: \b(teamId|ownerId|orgId|tenantId|installationId|configurationId|integrationConfigurationId|customerId|workspaceId|accountId)\b
       label: Tenant-shaped identifier
@@ -119,8 +150,16 @@ where:
       label: Django by-id lookup
     - regex: \.filter_by\s*\(\s*id\s*=
       label: SQLAlchemy filter_by(id=)
+    - regex: \b(tenantId|orgId|ownerId|accountId|workspaceId|customerId)\b
+      label: tenant-shaped identifier
+    - regex: \.findById\s*\(
+      label: by-id lookup
+    - regex: '@(PathVariable|RequestParam)'
+      label: request-bound parameter
   maxFilesPerBatch: 5
   extensions:
+    - java
+    - kt
     - py
 references:
   - CWE-639

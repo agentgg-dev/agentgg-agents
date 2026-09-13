@@ -69,8 +69,28 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: balance/quota/credits mutation
+      - regex: \.findById\s*\([\s\S]{0,300}\.save\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: read + save pair (verify the transaction)
+      - regex: '@Transactional'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: transaction boundary declared
 where:
   extensions:
+    - java
+    - kt
     - py
     - ts
     - tsx
@@ -93,6 +113,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: '\.(findUnique|findFirst|findById|findOne)\s*\([\s\S]{0,300}\.update\s*\('
       label: find + update pair (verify transaction)
@@ -111,6 +135,12 @@ where:
       label: balance/quota/credits reference
     - regex: select_for_update\s*\(|transaction\.atomic
       label: explicit locking/transaction present
+    - regex: \.save\s*\(
+      label: repository.save (verify the transaction)
+    - regex: '@Transactional'
+      label: transaction boundary
+    - regex: '@Version\b|LockModeType'
+      label: optimistic/pessimistic locking present
   maxFilesPerBatch: 5
 references:
   - CWE-367

@@ -15,6 +15,34 @@ precondition:
       - '**/dispatch*.{ts,js,mjs}'
       - '**/listener*.{ts,js,mjs}'
       - '**/webhook*.{ts,js,mjs}'
+    patterns:
+      - regex: '@(KafkaListener|RabbitListener|JmsListener|SqsListener|StreamListener)\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: message listener
+      - regex: '@(EventListener|TransactionalEventListener)\s*[\(\n]'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring event listener
+      - regex: \.ack\s*\(\s*\)|Acknowledgment\b
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: manual acknowledgement
 where:
   filePatterns:
     - '**/event-consumer*.{ts,js,mjs}'
@@ -24,11 +52,26 @@ where:
     - '**/dispatch*.{ts,js,mjs}'
     - '**/listener*.{ts,js,mjs}'
     - '**/webhook*.{ts,js,mjs}'
+    - '**/*Listener.{java,kt}'
+    - '**/*Consumer.{java,kt}'
+    - '**/*Handler.{java,kt}'
   preFilter:
     - semgrepRule: logic/event-handler
       label: Event dispatch switch or handler map lookup
+    - regex: '@(KafkaListener|RabbitListener|JmsListener|SqsListener|StreamListener)\s*\('
+      label: message listener
+    - regex: '@(EventListener|TransactionalEventListener)'
+      label: Spring event listener
+    - regex: \.ack\s*\(\s*\)|Acknowledgment\b
+      label: manual acknowledgement
+  excludePatterns:
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
 references:
   - CWE-696
+
 ---
 
 You are reviewing event-dispatching code (switch / map / object

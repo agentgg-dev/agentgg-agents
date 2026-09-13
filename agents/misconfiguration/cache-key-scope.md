@@ -63,8 +63,46 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: module-level dict used as a cache
+      - regex: '@Cacheable\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring @Cacheable
+      - regex: '@(CacheEvict|CachePut)\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring cache mutation
+      - regex: key\s*=\s*[\"']#root\.methodName[\"']
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: cache key with no per-user component
+      - regex: static\s+(final\s+)?(Map|ConcurrentHashMap)<
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: static Map used as a cache
 where:
   extensions:
+    - java
+    - kt
     - py
     - ts
     - tsx
@@ -85,6 +123,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: '(redis|cache|kv)\.(get|set|setex|hget|hset|mget)\s*\(\s*[`"''](feature|config|token|flag|user|profile)'
       label: Cache call with per-user-shaped key prefix
@@ -96,6 +138,14 @@ where:
       label: cache decorator (verify per-user scope)
     - regex: ^[A-Z_]*(CACHE|STORE|MEMO)\w*\s*[:=]\s*(dict\s*\(\s*\)|\{\s*\})
       label: module-level dict cache
+    - regex: '@Cacheable\s*\('
+      label: '@Cacheable (verify the key is per-user)'
+    - regex: '@(CacheEvict|CachePut)\s*\('
+      label: cache mutation
+    - regex: key\s*=\s*[\"']#root\.methodName[\"']
+      label: key with no per-user component
+    - regex: static\s+(final\s+)?(Map|ConcurrentHashMap)<
+      label: static Map cache
   maxFilesPerBatch: 5
 references:
   - CWE-639

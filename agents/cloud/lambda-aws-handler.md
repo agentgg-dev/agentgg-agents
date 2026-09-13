@@ -50,12 +50,42 @@ precondition:
           - '**/vendor/**'
           - '**/dist/**'
         label: Python Lambda handler
+      - regex: implements\s+Request(Stream)?Handler
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: AWS Lambda handler class
+      - regex: com\.amazonaws\.services\.lambda
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: AWS Lambda runtime import
+      - regex: APIGatewayProxyRequestEvent|APIGatewayV2HTTPEvent
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: API Gateway event type
   prompt: Run only if this project uses aws-lambda — look for it in the manifest (package.json / composer.json / go.mod / etc.) and in the code.
 where:
   filePatterns:
     - '**/lambda/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
     - '**/handler*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
     - '**/lambdas/**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs}'
+    - '**/lambda/**/*.{java,kt}'
+    - '**/lambdas/**/*.{java,kt}'
+    - '**/*Handler.{java,kt}'
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs,py,go,rs}'
@@ -64,6 +94,10 @@ where:
     - '**/node_modules/**'
     - '**/vendor/**'
     - '**/dist/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: export\s+const\s+handler\s*=|exports\.handler\s*=
       label: Lambda handler export
@@ -71,10 +105,17 @@ where:
       label: Lambda event type annotation
     - regex: def\s+(handler|lambda_handler)\s*\(
       label: Python Lambda handler
+    - regex: implements\s+Request(Stream)?Handler
+      label: Lambda handler class
+    - regex: com\.amazonaws\.services\.lambda
+      label: Lambda runtime import
+    - regex: handleRequest\s*\(
+      label: handler entry point
   maxFilesPerBatch: 5
 references:
   - CWE-285
   - 'OWASP-A05:2021'
+
 ---
 
 You are reviewing AWS Lambda handler implementations for the standard

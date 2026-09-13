@@ -72,6 +72,33 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: scheduler library
+      - regex: '@Scheduled\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring @Scheduled task
+      - regex: CRON_SECRET|X-Cron-Secret|x-cron-secret
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: cron secret reference
+      - regex: '@EnableScheduling|Quartz|JobDetail'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: scheduler wiring
 where:
   filePatterns:
     - '**/cron/**/*.{ts,tsx,js,jsx,mjs}'
@@ -91,6 +118,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: export\s+(async\s+function|const)\s+(GET|POST)\b
       label: HTTP handler in cron-shaped path
@@ -102,8 +133,16 @@ where:
       label: cron-shaped route
     - regex: (celery|APScheduler|apscheduler|schedule\.every)
       label: scheduler library
+    - regex: '@Scheduled\s*\('
+      label: '@Scheduled task'
+    - regex: CRON_SECRET|X-Cron-Secret|x-cron-secret
+      label: cron secret reference
+    - regex: '@EnableScheduling|Quartz|JobDetail'
+      label: scheduler wiring
   maxFilesPerBatch: 5
   extensions:
+    - java
+    - kt
     - py
 references:
   - CWE-306

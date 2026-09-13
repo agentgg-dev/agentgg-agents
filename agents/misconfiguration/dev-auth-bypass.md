@@ -107,8 +107,68 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: auth kill-switch flag
+      - regex: "@Profile\\s*\\(\\s*[\\\"'](dev|test|local)"
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: '@Profile dev/test/local'
+      - regex: spring\.profiles\.active\s*[=:]\s*(dev|test|local)
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: dev profile active in config
+      - regex: anyRequest\s*\(\s*\)\s*\.permitAll
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: permitAll on every request
+      - regex: System\.getenv\s*\(\s*[\"'](ENV|APP_ENV|ENVIRONMENT|STAGE)[\"']
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: environment-name guard
+      - regex: csrf\s*\(\s*\)\s*\.disable|\.csrf\s*\(\s*AbstractHttpConfigurer::disable
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: CSRF disabled
 where:
   extensions:
+    - java
+    - kt
+    - properties
+    - yml
+    - yaml
     - py
     - ts
     - tsx
@@ -129,6 +189,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: '(NODE_ENV|isDev|IS_TEST|isTest)\s*(===|==|!==|!=)\s*["''](development|test|dev)["'']'
       label: NODE_ENV / isDev / IS_TEST guard
@@ -146,6 +210,14 @@ where:
       label: dev-login helper
     - regex: LOGIN_DISABLED|AUTH_DISABLED|SKIP_AUTH
       label: auth kill-switch flag
+    - regex: '@Profile\s*\('
+      label: '@Profile'
+    - regex: spring\.profiles\.active\s*[=:]
+      label: active profile
+    - regex: anyRequest\s*\(\s*\)\s*\.permitAll
+      label: permitAll on every request
+    - regex: csrf\s*\(\s*\)\s*\.disable
+      label: CSRF disabled
   maxFilesPerBatch: 5
 references:
   - CWE-489

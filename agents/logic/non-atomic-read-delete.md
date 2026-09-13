@@ -74,8 +74,37 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: one-time-token shape
+      - regex: \.(findById|findBy\w+)\s*\([\s\S]{0,300}\.delete\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: read + delete pair (verify atomicity)
+      - regex: (otp|magic|invite|reset|verify|consume)\w*Token\b|oneTimeUse
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: one-time-token shape
+      - regex: \.deleteById\s*\(|\.delete\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: repository delete
 where:
   extensions:
+    - java
+    - kt
     - py
     - ts
     - tsx
@@ -96,6 +125,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: 'redis\.(get|hget|hgetall)\s*\([\s\S]{0,200}redis\.(del|hdel)\s*\('
       label: redis get + del pair (verify atomicity)
@@ -111,6 +144,12 @@ where:
       label: ORM .delete() (verify atomic with the read)
     - regex: (magic|otp|invite|reset|verify|consume)\w*_token|one_time_use
       label: one-time-token shape
+    - regex: \.deleteById\s*\(|\.delete\s*\(
+      label: repository delete (verify atomic with the read)
+    - regex: (otp|magic|invite|reset|verify|consume)\w*Token\b|oneTimeUse
+      label: one-time-token shape
+    - regex: '@Transactional'
+      label: transaction boundary
   maxFilesPerBatch: 5
 references:
   - CWE-367

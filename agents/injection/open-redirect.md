@@ -206,8 +206,55 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: host allowlist check on parsed URL
+      - regex: \.sendRedirect\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: HttpServletResponse.sendRedirect
+      - regex: "new\\s+RedirectView\\s*\\(|[\\\"']redirect:"
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring redirect view
+      - regex: HttpHeaders\.LOCATION|setHeader\s*\(\s*[\"']Location[\"']
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Location header set
+      - regex: \b(returnUrl|redirectUrl|returnTo|redirectUri|nextUrl)\b
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: redirect destination parameter
+      - regex: \.startsWith\s*\(\s*[\"']/[\"']\s*\)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: startsWith("/") check - verify it also rejects '//'
 where:
   extensions:
+    - java
+    - kt
     - py
     - ts
     - tsx
@@ -228,6 +275,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: res\.redirect\s*\(\s*(req|request)\.(query|body|params|headers)\.
       label: res.redirect() with request-derived destination
@@ -265,6 +316,16 @@ where:
       label: urljoin - verify base enforced
     - regex: urlparse\s*\([^)]*\)\.(netloc|hostname)
       label: parsed-URL host check
+    - regex: \.sendRedirect\s*\(
+      label: sendRedirect
+    - regex: "new\\s+RedirectView\\s*\\(|[\\\"']redirect:"
+      label: Spring redirect view
+    - regex: HttpHeaders\.LOCATION|setHeader\s*\(\s*[\"']Location[\"']
+      label: Location header
+    - regex: \b(returnUrl|redirectUrl|returnTo|redirectUri|nextUrl)\b
+      label: redirect parameter
+    - regex: \.startsWith\s*\(\s*[\"']/[\"']\s*\)
+      label: startsWith('/') - '//' bypassable
   maxFilesPerBatch: 5
 references:
   - CWE-601

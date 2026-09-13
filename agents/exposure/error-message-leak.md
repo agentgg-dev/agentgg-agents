@@ -13,6 +13,43 @@ precondition:
       - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
       - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
       - '**/endpoints/**/*.{ts,tsx,js,jsx,mjs}'
+    patterns:
+      - regex: \.printStackTrace\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: printStackTrace call
+      - regex: '@ExceptionHandler\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring exception handler
+      - regex: (ResponseEntity|return)[^;]{0,160}\.getMessage\s*\(\s*\)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: exception message returned to the caller
+      - regex: getStackTrace\s*\(\s*\)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: stack trace read
 where:
   filePatterns:
     - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
@@ -20,13 +57,30 @@ where:
     - '**/pages/api/**/*.{ts,tsx,js,jsx,mjs}'
     - '**/routes/**/*.{ts,tsx,js,jsx,mjs}'
     - '**/endpoints/**/*.{ts,tsx,js,jsx,mjs}'
+    - '**/*Controller.{java,kt}'
+    - '**/*Advice.{java,kt}'
+    - '**/*ExceptionHandler.{java,kt}'
   preFilter:
     - semgrepRule: exposure/error-message-in-response
       label: Raw error message or stack trace returned in HTTP response
+    - regex: \.printStackTrace\s*\(
+      label: printStackTrace
+    - regex: '@ExceptionHandler\s*\('
+      label: Spring exception handler
+    - regex: \.getMessage\s*\(\s*\)
+      label: exception message (verify it is not returned)
+    - regex: getStackTrace\s*\(\s*\)
+      label: stack trace read
+  excludePatterns:
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
 references:
   - CWE-209
   - CWE-200
   - 'OWASP-A05:2021'
+
 ---
 
 You are reviewing HTTP route handlers for error messages that leak

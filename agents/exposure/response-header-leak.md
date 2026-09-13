@@ -17,8 +17,38 @@ precondition:
       - lua
       - go
       - conf
+    patterns:
+      - regex: (setHeader|addHeader)\s*\(\s*[\"'](Server|X-Powered-By|X-AspNet)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: server-identifying header set
+      - regex: server\.server-header|server\.error\.include-stacktrace
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring error/server header config
+      - regex: getStackTrace\s*\(\s*\)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: stack trace read
 where:
   extensions:
+    - java
+    - kt
     - ts
     - tsx
     - js
@@ -31,9 +61,21 @@ where:
   preFilter:
     - semgrepRule: exposure/response-header-leak
       label: Response setHeader call with an info-disclosing header name
+    - regex: (setHeader|addHeader)\s*\(\s*[\"'](Server|X-Powered-By)
+      label: server-identifying header
+    - regex: server\.error\.include-stacktrace
+      label: stacktrace included in errors
+    - regex: getStackTrace\s*\(\s*\)
+      label: stack trace read
+  excludePatterns:
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
 references:
   - CWE-200
   - 'OWASP-A05:2021'
+
 ---
 
 You are reviewing source code for HTTP response headers that leak

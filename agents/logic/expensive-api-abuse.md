@@ -155,8 +155,46 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: manual SSE data frame
+      - regex: '@(Get|Post)Mapping\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: HTTP route
+      - regex: \.findAll\s*\(\s*\)
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: unbounded findAll
+      - regex: Thread\.sleep\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: blocking sleep in request path
+      - regex: '@Async\b|CompletableFuture'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: async work kicked off per request
 where:
   extensions:
+    - java
+    - kt
     - py
   filePatterns:
     - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
@@ -181,6 +219,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - semgrepRule: shared/http-endpoints
       label: HTTP route handler or endpoint function
@@ -198,11 +240,20 @@ where:
       label: LLM streaming call
     - regex: "yield\\s+f?[\\\"']data:"
       label: manual SSE data frame
+    - regex: \.findAll\s*\(\s*\)
+      label: unbounded findAll
+    - regex: Thread\.sleep\s*\(
+      label: blocking sleep
+    - regex: '@(Get|Post)Mapping\s*\('
+      label: HTTP route
+    - regex: Pageable|@PageableDefault
+      label: pagination present
   maxFilesPerBatch: 5
 references:
   - CWE-770
   - CWE-307
   - 'OWASP-A04:2021'
+
 ---
 
 You are reviewing endpoints that invoke paid / metered APIs for

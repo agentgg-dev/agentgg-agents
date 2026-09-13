@@ -52,8 +52,37 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Cache write with template-literal key
+      - regex: '@Cacheable\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring @Cacheable
+      - regex: getHeader\s*\(\s*[\"']X-
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: request header read (verify it is not in the cache key)
+      - regex: Cache-Control|setHeader\s*\(\s*[\"']Vary[\"']
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: cache header set
 where:
   extensions:
+    - java
+    - kt
     - ts
     - tsx
     - js
@@ -69,6 +98,10 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: '(req|request|ctx)\.headers(\.|\[)host'
       label: Cache key reference to request Host header
@@ -78,10 +111,17 @@ where:
       label: OpenResty cache key from Host/URI
     - regex: '(redis|kv|cache)\.(set|setex|hset|mset)\s*\(\s*[`"''][^`"'']*\$\{'
       label: Cache write with template-literal key
+    - regex: '@Cacheable\s*\('
+      label: '@Cacheable'
+    - regex: getHeader\s*\(\s*[\"']X-
+      label: custom header read
+    - regex: Cache-Control|[\"']Vary[\"']
+      label: cache header
   maxFilesPerBatch: 5
 references:
   - CWE-444
   - 'OWASP-A03:2021'
+
 ---
 
 You are reviewing source code for cache-key construction that allows

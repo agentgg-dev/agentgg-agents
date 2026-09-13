@@ -73,6 +73,42 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: get_x_by_id / find_x_by_slug helper
+      - regex: \.findById\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring Data findById
+      - regex: \.(getOne|getReferenceById)\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: JPA getOne/getReferenceById
+      - regex: entityManager\.find\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: EntityManager.find
+      - regex: \.findBy[A-Z]\w*\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: derived findByX query
 where:
   filePatterns:
     - '**/services/**/*.{ts,tsx,js,jsx,mjs}'
@@ -94,6 +130,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: '(get|find|fetch)[A-Z][a-zA-Z]+By(Id|Uid|Slug)\s*\('
       label: getXById / findXBySlug helper call
@@ -105,8 +145,18 @@ where:
       label: SQLAlchemy filter_by(id=)
     - regex: def\s+(get|find|fetch|load)_\w+_by_(id|uid|slug)\s*\(
       label: by-id lookup helper
+    - regex: \.findById\s*\(
+      label: findById
+    - regex: \.(getOne|getReferenceById)\s*\(
+      label: getOne/getReferenceById
+    - regex: entityManager\.find\s*\(
+      label: EntityManager.find
+    - regex: \.findBy[A-Z]\w*\s*\(
+      label: derived findByX query
   maxFilesPerBatch: 5
   extensions:
+    - java
+    - kt
     - py
 references:
   - CWE-639

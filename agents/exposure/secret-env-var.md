@@ -16,8 +16,47 @@ precondition:
       - cjs
       - lua
       - go
+    patterns:
+      - regex: System\.getenv\s*\(\s*[\"'][^\"']*(KEY|SECRET|TOKEN|PASSWORD|CREDENTIAL)
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: secret-shaped env var read
+      - regex: "@Value\\s*\\(\\s*[\\\"']\\$\\{[^}]*(secret|key|token|password)"
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: secret-shaped @Value property
+      - regex: System\.getProperty\s*\(\s*[\"'][^\"']*(secret|key|token|password)
+        in:
+          - '**/*.{java,kt}'
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: secret-shaped system property
 where:
   extensions:
+    - java
+    - kt
+    - properties
+    - yml
+    - yaml
     - ts
     - tsx
     - js
@@ -29,10 +68,22 @@ where:
   preFilter:
     - semgrepRule: exposure/process-env-access
       label: process.env access for a secret-named variable
+    - regex: System\.getenv\s*\(\s*[\"'][^\"']*(KEY|SECRET|TOKEN|PASSWORD|CREDENTIAL)
+      label: secret-shaped env var
+    - regex: "@Value\\s*\\(\\s*[\\\"']\\$\\{[^}]*(secret|key|token|password)"
+      label: secret-shaped @Value
+    - regex: System\.getProperty\s*\(\s*[\"'][^\"']*(secret|key|token|password)
+      label: secret-shaped system property
+  excludePatterns:
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
 references:
   - CWE-200
   - CWE-532
   - 'OWASP-A02:2021'
+
 ---
 
 You are reviewing source code for access to secret-shaped environment

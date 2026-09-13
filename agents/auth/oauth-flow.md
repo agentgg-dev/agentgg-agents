@@ -16,6 +16,7 @@ precondition:
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
           - '**/*.py'
+          - '**/*.{java,kt}'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -35,6 +36,7 @@ precondition:
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
           - '**/*.py'
+          - '**/*.{java,kt}'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -54,6 +56,7 @@ precondition:
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
           - '**/*.py'
+          - '**/*.{java,kt}'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -73,6 +76,7 @@ precondition:
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
           - '**/*.py'
+          - '**/*.{java,kt}'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -92,6 +96,7 @@ precondition:
           - '**/app/api/**/*.{ts,tsx,js,jsx}'
           - '**/api/**/*.{ts,tsx,js,jsx}'
           - '**/*.py'
+          - '**/*.{java,kt}'
         notIn:
           - '**/__tests__/**'
           - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -114,6 +119,12 @@ where:
     - '**/auth/**/*.py'
     - '**/callback/**/*.py'
     - '**/api/**/*.py'
+    - '**/oauth/**/*.{java,kt}'
+    - '**/auth/**/*.{java,kt}'
+    - '**/security/**/*.{java,kt}'
+    - '**/*OAuth*.{java,kt}'
+    - '**/*Oauth*.{java,kt}'
+    - '**/*Security*.{java,kt}'
   excludePatterns:
     - '**/__tests__/**'
     - '**/*.test.{ts,tsx,js,jsx,mjs}'
@@ -121,6 +132,10 @@ where:
     - '**/node_modules/**'
     - '**/dist/**'
     - '**/.next/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: '\b(authorize|authorization)\b[\s\S]{0,200}\bclient_id\b'
       label: OAuth authorize URL construction

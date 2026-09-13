@@ -96,8 +96,46 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: FastAPI/Django FileResponse
+      - regex: new\s+File\s*\([^)]*\b(request|param|name|fileName|filename|path|userPath)\b
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: File built from request data
+      - regex: Files\.(readAllBytes|readString|newInputStream|copy|move)\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: NIO file read/move
+      - regex: Paths\.get\s*\([^)]*\b(request|param|name|fileName|filename)\b
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Paths.get with request data
+      - regex: getResourceAsStream\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: classpath resource load
 where:
   extensions:
+    - java
+    - kt
     - py
     - ts
     - tsx
@@ -118,6 +156,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: 'fs(\.promises)?\.(readFile|readFileSync|readFileAsync|writeFile|writeFileSync|unlink|unlinkSync|stat|statSync|open|createReadStream|createWriteStream|rename|renameSync)\s*\([^)]*\b(req|request|params|body|userPath|filename|originalname)\b'
       label: fs operation with request-derived path
@@ -135,6 +177,14 @@ where:
       label: Flask send_file
     - regex: \bopen\s*\(\s*f[\"']
       label: open() with f-string path
+    - regex: new\s+File\s*\(
+      label: File construction (verify the path is confined)
+    - regex: Files\.(readAllBytes|readString|newInputStream|copy|move)\s*\(
+      label: NIO file operation
+    - regex: Paths\.get\s*\(
+      label: Paths.get
+    - regex: getResourceAsStream\s*\(
+      label: classpath resource load
   maxFilesPerBatch: 5
 references:
   - CWE-22

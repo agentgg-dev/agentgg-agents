@@ -94,6 +94,42 @@ precondition:
           - '**/venv/**'
           - '**/site-packages/**'
         label: webhook-shaped route
+      - regex: '@PostMapping\s*\([^)]*(webhook|hook|callback)'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: webhook-shaped route
+      - regex: "@RequestHeader\\s*\\(\\s*[\\\"'](Stripe-Signature|X-Hub-Signature|X-Slack-Signature|X-Svix-Signature|X-Shopify-Hmac)"
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: provider signature header
+      - regex: MessageDigest\.isEqual\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: constant-time signature comparison
+      - regex: Mac\.getInstance\s*\(
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: HMAC construction
 where:
   filePatterns:
     - '**/*webhook*/**/*.{ts,tsx,js,jsx,mjs}'
@@ -113,6 +149,10 @@ where:
     - '**/.venv/**'
     - '**/venv/**'
     - '**/site-packages/**'
+    - '**/src/test/**'
+    - '**/test/**'
+    - '**/target/**'
+    - '**/build/**'
   preFilter:
     - regex: export\s+(async\s+function|const)\s+POST\b
       label: POST handler in webhook-shaped path
@@ -128,8 +168,18 @@ where:
       label: constant-time comparison
     - regex: "@(app|router|bp)\\.(route|post)\\s*\\(\\s*[\\\"'][^\\\"']*(webhook|hook|callback)"
       label: webhook-shaped route
+    - regex: '@PostMapping\s*\([^)]*(webhook|hook|callback)'
+      label: webhook-shaped route
+    - regex: "@RequestHeader\\s*\\(\\s*[\\\"'](Stripe-Signature|X-Hub-Signature|X-Slack-Signature|X-Svix-Signature)"
+      label: provider signature header
+    - regex: MessageDigest\.isEqual\s*\(
+      label: constant-time comparison
+    - regex: Mac\.getInstance\s*\(
+      label: HMAC construction
   maxFilesPerBatch: 5
   extensions:
+    - java
+    - kt
     - py
 references:
   - CWE-345
