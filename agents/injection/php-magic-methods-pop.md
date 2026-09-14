@@ -28,7 +28,7 @@ where:
   preFilter:
     - regex: 'unserialize\s*\('
       label: unserialize() call
-    - regex: '__wakeup\s*\(|__destruct\s*\(|__toString\s*\(|__call\s*\(|__callStatic\s*\(|__get\s*\(|__set\s*\(|__isset\s*\(|__unset\s*\('
+    - regex: 'function\s+&?\s*(?:__wakeup|__destruct|__toString|__call|__callStatic|__get|__set|__isset|__unset)\s*\('
       label: PHP magic method implementation
 references:
   - CWE-502

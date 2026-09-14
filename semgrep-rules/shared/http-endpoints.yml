@@ -196,6 +196,8 @@ rules:
   # Laravel Route facade, Slim/Lumen $app->method(), and WordPress
   # register_rest_route(). Symfony PHP8 Route attribute is covered by
   # the route registration patterns where $ROUTER->get() is used.
+  # The `$ROUTER->method()` path is constrained to a string starting with "/",
+  # which is what keeps `$request->get($key)` and `$container->get($id)` out.
   - id: php-http-route-registration
     message: PHP HTTP route registration
     languages: [php]
@@ -208,12 +210,17 @@ rules:
       - pattern: Route::delete($PATH, ...)
       - pattern: Route::any($PATH, ...)
       - pattern: Route::match($METHODS, $PATH, ...)
-      - pattern: $ROUTER->get($PATH, ...)
-      - pattern: $ROUTER->post($PATH, ...)
-      - pattern: $ROUTER->put($PATH, ...)
-      - pattern: $ROUTER->patch($PATH, ...)
-      - pattern: $ROUTER->delete($PATH, ...)
       - pattern: register_rest_route($NAMESPACE, $PATH, ...)
+      - patterns:
+          - pattern-either:
+              - pattern: $ROUTER->get($PATH, ...)
+              - pattern: $ROUTER->post($PATH, ...)
+              - pattern: $ROUTER->put($PATH, ...)
+              - pattern: $ROUTER->patch($PATH, ...)
+              - pattern: $ROUTER->delete($PATH, ...)
+          - metavariable-regex:
+              metavariable: $PATH
+              regex: ^["']/
 
   # --- Ruby ---
 

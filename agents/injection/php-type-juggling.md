@@ -24,7 +24,7 @@ precondition:
           - '**/tests/**'
           - '**/spec/**'
         label: strcmp() result loose-compared (null on array, 0 falsy)
-      - regex: 'in_array\s*\([^)]*\)(?!\s*,\s*true)'
+      - regex: 'in_array\s*\((?![^()]*(?:\([^()]*\)[^()]*)*,\s*(?:true|TRUE)\s*\))(?:[^()]|\([^()]*\))*\)'
         in:
           - '**/*.php'
         notIn:
@@ -53,7 +53,7 @@ where:
       label: Loose comparison on a security-sensitive variable
     - regex: 'strcmp\s*\([^)]*\)\s*==[^=]|==\s*strcmp\s*\(|strcmp\s*\([^)]*\)\s*!=[^=]'
       label: strcmp() result loose-compared
-    - regex: 'in_array\s*\([^)]*\)(?!\s*,\s*true)'
+    - regex: 'in_array\s*\((?![^()]*(?:\([^()]*\)[^()]*)*,\s*(?:true|TRUE)\s*\))(?:[^()]|\([^()]*\))*\)'
       label: in_array() without strict flag
     - regex: '[!=]=\s*(md5|sha1|hash|crypt|password_hash|bin2hex)\s*\(|(md5|sha1|hash|crypt)\s*\([^)]*\)\s*[!=]=[^=]'
       label: Digest function result loose-compared
