@@ -1,7 +1,7 @@
 ---
 slug: jvm-file-write-path
-name: Arbitrary File Write or Rename via Unvalidated Path (JVM)
-description: 'Java file-write and file-rename/move operations (FileOutputStream, Files.write, Files.move, FileWriter, File.renameTo, FileUtils.writeStringToFile) whose path argument is user-controlled — allows writing or renaming to arbitrary locations including JSP/WAR deploy directories, cron files, and SSH authorized_keys. Traces path values and checks for base-directory confinement.'
+name: Path Traversal in File Read, Write or Move (JVM)
+description: 'Java and Kotlin file operations whose path argument is user-controlled: reads (Files.readAllBytes, Files.newInputStream, getResourceAsStream, new File), writes (FileOutputStream, Files.write, FileWriter, FileUtils.writeStringToFile), copies, moves and renames. Allows reading arbitrary files, or writing and renaming to arbitrary locations including JSP/WAR deploy directories, cron files and SSH authorized_keys. Traces path values and checks for base-directory confinement.'
 version: 0.1.0
 author: agentgg
 noiseTier: normal
@@ -62,6 +62,42 @@ precondition:
           - '**/target/**'
           - '**/build/**'
         label: File rename or move with potentially user-controlled target
+      - regex: 'new\s+File\s*\([^)]*\b(request|param|name|fileName|filename|path|userPath)\b'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: File built from request data
+      - regex: 'Files\.(readAllBytes|readString|newInputStream|copy|move)\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: java.nio.file.Files read, copy or move
+      - regex: 'Paths\.get\s*\([^)]*\b(request|param|name|fileName|filename)\b'
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Paths.get with request data
+      - regex: 'getResourceAsStream\s*\('
+        in:
+          - '**/*.{java,kt}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: classpath resource load
 where:
   extensions:
     - java
@@ -84,6 +120,14 @@ where:
       label: Spring FileCopyUtils / StreamUtils copy to file
     - regex: 'Files\.move\s*\(|file\.renameTo\s*\(|\.renameTo\s*\(\s*new\s+File\s*\('
       label: File rename or move with potentially user-controlled target path
+    - regex: 'new\s+File\s*\('
+      label: File construction (verify the path is confined)
+    - regex: 'Files\.(readAllBytes|readString|newInputStream|copy|move)\s*\('
+      label: java.nio.file.Files read, copy or move
+    - regex: 'Paths\.get\s*\('
+      label: Paths.get (verify the path is confined)
+    - regex: 'getResourceAsStream\s*\('
+      label: classpath resource load with a variable name
   maxFilesPerBatch: 5
 references:
   - CWE-22
@@ -91,10 +135,11 @@ references:
   - 'OWASP-A01:2021'
 ---
 
-You are reviewing JVM source code (Java / Kotlin) for arbitrary file write
-via an unvalidated user-controlled path — a file system write operation
-whose destination path is derived from user input without confirming the
-result stays within a permitted base directory.
+You are reviewing JVM source code (Java / Kotlin) for path traversal: a
+file system read, write, copy, move or rename whose path is derived from
+user input without confirming the result stays within a permitted base
+directory. A traversed read discloses files. A traversed write can plant
+code.
 
 The classic path traversal (`../../etc/cron.d/backdoor`) is one form, but
 the more dangerous variant in server-side Java is an absolute path supplied
@@ -156,11 +201,23 @@ Path src = Paths.get(existingFilePath);
 Files.move(src, Paths.get(userTargetPath));       // arbitrary move/rename
 ```
 
+**File read with a user-controlled path:**
+```java
+String name = request.getParameter("file");
+byte[] data = Files.readAllBytes(Paths.get("/var/app/reports", name)); // name = ../../etc/passwd
+InputStream in = new FileInputStream(new File(uploadDir, name));
+InputStream tpl = getClass().getResourceAsStream("/templates/" + name); // reads other classpath resources
+```
+A traversed read discloses any file the process can open: `/etc/passwd`,
+`WEB-INF/web.xml`, or an `application.properties` holding credentials. The
+containment check below applies to reads exactly as it applies to writes.
+
 ## True positive criteria
 
 Flag when ALL of the following hold:
 
-1. A file-write operation is called (any of the APIs above).
+1. A file read, write, copy, move or rename operation is called (any of
+   the APIs above).
 2. The path argument is, transitively, user-controlled: a request
    parameter, form field, REST body, URL segment, or a value that the user
    wrote to a database and is now retrieved and used as a path.

@@ -27,7 +27,7 @@ precondition:
           - '**/target/**'
           - '**/build/**'
         label: server-identifying header set
-      - regex: server\.server-header|server\.error\.include-stacktrace
+      - regex: server\.server-header
         in:
           - '**/*.{java,kt}'
         notIn:
@@ -35,16 +35,7 @@ precondition:
           - '**/test/**'
           - '**/target/**'
           - '**/build/**'
-        label: Spring error/server header config
-      - regex: getStackTrace\s*\(\s*\)
-        in:
-          - '**/*.{java,kt}'
-        notIn:
-          - '**/src/test/**'
-          - '**/test/**'
-          - '**/target/**'
-          - '**/build/**'
-        label: stack trace read
+        label: Spring server header config
 where:
   extensions:
     - java
@@ -63,10 +54,6 @@ where:
       label: Response setHeader call with an info-disclosing header name
     - regex: (setHeader|addHeader)\s*\(\s*[\"'](Server|X-Powered-By)
       label: server-identifying header
-    - regex: server\.error\.include-stacktrace
-      label: stacktrace included in errors
-    - regex: getStackTrace\s*\(\s*\)
-      label: stack trace read
   excludePatterns:
     - '**/src/test/**'
     - '**/test/**'

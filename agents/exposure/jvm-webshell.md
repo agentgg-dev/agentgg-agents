@@ -74,8 +74,8 @@ where:
       label: Runtime.exec call
     - regex: 'new\s+ProcessBuilder\s*\('
       label: ProcessBuilder construction
-    - regex: 'request\.getParameter\s*\('
-      label: request parameter read
+    - regex: 'ClassLoader[^;]{0,120}Base64'
+      label: class loader fed Base64-decoded bytes
     - regex: 'defineClass\s*\(|Class\.forName\s*\('
       label: reflective class loading
     - regex: '<%[^>]{0,200}(Runtime|ProcessBuilder|exec)'
@@ -136,12 +136,22 @@ extension is validated.
 
 ## True positive criteria
 
-Flag when either holds:
+Flag when any of these holds:
 
-1. A request-controlled value reaches `Runtime.exec`, `ProcessBuilder`, or
-   reflective class definition, with no allowlist between them.
-2. An upload path can write a `.jsp`/`.jspx` into a directory the servlet
+1. In a `.jsp`, `.jspx`, `.jsw` or `.jsv` file, a request-controlled value
+   reaches `Runtime.exec`, `ProcessBuilder`, or reflective class
+   definition, with no allowlist between them.
+2. In a `.java` or `.kt` file, a request-controlled value reaches reflective
+   class definition, or reaches `Runtime.exec` / `ProcessBuilder` together
+   with a backdoor signal: a hardcoded password compared against a request
+   parameter, a Base64 or hex decoded command, or a class body decoded from
+   request data.
+3. An upload path can write a `.jsp`/`.jspx` into a directory the servlet
    container serves, and the handler does not restrict the extension.
+
+A request value that reaches `Runtime.exec` or `ProcessBuilder` in ordinary
+application code, with no backdoor signal, is command injection, not a
+webshell. Do not report it here.
 
 Raise confidence when the file also shows: a hardcoded password compared
 against a request parameter before execution, Base64 or hex decoding of

@@ -50,6 +50,16 @@ precondition:
           - '**/target/**'
           - '**/build/**'
         label: stack trace read
+      - regex: include-(stacktrace|message|exception)\s*[:=]
+        in:
+          - '**/application*.{properties,yml,yaml}'
+          - '**/bootstrap*.{properties,yml,yaml}'
+        notIn:
+          - '**/src/test/**'
+          - '**/test/**'
+          - '**/target/**'
+          - '**/build/**'
+        label: Spring Boot error response detail setting
 where:
   filePatterns:
     - '**/app/api/**/route.{ts,tsx,js,jsx,mjs}'
@@ -60,6 +70,8 @@ where:
     - '**/*Controller.{java,kt}'
     - '**/*Advice.{java,kt}'
     - '**/*ExceptionHandler.{java,kt}'
+    - '**/application*.{properties,yml,yaml}'
+    - '**/bootstrap*.{properties,yml,yaml}'
   preFilter:
     - semgrepRule: exposure/error-message-in-response
       label: Raw error message or stack trace returned in HTTP response
@@ -71,6 +83,8 @@ where:
       label: exception message (verify it is not returned)
     - regex: getStackTrace\s*\(\s*\)
       label: stack trace read
+    - regex: include-(stacktrace|message|exception)\s*[:=]
+      label: Spring Boot error response detail setting
   excludePatterns:
     - '**/src/test/**'
     - '**/test/**'
@@ -122,6 +136,17 @@ Stack traces leak file paths, module structure, line numbers.
 return NextResponse.json({ message: error.message, trace: error.stack }, { status: 500 });
 ```
 
+**Spring Boot configuration that adds error detail to every error response:**
+```properties
+server.error.include-stacktrace=always
+server.error.include-message=always
+server.error.include-exception=true
+```
+With these set, the default `/error` response carries the stack trace,
+the exception message or the exception class name for every unhandled
+exception. No handler code is involved, so a catch-block review does not
+see it.
+
 ## True positive criteria
 
 Flag when ALL of the following hold:
@@ -130,6 +155,13 @@ Flag when ALL of the following hold:
 2. The catch block returns a response whose body includes `err.message`,
    `err.stack`, `err.toString()`, `String(err)`, or the entire error
    object serialized.
+
+Also flag a Spring Boot configuration file that sets
+`server.error.include-stacktrace` or `server.error.include-message` to
+`always` or `on-param`, or sets `server.error.include-exception` to `true`.
+`on-param` counts because any caller can add the parameter. Do not flag
+`never`, or a file whose name limits it to a `dev`, `local` or `test`
+profile.
 
 ## What to ignore
 

@@ -148,8 +148,6 @@ where:
       label: repository delete (verify atomic with the read)
     - regex: (otp|magic|invite|reset|verify|consume)\w*Token\b|oneTimeUse
       label: one-time-token shape
-    - regex: '@Transactional'
-      label: transaction boundary
   maxFilesPerBatch: 5
 references:
   - CWE-367

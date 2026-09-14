@@ -192,7 +192,7 @@ precondition:
           - '**/target/**'
           - '**/build/**'
         label: MessageDigest MD5/SHA-1
-      - regex: Cipher\.getInstance\s*\(\s*[\"'][^\"']*(DES|RC4|ECB)
+      - regex: Cipher\.getInstance\s*\(\s*[\"'](?!AES)[^\"']*(DES|RC4|ECB)
         in:
           - '**/*.{java,kt}'
         notIn:
@@ -200,7 +200,7 @@ precondition:
           - '**/test/**'
           - '**/target/**'
           - '**/build/**'
-        label: weak cipher or ECB mode
+        label: weak cipher, or ECB mode on a non-AES cipher
       - regex: new\s+Random\s*\(
         in:
           - '**/*.{java,kt}'
@@ -282,8 +282,8 @@ where:
       label: Crypto primitive call (cipher, hash, HMAC, key derivation)
     - regex: MessageDigest\.getInstance\s*\(\s*[\"'](MD5|SHA-?1)[\"']
       label: MD5/SHA-1 digest
-    - regex: Cipher\.getInstance\s*\(\s*[\"'][^\"']*(DES|RC4|ECB)
-      label: weak cipher/ECB
+    - regex: Cipher\.getInstance\s*\(\s*[\"'](?!AES)[^\"']*(DES|RC4|ECB)
+      label: weak cipher, or ECB mode on a non-AES cipher
     - regex: new\s+Random\s*\(
       label: java.util.Random
     - regex: DigestUtils\.(md5|sha1)
