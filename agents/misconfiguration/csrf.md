@@ -117,11 +117,19 @@ endpoint accepts a content type the browser will send cross-origin
 (form-encoded, plain text, simple JSON without a custom header), an
 attacker page can trigger the request in the victim's session.
 
+The attack works by borrowing the victim's authority: the server reads
+the cookie and performs the action as that user, or allows an action
+it would refuse without a session. That is what makes a forged request
+worth sending. If an endpoint behaves the same no matter who calls it,
+the attacker can simply call it directly, and routing the request
+through a victim's browser gains nothing.
+
 ## What to look for
 
 **State-changing routes** (`POST`, `PUT`, `PATCH`, `DELETE`) that:
 
-1. Read session/identity from a **cookie** (not a `Bearer` header).
+1. Authenticate the caller from a **cookie** (not a `Bearer` header),
+   in the handler itself or in middleware on its route.
 2. Mutate server state — write to DB, send money, change settings,
    post on behalf of the user.
 3. Have none of: CSRF token middleware, custom-required header check,
@@ -167,7 +175,9 @@ Flag when ALL of the following hold:
 
 1. Handler mutates server state (DB write, mail send, payment,
    permission change, file upload, etc.).
-2. Caller identity is established via a cookie set by the same app.
+2. Caller identity comes from a cookie set by the same app, and the
+   handler or its route middleware uses that identity to authorize or
+   attribute the action.
 3. No CSRF middleware, custom-header requirement, strict SameSite, or
    origin check appears in the request path.
 
@@ -179,8 +189,10 @@ Flag when ALL of the following hold:
   signed-request schemes (no cookies).
 - Webhooks with their own signature verification — flag separately
   under `webhook-handler` / `slack-signing-verification`.
-- Login, signup, password-reset-request endpoints — pre-auth, no
-  session yet to forge.
+- Endpoints that do not authenticate the caller: login, signup,
+  password-reset requests, public contact or feedback forms. With no
+  session involved there is nothing to forge. A sensitive action left
+  unauthenticated is a `missing-auth` issue, not CSRF.
 - GraphQL endpoints behind a custom-header requirement
   (`X-Apollo-Operation-Name`, etc.).
 - Endpoints already wrapped in CSRF middleware at the router level.
@@ -224,6 +236,12 @@ app.post("/api/transfer", ...);
 
 // Custom-header gate
 if (req.headers["x-requested-with"] !== "fetch") return res.sendStatus(403);
+
+// Public endpoint — no session involved, nothing to forge
+app.post("/api/contact", async (req, res) => {
+  await db.messages.insert({ email: req.body.email, text: req.body.text });
+  res.sendStatus(204);
+});
 ```
 
 When SameSite mode is set on the session cookie elsewhere in the
