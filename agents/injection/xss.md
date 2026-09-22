@@ -92,6 +92,34 @@ precondition:
           - '**/dist/**'
           - '**/.next/**'
         label: Unescaped server template directive (EJS/Handlebars/Pug/Nunjucks)
+      - regex: '<[a-zA-Z/!][^>\n]{0,200}>[^`\n]{0,500}\$\{'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{html,ejs,hbs,njk,pug}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/stories/**'
+          - '**/*.stories.{ts,tsx,js,jsx}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: HTML tag and interpolation in a template literal
+      - regex: '["'']<[a-zA-Z/!][^\n]*?["''][ \t]*\+|\+[ \t]*["'']<[a-zA-Z/!]'
+        in:
+          - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+          - '**/*.{html,ejs,hbs,njk,pug}'
+        notIn:
+          - '**/__tests__/**'
+          - '**/*.test.{ts,tsx,js,jsx,mjs}'
+          - '**/*.spec.{ts,tsx,js,jsx,mjs}'
+          - '**/stories/**'
+          - '**/*.stories.{ts,tsx,js,jsx}'
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/.next/**'
+        label: HTML string concatenated with an expression
 where:
   extensions:
     - ts
@@ -127,6 +155,10 @@ where:
       label: 'Angular [innerHTML] / bypassSecurityTrustHtml'
     - regex: '<%-\s|\{\{\{|!=\s+|\|\s*safe\b'
       label: Unescaped server template directive (EJS/Handlebars/Pug/Nunjucks)
+    - regex: '<[a-zA-Z/!][^>\n]{0,200}>[^`\n]{0,500}\$\{'
+      label: HTML tag and interpolation in a template literal
+    - regex: '["'']<[a-zA-Z/!][^\n]*?["''][ \t]*\+|\+[ \t]*["'']<[a-zA-Z/!]'
+      label: HTML string concatenated with an expression
   maxFilesPerBatch: 5
 references:
   - CWE-79
@@ -162,11 +194,13 @@ crossed a trust boundary.
 - `element.setHTML(value)` without a Sanitizer config that strips
   script-injection vectors.
 
-**Template literals assembled into HTML**
+**HTML assembled from strings**
 - A template literal that interpolates a variable AND contains HTML
   tags: `` `<p>${userInput}</p>` ``, `` `<a href="${url}">` ``.
   The HTML string is then passed to innerHTML, returned from an API
   as `text/html`, or injected into the DOM.
+- The same with string concatenation:
+  `'<a href="' + url + '">'`, `'<p>' + userInput + '</p>'`.
 
 **Vue**
 - `v-html="value"` binds raw HTML. Equivalent to innerHTML.
@@ -190,8 +224,9 @@ Flag when ALL of the following hold:
 
 1. A sink is present: `dangerouslySetInnerHTML`, `innerHTML`,
    `outerHTML`, `insertAdjacentHTML`, `document.write`, `v-html`,
-   `[innerHTML]`, `bypassSecurityTrustHtml`, or an unescaped
-   server-side template directive.
+   `[innerHTML]`, `bypassSecurityTrustHtml`, an unescaped
+   server-side template directive, or an HTML string sent to the
+   browser in a `text/html` response.
 2. The value reaching the sink has an untrusted origin: HTTP request
    params/body/headers, database content that originates from user
    input, third-party API responses, file uploads, WebSocket messages,
