@@ -9,6 +9,10 @@ references:
   - CWE-693
   - CWE-1021
   - 'OWASP-A05:2021'
+# A missing header is not an effect an attacker causes, so a browser has nothing
+# to reproduce. Left testable, a live run reported this class as reproduced by
+# demonstrating a separate XSS whose fix has nothing to do with the header.
+liveReproducible: false
 ---
 
 You are auditing a codebase for missing or weakly-configured HTTP
