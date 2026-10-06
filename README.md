@@ -1,7 +1,10 @@
 # agentgg-agents
 
 <p align="center">
-  <img src="static/logo.png" alt="agentgg" width="300">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="static/logo.png">
+    <img src="static/logo-light.png" alt="agentgg" width="420">
+  </picture>
 </p>
 
 The official agent library for [agentgg](https://github.com/agentgg-dev/agentgg) — AI-powered SAST agents for code security review.
