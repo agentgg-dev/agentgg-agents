@@ -97,8 +97,6 @@ where:
 references:
   - CWE-352
   - 'OWASP-A01:2021'
-# Earned: a live run reported this class as reproduced on a request the agent
-# had itself sent from the target's own origin.
 liveProofRule: |
   The request MUST come from a different origin than the target. A request the
   target's own page sends proves nothing here, however it was built.
